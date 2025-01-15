@@ -1,8 +1,6 @@
 {
   "tasks": {
-    "dev": "deno run -A --watch lab_main.ts",
-    "lab-main": "deno run -A --watch lab_main.ts",
-    "lab-server": "deno run -A --watch lab_server.ts",
+    "dev": "deno run -A --watch main.ts",
     "lint": "deno lint"
   },
   "imports": {
