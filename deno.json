@@ -1,13 +1,14 @@
 {
   "tasks": {
-    "dev": "deno run -A --watch main.ts",
+    "dev": "deno run --allow-env --allow-net --allow-read --allow-sys --watch main.ts",
     "lint": "deno lint"
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@1",
     "@luca/cases": "jsr:@luca/cases@^1.0.0",
     "cowsay": "npm:cowsay@^1.6.0",
-    "cases": "https://deno.land/x/case@2.2.0/mod.ts"
+    "cases": "https://deno.land/x/case@2.2.0/mod.ts",
+    "neo4j": "npm:neo4j-driver@^5.27.0"
   },
   "lint": {
     "rules": {
