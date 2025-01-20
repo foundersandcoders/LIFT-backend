@@ -1,3 +1,6 @@
+import * as dotenv from "jsr:@std/dotenv";
+await dotenv.load({export: true});
+
 import neo4j, { Driver } from "neo4j";
 import { Credentials as C, credentials as c } from "./credentials.ts";
 
@@ -31,7 +34,7 @@ export async function write(
   console.groupCollapsed("=== === Subject === ===");
     await driver.executeQuery( /* Subject */
       'MERGE (subject:Person {name: $subject[0]})',
-      { subject: s },
+      { subject: s[0] },
       { database: 'neo4j' }
     );
 
@@ -47,7 +50,7 @@ export async function write(
   console.groupCollapsed("=== === Object === ===");
     await driver.executeQuery( /* Object */
       'MERGE (object:Person {name: $object[0]})',
-      { object: o },
+      { object: o[0] },
       { database: 'neo4j' }
     );
 
@@ -77,4 +80,9 @@ export async function write(
   await driver.close();
 };
 
-write(["pig", "small"], ["idea", "ambitious"], ["realise", "attempts to"], ["regularly"]);
+write(
+  ["pig", "small"],
+  ["idea", "ambitious"],
+  ["realise", "attempts to"],
+  ["regularly"]
+);

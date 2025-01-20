@@ -1,4 +1,5 @@
 import neo4j, { Driver } from "neo4j";
+import * as dotenv from "jsr:@std/dotenv";
 
 const people = [
   { name: "Alex",
@@ -85,7 +86,7 @@ const testSentence = [
   "Harriet is partial to a treat"
 ]
 
-export async function query() {
+export async function seed() {
   const URI:string = await Deno.env.get("NEO4J_URI") ?? "";
   const USER:string = await Deno.env.get("NEO4J_USERNAME") ?? "";
   const PASSWORD:string = await Deno.env.get("NEO4J_PASSWORD") ?? "";
@@ -177,4 +178,4 @@ export async function query() {
   await driver.close();
 };
 
-query();
+seed();
