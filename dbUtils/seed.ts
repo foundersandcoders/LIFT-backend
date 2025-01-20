@@ -1,5 +1,7 @@
-import neo4j, { Driver } from "neo4j";
 import * as dotenv from "jsr:@std/dotenv";
+await dotenv.load({export: true});
+
+import neo4j, { Driver } from "neo4j";
 
 const people = [
   { name: "Alex",
