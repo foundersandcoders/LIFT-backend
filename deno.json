@@ -1,6 +1,9 @@
 {
   "tasks": {
-    "dev": "deno run --allow-env --allow-net --allow-read --allow-sys --watch main.ts",
+    "dev": "deno run -E -N -R -S --watch main.ts",
+    "seed": "deno run -E -N -R -S --watch dbUtils/seed.ts",
+    "wipe": "deno run --allow-env --allow-net --allow-read --allow-sys --watch dbUtils/wipe.ts",
+    "write": "deno run --allow-env --allow-net --allow-read --allow-sys --watch dbUtils/write.ts",
     "lint": "deno lint"
   },
   "imports": {

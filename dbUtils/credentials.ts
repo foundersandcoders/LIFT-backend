@@ -1,3 +1,6 @@
+import * as dotenv from "jsr:@std/dotenv";
+await dotenv.load({export: true});
+
 export interface Credentials{
   URI: string,
   USER: string,

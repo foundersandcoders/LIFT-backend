@@ -1,8 +1,9 @@
 import { Application } from "jsr:@oak/oak/application";
 import { oakCors } from "https://deno.land/x/cors@v1.2.2/mod.ts";
 import * as dotenv from "jsr:@std/dotenv";
+
 import router from "./routes/hub.ts";
-import { query } from "./dbUtils/seed.ts";
+import { seed } from "./dbUtils/seed.ts";
 
 await dotenv.load({export: true});
 
@@ -18,5 +19,3 @@ app.use(router.allowedMethods());
 
 app.listen({port});
 console.log(`Server is running on port ${port}`);
-
-query();
