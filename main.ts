@@ -7,6 +7,6 @@ const port = await parseInt(
   Deno.env.get("PORT") ?? "8080",
 );
 
-router.listen({ port: 0 });
+router.listen({ port: port });
 
 console.log(`Router awake on ${port}`);
