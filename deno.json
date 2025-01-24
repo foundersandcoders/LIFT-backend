@@ -11,7 +11,8 @@
     "calc": "./utils/calc.ts",
     "neo4j": "npm:neo4j-driver@^5.27.0",
     "router": "./routes/hub.ts",
-    "queries": "./queries/"
+    "queries": "./queries/",
+    "types": "./types/input.ts"
   },
   "lint": {
     "rules": {
