@@ -1,34 +1,26 @@
-import { Router } from "jsr:@oak/oak/router";
-import * as stuff from "../piles/html.tsx";
-
-// Router
+import { Router } from "acorn";
 const router = new Router();
 
-router.get("/", (ctx) => {
-  ctx.response.body = (stuff.pageStart
-    + stuff.header
-    + stuff.nav
-    + stuff.home
-    + stuff.footer
-  + stuff.pageEnd);
+router.get("/", () => ({
+  query: `( ??? )`,
+}));
+
+router.get("/subject/:name", (ctx) => {
+  return {
+    query: `( ${ctx.params.name} )---[ ??? ]-->( ??? )`,
+  };
 });
 
-router.get("/who", (ctx) => {
-  ctx.response.body = (stuff.pageStart
-    + stuff.header
-    + stuff.nav
-    + stuff.who
-    + stuff.footer
-  + stuff.pageEnd);
+router.get("/object/:name", (ctx) => {
+  return {
+    query: `( ??? )---[ ??? ]-->( ${ctx.params.name} )`,
+  };
 });
 
-router.get("/neo4j", (ctx) => {
-  ctx.response.body = (stuff.pageStart
-    + stuff.header
-    + stuff.nav
-    + stuff.neo4j
-    + stuff.footer
-  + stuff.pageEnd);
+router.get("/verb/:name", (ctx) => {
+  return {
+    query: `( ??? )---[ ${ctx.params.name} ]--> ( ??? )`,
+  };
 });
 
 export default router;
