@@ -1,5 +1,8 @@
-// deno-lint-ignore-file ban-ts-comment
+import * as dotenv from "jsr:@std/dotenv";
+await dotenv.load({ export: true });
+
 import neo4j, { Driver } from "neo4j";
+
 
 export async function queryAll() {
   const URI: string = await Deno.env.get("NEO4J_URI") ?? "";
@@ -9,7 +12,10 @@ export async function queryAll() {
   let driver: Driver, result;
 
   try {
-    driver = neo4j.driver(URI, neo4j.auth.basic(USER, PASSWORD));
+    driver = neo4j.driver(
+      URI,
+      neo4j.auth.basic(USER, PASSWORD)
+    );
     await driver.verifyConnectivity();
   } catch (err) {
     // @ts-ignore
@@ -22,12 +28,8 @@ export async function queryAll() {
     RETURN n
     LIMIT 25
   `);
-
   console.log(records);
 
   await driver.close();
-
   return records;
 }
-
-queryAll();
