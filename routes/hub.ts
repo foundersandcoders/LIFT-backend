@@ -27,6 +27,31 @@ router.get("/get", async (ctx) => {
   }
 });
 
+
+
+router.get("/get/alex", async (ctx) => {
+  try {
+    const records = await get("alex");
+    
+    if (!records) { return {
+      status: 500,
+      body: { error: "Failed to fetch records from the database" },
+    }}
+
+    return {
+      status: 200,
+      body: records,
+    };
+  } catch (error) {
+    console.error("Error fetching data:", error);
+
+    return {
+      status: 500,
+      body: { error: "Internal Server Error" },
+    };
+  }
+});
+
 router.post("/newEntry", async (ctx) => {
   try {
     const body = await ctx.body();
