@@ -1,118 +1,109 @@
-// deno-lint-ignore-file ban-ts-comment
-import * as dotenv from "jsr:@std/dotenv";
 import neo4j, { Driver } from "neo4j";
+import { creds } from "../utils/creds/neo4j.ts";
 
-await dotenv.load({ export: true });
-
-const people = [
-  {
-    name: "Alex",
-    worksFor: ["Dan"],
-    worksWith: ["Jason"],
-    species: "Human",
-    enjoys: [],
-  },
-  {
-    name: "Alphonso",
-    worksFor: ["Biela", "Islington Council"],
-    worksWith: ["Nich"],
-    species: "Human",
-    enjoys: [],
-  },
-  {
-    name: "Anna",
-    worksFor: ["Dan"],
-    worksWith: ["Jess"],
-    species: "Human",
-    enjoys: [],
-  },
-  {
-    name: "Biela",
-    worksFor: [],
-    worksWith: ["Jess"],
-    species: "Dog",
-    enjoys: [],
-  },
-  { name: "Dan", worksFor: [], worksWith: [], species: "Human", enjoys: [] },
-  {
-    name: "Harriet",
-    worksFor: [],
-    worksWith: [],
-    species: "Human",
-    enjoys: ["blanket", "treat"],
-  },
-  {
-    name: "Jack",
-    worksFor: ["Dan"],
-    worksWith: ["Max"],
-    species: "Human",
-    enjoys: [],
-  },
-  {
-    name: "Jason",
-    worksFor: ["Dan"],
-    worksWith: ["Alex"],
-    species: "Goblin",
-    enjoys: [],
-  },
-  {
-    name: "Jess",
-    worksFor: ["Dan"],
-    worksWith: ["Biela", "Anna"],
-    species: "Human",
-    enjoys: [],
-  },
-  {
-    name: "Max",
-    worksFor: ["Dan"],
-    worksWith: ["Jack"],
-    species: "Human",
-    enjoys: [],
-  },
-  {
-    name: "Nich",
-    worksFor: ["Dan"],
-    worksWith: [],
-    species: "Human",
-    enjoys: [],
-  },
-  {
-    name: "Shaughn",
-    worksFor: ["Dan"],
-    worksWith: [],
-    species: "Human",
-    enjoys: [],
-  },
-];
-
-const items = [
-  { name: "blanket" },
-  { name: "treat" },
-];
-
-const testSentence = [
-  "Harriet enjoys blankets",
-  "Harriet is partial to a treat",
-];
+const data = {
+  people: [
+    {
+      name: "Alex",
+      worksFor: ["Dan"],
+      worksWith: ["Jason"],
+      species: "Human",
+      enjoys: [],
+    },
+    {
+      name: "Alphonso",
+      worksFor: ["Biela", "Islington Council"],
+      worksWith: ["Nich"],
+      species: "Human",
+      enjoys: [],
+    },
+    {
+      name: "Anna",
+      worksFor: ["Dan"],
+      worksWith: ["Jess"],
+      species: "Human",
+      enjoys: [],
+    },
+    {
+      name: "Biela",
+      worksFor: [],
+      worksWith: ["Jess"],
+      species: "Dog",
+      enjoys: [],
+    },
+    { name: "Dan", worksFor: [], worksWith: [], species: "Human", enjoys: [] },
+    {
+      name: "Harriet",
+      worksFor: [],
+      worksWith: [],
+      species: "Human",
+      enjoys: ["blanket", "treat"],
+    },
+    {
+      name: "Jack",
+      worksFor: ["Dan"],
+      worksWith: ["Max"],
+      species: "Human",
+      enjoys: [],
+    },
+    {
+      name: "Jason",
+      worksFor: ["Dan"],
+      worksWith: ["Alex"],
+      species: "Goblin",
+      enjoys: [],
+    },
+    {
+      name: "Jess",
+      worksFor: ["Dan"],
+      worksWith: ["Biela", "Anna"],
+      species: "Human",
+      enjoys: [],
+    },
+    {
+      name: "Max",
+      worksFor: ["Dan"],
+      worksWith: ["Jack"],
+      species: "Human",
+      enjoys: [],
+    },
+    {
+      name: "Nich",
+      worksFor: ["Dan"],
+      worksWith: [],
+      species: "Human",
+      enjoys: [],
+    },
+    {
+      name: "Shaughn",
+      worksFor: ["Dan"],
+      worksWith: [],
+      species: "Human",
+      enjoys: [],
+    },
+  ],
+  items: [
+    { name: "blanket" },
+    { name: "treat" },
+  ]
+}
 
 export async function seed() {
-  const URI: string = await Deno.env.get("NEO4J_URI") ?? "";
-  const USER: string = await Deno.env.get("NEO4J_USERNAME") ?? "";
-  const PASSWORD: string = await Deno.env.get("NEO4J_PASSWORD") ?? "";
-
-  // deno-lint-ignore prefer-const
-  let driver: Driver, result;
+  let driver: Driver;
 
   try {
-    driver = neo4j.driver(URI, neo4j.auth.basic(USER, PASSWORD));
+    driver = neo4j.driver(
+      creds.URI,
+      neo4j.auth.basic(creds.USER, creds.PASSWORD)
+    );
     await driver.verifyConnectivity();
   } catch (err) {
-    // @ts-ignore
+    /* @ts-ignore */
     console.log(`Connection error\n${err}\nCause: ${err.cause}`);
     return;
   }
 
-  for (const person of people) {
+  for (const person of data.people) {
     await driver.executeQuery(
       "MERGE (p:Person {name: $person.name})",
       { person: person },
@@ -120,7 +111,7 @@ export async function seed() {
     );
   }
 
-  for (const item of items) {
+  for (const item of data.items) {
     await driver.executeQuery(
       "MERGE (i:Item {name: $item.name})",
       { item: item },
@@ -128,7 +119,7 @@ export async function seed() {
     );
   }
 
-  for (const person of people) {
+  for (const person of data.people) {
     if (person.worksFor != undefined) {
       await driver.executeQuery(
         `
@@ -169,12 +160,10 @@ export async function seed() {
     }
   }
 
-  result = await driver.executeQuery(
-    `
-    MATCH (p:Person)-[:WORKS_FOR]-(boss:Person)
+  const result = await driver.executeQuery(
+    `MATCH (p:Person)-[:WORKS_FOR]-(boss:Person)
     WHERE boss.species = $species
-    RETURN boss
-    `,
+    RETURN boss`,
     { species: "Dog" },
     { database: "neo4j" },
   );
@@ -196,5 +185,3 @@ export async function seed() {
 
   await driver.close();
 }
-
-seed();
