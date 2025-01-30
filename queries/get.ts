@@ -1,8 +1,8 @@
 import neo4j, { Driver } from "neo4j";
 import { creds } from "../utils/creds/neo4j.ts";
 
-export async function get() {
-  let driver: Driver, result;
+export async function get(subject?: string) {
+  let driver: Driver;
 
   try {
     driver = neo4j.driver(
@@ -16,11 +16,24 @@ export async function get() {
     return;
   }
 
-  const { records } = await driver.executeQuery(`
-    MATCH (n)
-    RETURN n
-    LIMIT 25
-  `);
+  let query: string;
+  let params: Record<string, unknown> | undefined = undefined;
+
+  if (subject) {
+    query = `
+      MATCH (n { name: $subject })
+      RETURN n
+    `;
+    params = { subject };
+  } else {
+    query = `
+      MATCH (n)
+      RETURN n
+      LIMIT 25
+    `;
+  }
+
+  const { records } = await driver.executeQuery(query, params);
   console.log(records);
 
   await driver.close();
