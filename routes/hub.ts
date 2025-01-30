@@ -1,12 +1,12 @@
 import { Router } from "acorn";
 import { EntryInput as In } from "../utils/interfaces.ts";
-import { queryAll } from "../queries/queryAll.ts";
+import { get } from "../queries/get.ts";
 
 const router = new Router();
 
-router.get("/all", async (ctx) => {
+router.get("/get", async (ctx) => {
   try {
-    const records = await queryAll();
+    const records = await get();
     
     if (!records) { return {
       status: 500,

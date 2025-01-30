@@ -1,7 +1,7 @@
 import neo4j, { Driver } from "neo4j";
 import { creds } from "../utils/creds/neo4j.ts";
 
-export async function queryAll() {
+export async function get() {
   let driver: Driver, result;
 
   try {
