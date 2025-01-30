@@ -1,10 +1,9 @@
 {
   "tasks": {
     "dev": "deno run -A --watch main.ts",
-    "dbGet": "deno run -A --watch queries/queryAll.ts",
+    "dbGet": "deno run -A --watch queries/get.ts",
     "dbSeed": "deno run -A --watch queries/seed.ts",
-    "dbWipe": "deno run -A --watch queries/wipe.ts",
-    "dbWrite": "deno run -A --watch queries/write.ts",
+    "dbReset": "deno run -A --watch queries/reset.ts",
     "lint": "deno lint"
   },
   "imports": {
