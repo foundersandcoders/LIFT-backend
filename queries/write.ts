@@ -25,7 +25,7 @@ export async function write(
   try {
     driver = neo4j.driver(URI, neo4j.auth.basic(USER, PASSWORD));
     await driver.verifyConnectivity();
-  } catch (err) {
+  } catch (err) { /* @ts-ignore */
     console.log(`Connection error\n${err}\nCause: ${err.cause}`);
     return;
   }
@@ -42,7 +42,7 @@ export async function write(
   s.shift();
 
   console.groupCollapsed("=== Not Encoded ===");
-  for (const term of s) console.log(term);
+  for (const term of s) { console.log(term) };
   console.groupEnd();
   console.groupEnd();
 
@@ -58,7 +58,7 @@ export async function write(
   o.shift();
 
   console.groupCollapsed("=== Not Encoded ===");
-  for (const term of o) console.log(term);
+  for (const term of o) { console.log(term) };
   console.groupEnd();
   console.groupEnd();
 
@@ -90,13 +90,13 @@ export async function write(
   v.shift();
 
   console.groupCollapsed("=== Not Encoded ===");
-  for (const term of v) console.log(term);
+  for (const term of v) { console.log(term) };
   console.groupEnd();
   console.groupEnd();
 
   console.groupCollapsed("=== === Additional === ===");
   console.groupCollapsed("=== Not Encoded ===");
-  for (const term of a) console.log(term);
+  for (const term of a) { console.log(term) };
   console.groupEnd();
   console.groupEnd();
 

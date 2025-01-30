@@ -14,7 +14,7 @@ export async function wipe() {
     driver = neo4j.driver(URI, neo4j.auth.basic(USER, PASSWORD));
     await driver.verifyConnectivity();
     console.log(`Connected`);
-  } catch (err) {
+  } catch (err) { /* @ts-ignore */
     console.log(`Connection error\n${err}\nCause: ${err.cause}`);
     return;
   }
