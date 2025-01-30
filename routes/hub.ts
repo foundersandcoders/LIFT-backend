@@ -1,5 +1,5 @@
 import { Router } from "acorn";
-import { EntryInput } from "types";
+import { EntryInput as In } from "../utils/interfaces.ts";
 import { queryAll } from "../queries/queryAll.ts";
 
 const router = new Router();
@@ -27,6 +27,33 @@ router.get("/all", async (ctx) => {
   }
 });
 
+router.post("/newEntry", async (ctx) => {
+  try {
+    const body = await ctx.body();
+    const entry = body as In;
+
+    if (
+      !entry.subject
+      || !entry.verb
+      || !entry.object
+      || typeof entry.isPublic !== "boolean"
+    ) {throw new Error("Missing or invalid required fields") }
+
+    console.log("Received new entry:", entry);
+
+    return { message: "Entry received successfully" };
+  } catch (error) {
+    console.error("Error processing entry:", error);
+
+    return {
+      status: 400,
+      body: {error: "Invalid input format"}
+    };
+  }
+});
+
+export default router;
+
 /* Get By Part of Speech
   router.get("/subject/:name", (ctx) => {
     return {
@@ -45,31 +72,4 @@ router.get("/all", async (ctx) => {
       query: `( ??? )---[ ${ctx.params.name} ]--> ( ??? )`,
     };
   });
-*/
-
-router.post("/newEntry", async (ctx) => {
-  try {
-    const body = await ctx.body();
-    const entry = body as EntryInput;
-
-    if (
-      !entry.subject
-      || !entry.verb
-      || !entry.object
-      || typeof entry.isPublic !== "boolean"
-    ) { throw new Error("Missing or invalid required fields") }
-
-    console.log("Received new entry:", entry);
-
-    return { message: "Entry received successfully" };
-  } catch (error) {
-    console.error("Error processing entry:", error);
-
-    return {
-      status: 400,
-      body: {error: "Invalid input format"}
-    };
-  }
-});
-
-export default router;
+  */
