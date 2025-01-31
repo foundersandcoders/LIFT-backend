@@ -1,7 +1,7 @@
-import * as env from "env";
+import * as dotenv from "dotenv";
 import router from "router";
 
-await env.load({ export: true });
+await dotenv.load({ export: true });
 
 const port = await parseInt(
   Deno.env.get("PORT") ?? "8080",

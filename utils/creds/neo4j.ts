@@ -1,4 +1,4 @@
-import * as dotenv from "env";
+import * as dotenv from "dotenv";
 import { CredsN4J } from "types";
 
 await dotenv.load({ export: true });
