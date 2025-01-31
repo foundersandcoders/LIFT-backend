@@ -1,6 +1,4 @@
-@JasonWarrenUK  Let's start with the GETs. Will update soon POSTs, PATCHs and DELETEs
-
-### Proposed Endpoints and Query Structures
+# Proposed Endpoints and Query Structures
 
 | Endpoint               | Purpose                                   | Query Parameters                   | Example Response                        |
 |------------------------|-------------------------------------------|------------------------------------|-----------------------------------------|
@@ -11,32 +9,42 @@
 
 ---
 
-### Request Examples
+## Request Examples
 
-#### `/dictionary`
-- **Retrieve all dictionary entries**:
+### `/dictionary`
+
+**Retrieve all dictionary entries**:
+
   ```http
   GET /dictionary
   ```
-- **Retrieve entries starting with `app`, limited to 10**:
+
+**Retrieve entries starting with `app`, limited to 10**:
+
   ```http
   GET /dictionary?startsWith=app&limit=10
   ```
 
-#### `/statements`
-- **Retrieve all statements**:
+### `/statements`
+
+**Retrieve all statements**:
+
   ```http
   GET /statements
   ```
 
-#### `/statements/subject`
+### `/statements/subject`
+
 - **Retrieve statements for a specific subject (`Alice`)**:
+  
   ```http
   GET /statements/subject?subject=Alice
   ```
 
-#### `/tiles`
-- **Retrieve all tile data**:
+### `/tiles`
+
+**Retrieve all tile data**:
+  
   ```http
   GET /tiles
   ```
