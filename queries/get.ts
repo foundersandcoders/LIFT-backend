@@ -1,7 +1,7 @@
 import neo4j, { Driver } from "neo4j";
 import { creds as c } from "../utils/creds/neo4j.ts";
 
-export async function get(subject?: string) {
+export async function getSubject(subject?: string) {
   let driver: Driver;
   let records;
 
@@ -26,7 +26,10 @@ export async function get(subject?: string) {
       records = result.records;
     }
 
-    console.log(`Results: ${records?.length || 0}`);
+    console.groupCollapsed(`=== Subject Search ===`);
+      console.log(`Subject: ${subject ? subject : "All"}"`);
+      console.log(`Results: ${records?.length || 0}`);
+    console.groupEnd();
   } catch (err) {
     console.error("Error in get function:", err);
   } finally {

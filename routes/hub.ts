@@ -1,22 +1,28 @@
 import { Router } from "acorn";
 import { EntryInput as In } from "../utils/interfaces.ts";
-import { get } from "../queries/get.ts";
+import { getSubject } from "../queries/get.ts";
 
 const router = new Router();
 
+/* ?? What is ctx?
+  "ctx" is an alias for the "context" object.
+  Provides access to Request object & other useful props/methods for handling requests.
+*/
+
+// = Get Routes
+// note: get all
+  // returns a list of every node in the DB.
 router.get("/get", async (ctx) => {
   try {
     const records = await get();
-    
+
     if (!records) { return {
       status: 500,
       body: { error: "Failed to fetch records from the database" },
-    }}
-
-    return {
+    }} else { return {
       status: 200,
-      body: records,
-    };
+      body: records
+    }};
   } catch (error) {
     console.error("Error fetching data:", error);
 
@@ -27,19 +33,19 @@ router.get("/get", async (ctx) => {
   }
 });
 
-router.get("/get/alex", async (ctx) => {
+// note: subject search
+  // returns a named node, all its relationships & linked nodes
+router.get("/subject/:noun", async (ctx) => {
   try {
-    const records = await get("Alex");
+    const records = await getSubject(ctx.params.noun);
     
     if (!records) { return {
       status: 500,
       body: { error: "Failed to fetch records from the database" },
-    }}
-
-    return {
+    }} else { return {
       status: 200,
-      body: records,
-    };
+      body: records
+    }}
   } catch (error) {
     console.error("Error fetching data:", error);
 
@@ -50,6 +56,7 @@ router.get("/get/alex", async (ctx) => {
   }
 });
 
+// = Post Routes
 router.post("/newEntry", async (ctx) => {
   try {
     const body = await ctx.body();
@@ -75,24 +82,27 @@ router.post("/newEntry", async (ctx) => {
   }
 });
 
+// !! Test Routes
+router.get("/test/getAlex", async (ctx) => {
+  try {
+    const records = await get("Alex");
+    
+    if (!records) { return {
+      status: 500,
+      body: { error: "Failed to fetch records from the database" },
+    }} else { return {
+      status: 200,
+      body: records
+    }}
+  } catch (error) {
+    console.error("Error fetching data:", error);
+
+    return {
+      status: 500,
+      body: { error: "Internal Server Error" },
+    };
+  }
+});
+
+// = Exports
 export default router;
-
-/*  Routes
-  router.get("/subject/:name", (ctx) => {
-    return {
-      query: `( ${ctx.params.name} )---[ ??? ]-->( ??? )`,
-    };
-  });
-
-  router.get("/object/:name", (ctx) => {
-    return {
-      query: `( ??? )---[ ??? ]-->( ${ctx.params.name} )`,
-    };
-  });
-
-  router.get("/verb/:name", (ctx) => {
-    return {
-      query: `( ??? )---[ ${ctx.params.name} ]--> ( ??? )`,
-    };
-  });
-  */
