@@ -1,41 +1,37 @@
 import neo4j, { Driver } from "neo4j";
-import { creds } from "../utils/creds/neo4j.ts";
+import { creds as c } from "../utils/creds/neo4j.ts";
 
 export async function get(subject?: string) {
   let driver: Driver;
+  let records;
 
   try {
     driver = neo4j.driver(
-      creds.URI,
-      neo4j.auth.basic(creds.USER, creds.PASSWORD)
+      c.URI,
+      neo4j.auth.basic(c.USER, c.PASSWORD),
     );
     await driver.verifyConnectivity();
+
+    if (subject) {
+      // Use parameterized query with $subject
+      const result = await driver.executeQuery(
+        `MATCH (p:Person {name: $subject})-[r]->(q) RETURN p, r, q`,
+        { subject }
+      );
+      records = result.records;
+    } else {
+      const result = await driver.executeQuery(
+        `MATCH (n) RETURN n LIMIT 25`
+      );
+      records = result.records;
+    }
+
+    console.log(`Results: ${records?.length || 0}`);
   } catch (err) {
-    /* @ts-ignore */
-    console.log(`Connection error\n${err}\nCause: ${err.cause}`);
-    return;
+    console.error("Error in get function:", err);
+  } finally {
+    if (driver) await driver.close();
   }
 
-  let query: string;
-  let params: Record<string, unknown> | undefined = undefined;
-
-  if (subject) {
-    query = `
-      MATCH (n { name: $subject })
-      RETURN n
-    `;
-    params = { subject };
-  } else {
-    query = `
-      MATCH (n)
-      RETURN n
-      LIMIT 25
-    `;
-  }
-
-  const { records } = await driver.executeQuery(query, params);
-  console.log(records);
-
-  await driver.close();
   return records;
 }

@@ -27,11 +27,9 @@ router.get("/get", async (ctx) => {
   }
 });
 
-
-
 router.get("/get/alex", async (ctx) => {
   try {
-    const records = await get("alex");
+    const records = await get("Alex");
     
     if (!records) { return {
       status: 500,
@@ -79,7 +77,7 @@ router.post("/newEntry", async (ctx) => {
 
 export default router;
 
-/* Get By Part of Speech
+/*  Routes
   router.get("/subject/:name", (ctx) => {
     return {
       query: `( ${ctx.params.name} )---[ ??? ]-->( ??? )`,

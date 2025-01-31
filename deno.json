@@ -8,7 +8,7 @@
   },
   "imports": {
     "acorn": "jsr:@oak/acorn@^1.1.1",
-    "env": "jsr:@std/dotenv",
+    "dotenv": "jsr:@std/dotenv",
     "neo4j": "npm:neo4j-driver@^5.27.0",
     "types": "./utils/interfaces.ts",
     "calc": "./utils/calc.ts",
