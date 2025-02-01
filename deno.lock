@@ -1,6 +1,14 @@
 {
   "version": "4",
   "specifiers": {
+    "jsr:@coven/constants@~0.3.3": "0.3.3",
+    "jsr:@coven/cron@*": "0.3.3",
+    "jsr:@coven/expression@~0.3.3": "0.3.3",
+    "jsr:@coven/iterables@~0.3.3": "0.3.3",
+    "jsr:@coven/parsers@~0.3.3": "0.3.3",
+    "jsr:@coven/predicates@~0.3.3": "0.3.3",
+    "jsr:@coven/types@~0.3.3": "0.3.3",
+    "jsr:@coven/utils@~0.3.3": "0.3.3",
     "jsr:@oak/acorn@^1.1.1": "1.1.1",
     "jsr:@oak/commons@1": "1.0.0",
     "jsr:@oak/oak@*": "17.1.4",
@@ -32,6 +40,61 @@
     "npm:undici@^6.18.0": "6.21.1"
   },
   "jsr": {
+    "@coven/constants@0.3.3": {
+      "integrity": "e70aac8ce67055832d08475619b9303cb362498c7a594886b8410a18cb81b8ef"
+    },
+    "@coven/cron@0.3.3": {
+      "integrity": "df5a939cc20ba5b1f8973bb3dbfd3172b691752d34f2e7aa265723f48df2190a",
+      "dependencies": [
+        "jsr:@coven/constants",
+        "jsr:@coven/expression",
+        "jsr:@coven/iterables",
+        "jsr:@coven/parsers",
+        "jsr:@coven/predicates",
+        "jsr:@coven/types"
+      ]
+    },
+    "@coven/expression@0.3.3": {
+      "integrity": "896b2953013bb915b8e89f24fdd780d26a9866aac7f8608bf568689574b52fed",
+      "dependencies": [
+        "jsr:@coven/constants",
+        "jsr:@coven/types"
+      ]
+    },
+    "@coven/iterables@0.3.3": {
+      "integrity": "f19d77213e27fb291b287cd3422db967fab5bdd391a321185ec20c25ba8ddca4",
+      "dependencies": [
+        "jsr:@coven/constants",
+        "jsr:@coven/predicates",
+        "jsr:@coven/types",
+        "jsr:@coven/utils"
+      ]
+    },
+    "@coven/parsers@0.3.3": {
+      "integrity": "18409742718a5d17f9722b76db616c23fbfb8e51caddb953c904e055ee4d4aef",
+      "dependencies": [
+        "jsr:@coven/types"
+      ]
+    },
+    "@coven/predicates@0.3.3": {
+      "integrity": "026ed415d798b582e091b3d782ef0012dcb0a5598cc51ca4df809ee7297b155b",
+      "dependencies": [
+        "jsr:@coven/parsers",
+        "jsr:@coven/types"
+      ]
+    },
+    "@coven/types@0.3.3": {
+      "integrity": "e6cdedb68cba1b6c9e27456e42f7b5a45498604a9c47d76c2c6cbb910ea8b644",
+      "dependencies": [
+        "jsr:@coven/constants"
+      ]
+    },
+    "@coven/utils@0.3.3": {
+      "integrity": "686eb49b81cc9f794bd251827928b1f06f92e22a814cd5939a6f2665c63b61a0",
+      "dependencies": [
+        "jsr:@coven/types"
+      ]
+    },
     "@oak/acorn@1.1.1": {
       "integrity": "a6157ef41a7886c14b296bf91b058492b5fd642102666bf8d71c57b92a4e94c0",
       "dependencies": [
