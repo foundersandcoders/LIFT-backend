@@ -386,6 +386,7 @@
   "workspace": {
     "dependencies": [
       "jsr:@oak/acorn@^1.1.1",
+      "jsr:@std/dotenv@*",
       "npm:neo4j-driver@^5.27.0"
     ]
   }

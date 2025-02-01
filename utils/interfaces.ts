@@ -1,3 +1,9 @@
+export interface CredsN4J {
+  URI: string;
+  USER: string;
+  PASSWORD: string;
+}
+
 export interface EntryInput {
   statement?: string,
   subject: string,

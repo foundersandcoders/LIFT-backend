@@ -1,4 +1,4 @@
-import * as dotenv from "jsr:@std/dotenv";
+import * as dotenv from "dotenv";
 import router from "router";
 
 await dotenv.load({ export: true });
@@ -8,5 +8,4 @@ const port = await parseInt(
 );
 
 router.listen({ port: port });
-
 console.log(`Router awake on ${port}`);
