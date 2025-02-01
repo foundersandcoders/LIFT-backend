@@ -1,5 +1,7 @@
+import * as dotenv from "jsr:@std/dotenv";
+await dotenv.load({ export: true });
+
 import neo4j, { Driver } from "neo4j";
-import { creds } from "../utils/creds/neo4j.ts";
 
 interface Input {
   s: string[];
@@ -8,23 +10,22 @@ interface Input {
   a: string[];
 }
 
-export async function write
-(
+export async function write(
   s: Input["s"],
   o: Input["o"],
   v: Input["v"],
   a: Input["a"],
 ) {
+  const URI = await Deno.env.get("NEO4J_URI") ?? "";
+  const USER = await Deno.env.get("NEO4J_USERNAME") ?? "";
+  const PASSWORD = await Deno.env.get("NEO4J_PASSWORD") ?? "";
+
   let driver: Driver, result;
 
   try {
-    driver = neo4j.driver(
-      creds.URI,
-      neo4j.auth.basic(creds.USER, creds.PASSWORD)
-    );
+    driver = neo4j.driver(URI, neo4j.auth.basic(USER, PASSWORD));
     await driver.verifyConnectivity();
-  } catch (err) {
-    /* @ts-ignore */
+  } catch (err) { /* @ts-ignore */
     console.log(`Connection error\n${err}\nCause: ${err.cause}`);
     return;
   }

@@ -1,18 +1,18 @@
 {
   "tasks": {
-    "dbSeed": "deno run -A --watch dbUtils/seed.ts",
-    "dbWipe": "deno run -A --watch dbUtils/wipe.ts",
-    "dbWrite": "deno run -A --watch dbUtils/write.ts",
     "dev": "deno run -A --watch main.ts",
+    "dbGet": "deno run -A --watch queries/get.ts",
+    "dbSeed": "deno run -A --watch queries/seed.ts",
+    "dbReset": "deno run -A --watch queries/reset.ts",
     "lint": "deno lint"
   },
   "imports": {
     "acorn": "jsr:@oak/acorn@^1.1.1",
-    "calc": "./utils/calc.ts",
+    "dotenv": "jsr:@std/dotenv",
     "neo4j": "npm:neo4j-driver@^5.27.0",
-    "router": "./routes/hub.ts",
-    "queries": "./queries/",
-    "types": "./types/input.ts"
+    "types": "./utils/interfaces.ts",
+    "calc": "./utils/calc.ts",
+    "router": "./routes/hub.ts"
   },
   "lint": {
     "rules": {
