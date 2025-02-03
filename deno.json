@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "dev": "deno run -A --watch main.ts",
+    "dev": "deno run -A --watch --unstable-cron main.ts",
     "dbGet": "deno run -A --watch queries/get.ts",
     "dbSeed": "deno run -A --watch queries/seed.ts",
     "dbReset": "deno run -A --watch queries/reset.ts",
