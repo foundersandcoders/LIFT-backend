@@ -1,4 +1,4 @@
-import neo4j, { Driver } from "neo4j";
+import neo4j, { Driver, Record } from "neo4j";
 import { creds as c } from "../utils/creds/neo4j.ts";
 
 export async function getNouns() {
@@ -35,7 +35,7 @@ export async function getSubject(subject: string) {
     if (subject) {
       const result = await driver.executeQuery(
         `MATCH (p:Person {name: $subject})-[r]->(q)
-        RETURN p, r, q`,
+        RETURN p.name, r.name, q.name`,
         { subject }
       );
       records = result.records;
@@ -51,6 +51,14 @@ export async function getSubject(subject: string) {
     console.groupCollapsed(`=== Subject Search ===`);
       console.log(`Subject: ${subject}"`);
       console.log(`Results: ${records?.length || 0}`);
+
+      for(const record of records) {
+        console.log(
+          record.get("p.name"),
+          "r.label",
+          record.get("q.name")
+        )
+      }
     console.groupEnd();
   } catch (err) {
     console.error("Error in get function:", err);
