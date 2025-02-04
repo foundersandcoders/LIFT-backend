@@ -4,6 +4,7 @@
     "dbGet": "deno run -A --watch queries/get.ts",
     "dbSeed": "deno run -A --watch queries/seed.ts",
     "dbReset": "deno run -A --watch queries/reset.ts",
+    "dbWrite": "deno run -A --watch queries/write.ts",
     "lint": "deno lint"
   },
   "imports": {
