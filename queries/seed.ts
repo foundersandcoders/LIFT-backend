@@ -88,6 +88,9 @@ const data = {
   ]
 }
 console.log(`🚀 Seeding Data to Neo4j at: ${creds.URI}`);
+// console.log("🔍 Debug: People Data:", JSON.stringify(data.people, null, 2));
+// console.log("🔍 Debug: Items Data:", JSON.stringify(data.items, null, 2));
+
 
 export async function seed() {
   let driver: Driver;
@@ -103,14 +106,17 @@ export async function seed() {
     console.log(`Connection error\n${err}\nCause: ${err.cause}`);
     return;
   }
-
-  for (const person of data.people) {
-    console.log(`📝 Inserting Person: ${person.name}`);
-    await driver.executeQuery(
-      "MERGE (p:Person {name: $person.name})",
-      { person: person },
-      { database: "neo4j" },
-    );
+  try{
+    for (const person of data.people) {
+      console.log(`📝 Attempting to insert Person: ${person.name}`);
+      await driver.executeQuery(
+        "MERGE (p:Person {name: $person.name})",
+        { person: person },
+        { database: "neo4j" },
+      );
+    }
+  } catch (error) {
+    console.error("❌ ERROR inside the loop:", error);
   }
 
   for (const item of data.items) {
@@ -189,3 +195,5 @@ export async function seed() {
 
   await driver.close();
 }
+
+await seed();
