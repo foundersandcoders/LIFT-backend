@@ -5,8 +5,8 @@
 /node_modules
 
 .env
-.env.Local
-.env.Production
+.env.local
+.env.production
 *.orig
 *.pyc
 *.swp

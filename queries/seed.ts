@@ -88,9 +88,6 @@ const data = {
   ]
 }
 console.log(`🚀 Seeding Data to Neo4j at: ${creds.URI}`);
-// console.log("🔍 Debug: People Data:", JSON.stringify(data.people, null, 2));
-// console.log("🔍 Debug: Items Data:", JSON.stringify(data.items, null, 2));
-
 
 export async function seed() {
   let driver: Driver;
@@ -195,5 +192,4 @@ export async function seed() {
 
   await driver.close();
 }
-
 await seed();
