@@ -1,6 +1,9 @@
 import { Router } from "acorn";
 import { EntryInput as In } from "../utils/interfaces.ts";
-import { getNouns, getSubject, getObject } from "../queries/get.ts";
+import { 
+  getNouns, getSubject, getObject,
+  getVerbs
+} from "../queries/get.ts";
 
 const router = new Router();
 
@@ -15,7 +18,8 @@ router.get("/", (ctx) => {
     "Routes": {
       "/n": "Return all nodes with the label \":Person\"",
       "/n/s/:name": "Return relationships with \":name\" as subject",
-      "/n/o/:name": "Return relationships with \":name\" as object"
+      "/n/o/:name": "Return relationships with \":name\" as object",
+      "/v": "Return relationships",
     }
   }}
 });
@@ -73,6 +77,27 @@ router.get("/n/o/:n", async (ctx) => {
       status: 200,
       body: records
     }}
+  } catch (error) {
+    console.error("Error fetching data:", error);
+
+    return {
+      status: 500,
+      body: { error: "Internal Server Error" },
+    };
+  }
+});
+
+router.get("/v", async (ctx) => {
+  try {
+    const records = await getVerbs();
+
+    if (!records) { return {
+      status: 500,
+      body: { error: "Failed to fetch records from the database" },
+    }} else { return {
+      status: 200,
+      body: records
+    }};
   } catch (error) {
     console.error("Error fetching data:", error);
 
