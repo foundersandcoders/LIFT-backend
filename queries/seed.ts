@@ -87,6 +87,7 @@ const data = {
     { name: "treat" },
   ]
 }
+console.log(`🚀 Seeding Data to Neo4j at: ${creds.URI}`);
 
 export async function seed() {
   let driver: Driver;
@@ -104,6 +105,7 @@ export async function seed() {
   }
 
   for (const person of data.people) {
+    console.log(`📝 Inserting Person: ${person.name}`);
     await driver.executeQuery(
       "MERGE (p:Person {name: $person.name})",
       { person: person },
@@ -112,6 +114,7 @@ export async function seed() {
   }
 
   for (const item of data.items) {
+    console.log(`📝 Inserting Item: ${item.name}`);
     await driver.executeQuery(
       "MERGE (i:Item {name: $item.name})",
       { item: item },
@@ -182,6 +185,7 @@ export async function seed() {
       `in ${result.summary.resultAvailableAfter} ms.`
     )
   */
+    
 
   await driver.close();
 }
