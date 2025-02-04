@@ -6,6 +6,7 @@
     "dbSeed": "deno run -A --watch queries/seed.ts",
     "dbSeedLocal": "deno run -A --env-file=.env.local queries/seed.ts",
     "dbReset": "deno run -A --watch queries/reset.ts",
+    "dbResetLocal": "deno run -A --env-file=.env.local queries/reset.ts",
     "lint": "deno lint"
   },
   "imports": {
