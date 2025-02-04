@@ -144,3 +144,6 @@ export async function getVerbs() {
 
   return verbArr;
 }
+
+getNouns();
+getVerbs();

@@ -3,7 +3,10 @@ import { creds as c } from "./creds/neo4j.ts";
 import { nextDate } from "jsr:@coven/cron";
 
 export const nudgeSched = "0 */4 * * *"; // Once every 4 hours
-const nextRun = () => { nextDate(new Date())(nudgeSched) };
+
+const nextRun = () => {
+    nextDate(new Date())(nudgeSched)
+};
 
 export async function nudgeDb () {
     let driver: Driver;

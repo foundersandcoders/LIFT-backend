@@ -7,6 +7,7 @@
     "dbSeedProd": "deno run -A --env-file=.env.production queries/seed.ts",
     "dbResetLocal": "deno run -A --env-file=.env.local queries/reset.ts",
     "dbResetProduction": "deno run -A --env-file=.env.production queries/reset.ts",
+    "dbWrite": "deno run -A --watch queries/write.ts",
     "lint": "deno lint"
   },
   "imports": {

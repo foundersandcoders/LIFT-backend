@@ -1,5 +1,7 @@
+import * as dotenv from "jsr:@std/dotenv";
 import neo4j, { Driver } from "neo4j";
-import { creds } from "../utils/creds/neo4j.ts";
+
+await dotenv.load({ export: true });
 
 interface Input {
   s: string[];
@@ -8,26 +10,30 @@ interface Input {
   a: string[];
 }
 
-export async function write
-(
+export async function write(
   s: Input["s"],
   o: Input["o"],
   v: Input["v"],
   a: Input["a"],
 ) {
+  const URI = await Deno.env.get("NEO4J_URI") ?? "";
+  const USER = await Deno.env.get("NEO4J_USERNAME") ?? "";
+  const PASSWORD = await Deno.env.get("NEO4J_PASSWORD") ?? "";
+
   let driver: Driver, result;
 
   try {
-    driver = neo4j.driver(
-      creds.URI,
-      neo4j.auth.basic(creds.USER, creds.PASSWORD)
-    );
+    driver = neo4j.driver(URI, neo4j.auth.basic(USER, PASSWORD));
     await driver.verifyConnectivity();
-  } catch (err) {
-    /* @ts-ignore */
+  } catch (err) { /* @ts-ignore */
     console.log(`Connection error\n${err}\nCause: ${err.cause}`);
     return;
   }
+
+  // Store original subject and object before shifting
+  const ogSubject = s[0];
+  const ogObject = o[0];
+  const relationshipName = v[0];
 
   console.groupCollapsed("=== === Subject === ===");
   await driver.executeQuery(
@@ -62,27 +68,16 @@ export async function write
   console.groupEnd();
 
   console.groupCollapsed("=== === Verb === ===");
-  // /* Verb */
-  // await driver.executeQuery(
-  //   `MATCH (subject:Person {name: $subject[0]})
-  //   MATCH (object:Person {name: $object[0]})
-  //   MERGE (s)-[:WORKS_FOR]->(o)`,
-  //   { subject: s },
-  //   { object: o },
-  //   { verb: v },
-  //   { database: 'neo4j' }
-  // )
-
-  const relationshipName = v[0];
   const query = `
-      MATCH (subject:Person {name: $subject[0]})
-      MATCH (object:Person {name: $object[0]})
+      MATCH (subject:Person {name: $subject})
+      MATCH (object:Person {name: $object})
       MERGE (subject)-[:\`${relationshipName}\`]->(object)
-    `;
+  `;
+  
   await driver.executeQuery(
     query,
-    { subject: s, object: o }, // your parameter object
-    { database: "neo4j" },
+    { subject: ogSubject, object: ogObject }, // Correct references
+    { database: "neo4j" }
   );
 
   console.log(`Created ${v[0]}`);
@@ -107,13 +102,13 @@ export async function write
 write(
   ["pig", "small"],
   ["idea", "ambitious"],
-  ["realise", "attempts to"],
+  ["steal", "attempts to"],
   ["regularly"],
 );
 
 write(
   ["Alex", "Galician"],
   ["Jason", "???"],
-  ["tolerate"],
+  ["ignore"],
   [""],
 );
