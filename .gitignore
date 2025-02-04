@@ -4,9 +4,13 @@
 
 /node_modules
 
+### .env files for environments ###
 .env
 .env.local
 .env.production
+.env.*
+
+
 *.orig
 *.pyc
 *.swp
@@ -19,7 +23,6 @@
 
 # Icon must end with two \r
 Icon
-
 
 # Thumbnails
 ._*
