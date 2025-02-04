@@ -1,4 +1,4 @@
-import neo4j, { Driver } from "neo4j";
+import neo4j, { Driver, Record, Relationship } from "neo4j";
 import { creds as c } from "../utils/creds/neo4j.ts";
 
 export async function getNouns() {
@@ -9,7 +9,7 @@ export async function getNouns() {
 
     const result = await driver.executeQuery(
       `MATCH (p:Person)
-      RETURN p
+      RETURN p.name
       LIMIT 25`
     );
 
@@ -18,6 +18,9 @@ export async function getNouns() {
     console.groupCollapsed(`=== Unfiltered Search ===`);
       console.log(`Subject: "All People"`);
       console.log(`Results: ${records?.length || 0}`);
+      for(const record of records) {
+        console.log(record.get("p.name"))
+      }
     console.groupEnd();
   } catch (err) {
     console.error("Error in get function:", err);
@@ -35,7 +38,7 @@ export async function getSubject(subject: string) {
     if (subject) {
       const result = await driver.executeQuery(
         `MATCH (p:Person {name: $subject})-[r]->(q)
-        RETURN p, r, q`,
+        RETURN p.name, type(r) as rType, q.name`,
         { subject }
       );
       records = result.records;
@@ -51,6 +54,13 @@ export async function getSubject(subject: string) {
     console.groupCollapsed(`=== Subject Search ===`);
       console.log(`Subject: ${subject}"`);
       console.log(`Results: ${records?.length || 0}`);
+      for(const record of records) {
+        console.log(
+          record.get("p.name"),
+          record.get("rType"),
+          record.get("q.name")
+        )
+      }
     console.groupEnd();
   } catch (err) {
     console.error("Error in get function:", err);
@@ -69,7 +79,7 @@ export async function getObject(object: string) {
 
     const result = await driver.executeQuery(
       `MATCH (p)-[r]->(q:Person {name: $object})
-      RETURN p, r, q`,
+      RETURN p.name, type(r) as rType, q.name`,
       { object }
     );
 
@@ -78,6 +88,13 @@ export async function getObject(object: string) {
     console.groupCollapsed(`=== Object Search ===`);
       console.log(`Subject: ${object}"`);
       console.log(`Results: ${records?.length || 0}`);
+      for(const record of records) {
+        console.log(
+          record.get("p.name"),
+          record.get("rType"),
+          record.get("q.name")
+        )
+      }
     console.groupEnd();
   } catch (err) {
     console.error("Error in get function:", err);
