@@ -1,7 +1,5 @@
-import * as dotenv from "dotenv";
+//import * as dotenv from "dotenv";
 import { CredsN4J } from "types";
-
-await dotenv.load({ export: true });
 
 const uri = await Deno.env.get("NEO4J_URI") ?? "";
 const user = await Deno.env.get("NEO4J_USERNAME") ?? "";
@@ -12,3 +10,8 @@ export const creds: CredsN4J = {
   USER: user,
   PASSWORD: password,
 };
+
+console.log(`🔍 ENVIRONMENT CHECK`);
+console.log(`NEO4J_URI: ${Deno.env.get("NEO4J_URI")}`);
+console.log(`NEO4J_USERNAME: ${Deno.env.get("NEO4J_USERNAME")}`);
+console.log(`🔗 Connecting to Neo4j at: ${creds.URI}`);

@@ -27,3 +27,4 @@ export async function reset() {
 
   console.log(`Driver closed`);
 }
+await reset()

@@ -185,3 +185,4 @@ export async function seed() {
 
   await driver.close();
 }
+await seed();

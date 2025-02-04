@@ -1,9 +1,12 @@
 {
   "tasks": {
-    "dev": "deno run -A --watch --unstable-cron main.ts",
+    "dev": "deno run -A --watch --unstable-cron --env-file=.env.local main.ts",
+    "prod": "deno run -A --watch --unstable-cron --env-file=.env.production main.ts",
     "dbGet": "deno run -A --watch queries/get.ts",
-    "dbSeed": "deno run -A --watch queries/seed.ts",
-    "dbReset": "deno run -A --watch queries/reset.ts",
+    "dbSeedLocal": "deno run -A --env-file=.env.local queries/seed.ts",
+    "dbSeedProd": "deno run -A --env-file=.env.production queries/seed.ts",
+    "dbResetLocal": "deno run -A --env-file=.env.local queries/reset.ts",
+    "dbResetProduction": "deno run -A --env-file=.env.production queries/reset.ts",
     "lint": "deno lint"
   },
   "imports": {
