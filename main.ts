@@ -1,4 +1,6 @@
 import * as dotenv from "dotenv";
+import { Application } from "https://deno.land/x/oak/mod.ts";
+import { oakCors } from "https://deno.land/x/cors/mod.ts";
 import router from "router";
 import { nudgeDb, nudgeSched } from "./utils/nudgeDb.ts";
 
