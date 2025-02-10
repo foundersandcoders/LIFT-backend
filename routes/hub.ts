@@ -1,7 +1,6 @@
 // import { Router } from "acorn";
 import { Router } from "https://deno.land/x/oak/mod.ts";
 import langRouter from "./language.ts"
-
 import { EntryInput as In } from "../utils/types/interfaces.ts";
 import { getNouns, getObject, getSubject, getVerbs } from "../queries/get.ts";
 import { write } from "../queries/write.ts";

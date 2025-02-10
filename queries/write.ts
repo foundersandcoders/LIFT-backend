@@ -100,16 +100,7 @@ export async function write(
   await driver.close();
 }
 
-write(
-  ["pig", "small"],
-  ["idea", "ambitious"],
-  ["steal", "attempts to"],
-  ["regularly"],
-);
-
-write(
-  ["Alex", "Galician"],
-  ["Jason", "???"],
-  ["ignore"],
-  [""],
-);
+if (import.meta.main) {
+  write(["pig", "small"], ["idea", "ambitious"], ["steal", "attempts to"], ["regularly"]);
+  write(["Alex", "Galician"], ["Jason", "???"], ["ignore"], [""]);
+}
