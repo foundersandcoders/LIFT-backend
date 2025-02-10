@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-explicit-any
 // import nlp from "https://cdn.skypack.dev/compromise";
 import nlp from "npm:compromise@14.10.0";
 import { Grammar, Subject, Verb, Object } from "../types/language.ts";
@@ -48,7 +49,7 @@ function extractNounDescriptors(phrase: string, head: string): string[] {
   // Extract verb phrases used as modifiers (e.g. "called Jason")
   const verbModifiers = doc.match("#Verb+ #ProperNoun+").out("array");
   // Remove any words that match the head noun from adjectives list
-  const filteredAdjectives = adjectives.filter((adj) =>
+  const filteredAdjectives = adjectives.filter((adj:string) =>
     adj.toLowerCase() !== head.toLowerCase()
   );
   return [...filteredAdjectives, ...prepPhrases, ...verbModifiers];
@@ -117,7 +118,7 @@ function parseVerbPhrase(phrase: string): Verb {
 
   // First, get all verbs and filter out auxiliaries
   const verbs = doc.verbs().out("array");
-  const mainVerb = verbs.find((v) =>
+  const mainVerb = verbs.find((v:string) =>
     !nlp(v).has("#Auxiliary") &&
     !nlp(v).has("#Adverb")
   ) || phrase.trim();
@@ -151,60 +152,70 @@ function parseVerbPhrase(phrase: string): Verb {
  * - If the final token of the sentence is an adverb, it is reattached to the verb.
  */
 export function breaker(sentence: string): Grammar {
-  const doc = nlp(sentence);
+  // console.groupCollapsed(`=== Breaker ===`);
+  const doc:any = nlp(sentence);
+
+  // console.log(`doc: ${doc}`);
+
   const termData = doc.terms().data();
+
+  // console.log(`termData: ${termData}`);
 
   if (termData.length === 0) {
     throw new Error("Empty sentence provided");
   }
 
-  // Find the main verb phrase, skipping auxiliary verbs
   let verbIndex = -1;
+  // console.log(`verbIndex: ${verbIndex}`);
+
+  // console.groupCollapsed(`=== Looping through termData ===`);
   for (let i = 0; i < termData.length; i++) {
     const term = termData[i].terms[0];
-    // Check if it's a verb but not an auxiliary verb
+    // console.log(`term: ${term}`);
     if (term.tags.includes("Verb") && !term.tags.includes("Auxiliary")) {
-      // If it's "called", check if it's being used as a naming verb
       if (term.normal === "called" && i < termData.length - 1) {
         const nextTerm = termData[i + 1].terms[0];
-        // If followed by a proper noun, skip this verb
-        if (nextTerm.tags.includes("ProperNoun")) {
-          continue;
-        }
+        if (nextTerm.tags.includes("ProperNoun")) { continue };
       }
       verbIndex = i;
+      // console.log(`verbIndex: ${verbIndex}`);
       break;
     }
   }
+  // console.groupEnd();
 
   if (verbIndex === -1) {
+    // console.log(`verbIndex: ${verbIndex}`);
     return {
       subject: parseNounPhrase(""),
       verb: parseVerbPhrase(sentence),
     };
   }
-
-  // Adjust subject boundary: if the term immediately before the verb is an adverb, remove it from subject
+  
   let subjectEndIndex = verbIndex;
+  // console.log(`subjectEndIndex: ${subjectEndIndex}`);
+
   if (
     verbIndex > 0 && termData[verbIndex - 1].terms[0].tags.includes("Adverb")
   ) {
     subjectEndIndex = verbIndex - 1;
+    // console.log(`subjectEndIndex: ${subjectEndIndex}`);
   }
 
-  // Build subject phrase, including any auxiliary verbs before the main verb
-  const subjectTerms = termData.slice(0, subjectEndIndex).map((t) => {
+  const subjectTerms = termData.slice(0, subjectEndIndex).map((t:any) => {
     // Skip auxiliary verbs in the subject
     if (!t.terms[0].tags.includes("Auxiliary")) {
       return t.text;
     }
     return "";
-  }).filter(Boolean); // Remove empty strings
-  const subjectPhrase = subjectTerms.join(" ");
+  }).filter(Boolean);
+  // console.log(`subjectTerms: ${subjectTerms}`);
 
-  // Build verb phrase, including auxiliary verbs
+  const subjectPhrase = subjectTerms.join(" ");
+  // console.log(`subjectPhrase: ${subjectPhrase}`);
+
   const verbTerms: string[] = [];
-  // Include auxiliary verbs that come before the main verb
+  // console.log(`verbTerms: ${verbTerms}`);
   for (let i = subjectEndIndex; i < verbIndex; i++) {
     if (
       termData[i].terms[0].tags.includes("Auxiliary") ||
@@ -213,33 +224,45 @@ export function breaker(sentence: string): Grammar {
       verbTerms.push(termData[i].text);
     }
   }
-  // Add the main verb
+  
   verbTerms.push(termData[verbIndex].text);
+  // console.log(`verbTerms: ${verbTerms}`);
 
-  // Add following adverbs
   let i = verbIndex + 1;
   while (i < termData.length && termData[i].terms[0].tags.includes("Adverb")) {
+    // console.log(`verbIndex[${i}]: ${termData[i].text}`);
     verbTerms.push(termData[i].text);
     i++;
   }
   let verbPhrase = verbTerms.join(" ");
+  // console.log(`verbPhrase: ${verbPhrase}`);
 
-  // Build object phrase from remaining tokens
-  const objectTerms = termData.slice(i).map((t) => t.text);
-  // Handle final adverb
+  const objectTerms = termData.slice(i).map((t:any) => t.text);
+  // console.log(`objectTerms: ${objectTerms}`);
   if (objectTerms.length > 0) {
     const lastToken = termData[termData.length - 1];
+    // console.log(`lastToken: ${lastToken}`);
     if (lastToken.terms[0].tags.includes("Adverb")) {
+      // console.log(`verbPhrase: ${verbPhrase}`);
       verbPhrase = verbPhrase + " " + objectTerms.pop();
+      // console.log(`verbPhrase: ${verbPhrase}`);
     }
   }
   const objectPhrase = objectTerms.join(" ");
+  // console.log(`objectPhrase: ${objectPhrase}`);
 
   const subject = subjectPhrase
-    ? parseNounPhrase(subjectPhrase)
-    : { head: ["", ""], quantity: [] };
+  ? parseNounPhrase(subjectPhrase)
+  : { head: ["", ""], quantity: [] };
+  // console.log(`subjectPhrase: ${subjectPhrase}`);
+
   const verb = parseVerbPhrase(verbPhrase);
+  // console.log(`verb: ${verb}`);
+
   const object = objectPhrase ? parseNounPhrase(objectPhrase) : undefined;
+  // console.log(`object: ${object}`);
+  
+  // console.groupEnd();
 
   return { subject, verb, object };
 }
@@ -255,7 +278,7 @@ if (import.meta.main) {
   ];
   for (const sentence of examples) {
     console.log("Input:", sentence);
-    console.log("Parsed:", JSON.stringify(parseSentence(sentence), null, 2));
+    console.log("Parsed:", JSON.stringify(breaker(sentence), null, 2));
     console.log("----------");
   }
 }

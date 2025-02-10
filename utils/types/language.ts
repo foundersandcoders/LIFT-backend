@@ -5,7 +5,7 @@ export interface Grammar {
 }
 
 export interface Subject {
-  head: [string, string];
+  head: string[];
   article?: string;
   quantity: (string | number)[];
   descriptors?: string[];
@@ -17,7 +17,7 @@ export interface Verb {
 }
 
 export interface Object {
-  head: [string, string];
+  head: string[];
   article?: string;
   quantity: (string | number)[];
   descriptors?: string[];
