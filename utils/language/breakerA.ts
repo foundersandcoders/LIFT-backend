@@ -1,6 +1,6 @@
 // import nlp from "https://cdn.skypack.dev/compromise";
 import nlp from "npm:compromise@14.10.0";
-import { Subject, Object, Verb, Grammar } from "../interfaces.ts";
+import { Grammar, Subject, Verb, Object } from "../types/languageA.ts";
 
 // -------------------------------------------------------------------------
 // Helper functions
@@ -24,7 +24,10 @@ function isArticle(word: string): boolean {
 /**
  * Determine quantity based on an article or the noun's plurality.
  */
-function determineQuantity(article: string | null, headWord: string): (string | number)[] {
+function determineQuantity(
+  article: string | null,
+  headWord: string,
+): (string | number)[] {
   if (article && article.toLowerCase() === "some") {
     return ["some", "plural"];
   }
@@ -45,7 +48,9 @@ function extractNounDescriptors(phrase: string, head: string): string[] {
   // Extract verb phrases used as modifiers (e.g. "called Jason")
   const verbModifiers = doc.match("#Verb+ #ProperNoun+").out("array");
   // Remove any words that match the head noun from adjectives list
-  const filteredAdjectives = adjectives.filter(adj => adj.toLowerCase() !== head.toLowerCase());
+  const filteredAdjectives = adjectives.filter((adj) =>
+    adj.toLowerCase() !== head.toLowerCase()
+  );
   return [...filteredAdjectives, ...prepPhrases, ...verbModifiers];
 }
 
@@ -55,17 +60,19 @@ function extractNounDescriptors(phrase: string, head: string): string[] {
 function extractVerbDescriptors(phrase: string, head: string): string[] {
   const doc = nlp(phrase);
   const descriptors: string[] = [];
-  
+
   // Extract auxiliary verbs
   const auxiliaries = doc.match("#Auxiliary+").out("array");
   if (auxiliaries.length) descriptors.push(...auxiliaries);
-  
+
   // Extract adverbs
   const adverbs = doc.adverbs().out("array");
   if (adverbs.length) descriptors.push(...adverbs);
-  
+
   // Remove the head verb if accidentally included
-  return descriptors.filter(desc => desc.toLowerCase() !== head.toLowerCase());
+  return descriptors.filter((desc) =>
+    desc.toLowerCase() !== head.toLowerCase()
+  );
 }
 
 /**
@@ -83,7 +90,9 @@ function parseNounPhrase(phrase: string): Subject | Object {
 
   // Use Compromise to get the first noun
   const nounDoc = doc.match("#Noun").first();
-  let headWord = nounDoc.found ? nounDoc.out("text") : words[words.length - 1];
+  const headWord = nounDoc.found
+    ? nounDoc.out("text")
+    : words[words.length - 1];
   const head: [string, string] = [headWord, headWord];
 
   // Extract descriptors including verb modifiers
@@ -105,30 +114,31 @@ function parseNounPhrase(phrase: string): Subject | Object {
  */
 function parseVerbPhrase(phrase: string): Verb {
   const doc = nlp(phrase);
-  
+
   // First, get all verbs and filter out auxiliaries
-  const verbs = doc.verbs().out('array');
-  const mainVerb = verbs.find(v => 
-    !nlp(v).has('#Auxiliary') && 
-    !nlp(v).has('#Adverb')
+  const verbs = doc.verbs().out("array");
+  const mainVerb = verbs.find((v) =>
+    !nlp(v).has("#Auxiliary") &&
+    !nlp(v).has("#Adverb")
   ) || phrase.trim();
-  
+
   // Get the infinitive form of just the main verb
-  const verbInfinitive = nlp(mainVerb).verbs().toInfinitive().out('text') || mainVerb;
-  
-  // Get auxiliary verbs in order
-  const auxiliaries = doc.match('#Auxiliary+').out('array');
-  
-  // Get adverbs
-  const adverbs = doc.adverbs().out('array');
-  
-  // Build the full verb phrase: auxiliaries + main verb
-  const fullVerbPhrase = auxiliaries.length ? 
-    `${auxiliaries.join(' ')} ${mainVerb}` : 
+  const verbInfinitive = nlp(mainVerb).verbs().toInfinitive().out("text") ||
     mainVerb;
-  
+
+  // Get auxiliary verbs in order
+  const auxiliaries = doc.match("#Auxiliary+").out("array");
+
+  // Get adverbs
+  const adverbs = doc.adverbs().out("array");
+
+  // Build the full verb phrase: auxiliaries + main verb
+  const fullVerbPhrase = auxiliaries.length
+    ? `${auxiliaries.join(" ")} ${mainVerb}`
+    : mainVerb;
+
   const head: [string, string] = [verbInfinitive, fullVerbPhrase];
-  
+
   return { head, descriptors: adverbs };
 }
 
@@ -168,20 +178,22 @@ export function parseSentence(sentence: string): Grammar {
   }
 
   if (verbIndex === -1) {
-    return { 
-      subject: parseNounPhrase(""), 
-      verb: parseVerbPhrase(sentence) 
+    return {
+      subject: parseNounPhrase(""),
+      verb: parseVerbPhrase(sentence),
     };
   }
 
   // Adjust subject boundary: if the term immediately before the verb is an adverb, remove it from subject
   let subjectEndIndex = verbIndex;
-  if (verbIndex > 0 && termData[verbIndex - 1].terms[0].tags.includes("Adverb")) {
+  if (
+    verbIndex > 0 && termData[verbIndex - 1].terms[0].tags.includes("Adverb")
+  ) {
     subjectEndIndex = verbIndex - 1;
   }
 
   // Build subject phrase, including any auxiliary verbs before the main verb
-  const subjectTerms = termData.slice(0, subjectEndIndex).map(t => {
+  const subjectTerms = termData.slice(0, subjectEndIndex).map((t) => {
     // Skip auxiliary verbs in the subject
     if (!t.terms[0].tags.includes("Auxiliary")) {
       return t.text;
@@ -191,17 +203,19 @@ export function parseSentence(sentence: string): Grammar {
   const subjectPhrase = subjectTerms.join(" ");
 
   // Build verb phrase, including auxiliary verbs
-  let verbTerms: string[] = [];
+  const verbTerms: string[] = [];
   // Include auxiliary verbs that come before the main verb
   for (let i = subjectEndIndex; i < verbIndex; i++) {
-    if (termData[i].terms[0].tags.includes("Auxiliary") || 
-        termData[i].terms[0].tags.includes("Adverb")) {
+    if (
+      termData[i].terms[0].tags.includes("Auxiliary") ||
+      termData[i].terms[0].tags.includes("Adverb")
+    ) {
       verbTerms.push(termData[i].text);
     }
   }
   // Add the main verb
   verbTerms.push(termData[verbIndex].text);
-  
+
   // Add following adverbs
   let i = verbIndex + 1;
   while (i < termData.length && termData[i].terms[0].tags.includes("Adverb")) {
@@ -211,7 +225,7 @@ export function parseSentence(sentence: string): Grammar {
   let verbPhrase = verbTerms.join(" ");
 
   // Build object phrase from remaining tokens
-  let objectTerms = termData.slice(i).map(t => t.text);
+  const objectTerms = termData.slice(i).map((t) => t.text);
   // Handle final adverb
   if (objectTerms.length > 0) {
     const lastToken = termData[termData.length - 1];
@@ -221,7 +235,9 @@ export function parseSentence(sentence: string): Grammar {
   }
   const objectPhrase = objectTerms.join(" ");
 
-  const subject = subjectPhrase ? parseNounPhrase(subjectPhrase) : { head: ["", ""], quantity: [] };
+  const subject = subjectPhrase
+    ? parseNounPhrase(subjectPhrase)
+    : { head: ["", ""], quantity: [] };
   const verb = parseVerbPhrase(verbPhrase);
   const object = objectPhrase ? parseNounPhrase(objectPhrase) : undefined;
 
@@ -235,7 +251,7 @@ if (import.meta.main) {
   const examples = [
     "The young children of the politicians deliberately disobeyed explicit orders",
     "The young children of the politicians disobeyed explicit orders deliberately",
-    "The young children of the politicians deliberately disobeyed their parents' explicit orders"
+    "The young children of the politicians deliberately disobeyed their parents' explicit orders",
   ];
   for (const sentence of examples) {
     console.log("Input:", sentence);

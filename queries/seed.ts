@@ -85,8 +85,8 @@ const data = {
   items: [
     { name: "blanket" },
     { name: "treat" },
-  ]
-}
+  ],
+};
 
 export async function seed() {
   let driver: Driver;
@@ -94,7 +94,7 @@ export async function seed() {
   try {
     driver = neo4j.driver(
       creds.URI,
-      neo4j.auth.basic(creds.USER, creds.PASSWORD)
+      neo4j.auth.basic(creds.USER, creds.PASSWORD),
     );
     await driver.verifyConnectivity();
   } catch (err) {

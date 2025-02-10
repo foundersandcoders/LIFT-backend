@@ -7,7 +7,7 @@ export async function reset() {
   try {
     driver = neo4j.driver(
       creds.URI,
-      neo4j.auth.basic(creds.USER, creds.PASSWORD)
+      neo4j.auth.basic(creds.USER, creds.PASSWORD),
     );
     await driver.verifyConnectivity();
   } catch (err) {
@@ -16,10 +16,13 @@ export async function reset() {
     return;
   }
 
-  await driver.executeQuery(`
+  await driver.executeQuery(
+    `
     MATCH (n)
     DETACH DELETE n
-  `, { database: "neo4j" });
+  `,
+    { database: "neo4j" },
+  );
 
   console.log(`DB Wiped`);
 
@@ -27,4 +30,4 @@ export async function reset() {
 
   console.log(`Driver closed`);
 }
-await reset()
+await reset();
