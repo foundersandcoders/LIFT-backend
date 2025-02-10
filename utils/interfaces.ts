@@ -1,9 +1,51 @@
+// -------------------------------------------------------------------------
+// Security
 export interface CredsN4J {
   URI: string;
   USER: string;
   PASSWORD: string;
 }
 
+// -------------------------------------------------------------------------
+// Grammar Analysis
+export interface Subject {
+  // [singular, original]
+  head: [string, string];
+  article?: string;
+  quantity: (string | number)[];
+  descriptors?: string[];
+}
+
+export interface Object {
+  // [singular, original]
+  head: [string, string];
+  article?: string;
+  quantity: (string | number)[];
+  descriptors?: string[];
+}
+
+export interface Verb {
+  // [present infinitive, original]
+  head: [string, string];
+  descriptors?: string[];
+}
+
+export interface Grammar {
+  subject: Subject;
+  object?: Object;
+  verb: Verb;
+}
+
+// -------------------------------------------------------------------------
+// Lifecycle Tracking
+export interface Action {
+  creationDate: string,
+  byDate?: string,
+  action: string
+}
+
+// -------------------------------------------------------------------------
+// Placeholders
 export interface EntryInput {
   statement?: string,
   subject: string,
@@ -15,20 +57,7 @@ export interface EntryInput {
 }
 
 export interface EntryStore {
-  statement?: string,
-  atoms: Atoms,
+  statement: string,
+  atoms: Grammar,
   actions?: Action[]
-}
-
-export interface Action {
-  creationDate: string,
-  byDate?: string,
-  action: string
-}
-
-export interface Atoms {
-  subject: string,
-  verb: string,
-  object: string,
-  adverbial: string,
 }
