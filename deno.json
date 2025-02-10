@@ -2,13 +2,14 @@
   "tasks": {
     "dev": "deno run -A --watch --unstable-cron --env-file=.env.local main.ts",
     "prod": "deno run -A --watch --unstable-cron --env-file=.env.production main.ts",
+    "lint": "deno lint",
+    "parseA": "deno run -A utils/dev/parse.ts",
     "dbGet": "deno run -A --watch queries/get.ts",
     "dbSeedLocal": "deno run -A --env-file=.env.local queries/seed.ts",
     "dbSeedProd": "deno run -A --env-file=.env.production queries/seed.ts",
     "dbResetLocal": "deno run -A --env-file=.env.local queries/reset.ts",
     "dbResetProduction": "deno run -A --env-file=.env.production queries/reset.ts",
-    "dbWrite": "deno run -A --watch queries/write.ts",
-    "lint": "deno lint"
+    "dbWrite": "deno run -A --watch queries/write.ts"
   },
   "imports": {
     "acorn": "jsr:@oak/acorn@^1.1.1",
@@ -16,7 +17,8 @@
     "neo4j": "npm:neo4j-driver@^5.27.0",
     "types": "./utils/interfaces.ts",
     "calc": "./utils/calc.ts",
-    "router": "./routes/hub.ts"
+    "router": "./routes/hub.ts",
+    "compromise": "npm:compromise@14.10.0"
   },
   "lint": {
     "rules": {

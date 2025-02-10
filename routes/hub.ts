@@ -1,96 +1,95 @@
-// import { Router } from "acorn";
-import { Router } from "https://deno.land/x/oak/mod.ts";
-
-import { EntryInput as In } from "../utils/interfaces.ts";
-import { 
-  getNouns, getSubject, getObject,
-  getVerbs
-} from "../queries/get.ts";
+import { Router } from "https://deno.land/x/oak@v17.1.4/mod.ts";
+import { EntryInput as In } from "../utils/types/interfaces.ts";
+import { getNouns, getObject, getSubject, getVerbs } from "../queries/get.ts";
 import { write } from "../queries/write.ts";
-
+import { breaker } from "../utils/language/breaker.ts";
 
 const router = new Router();
 
-/* ?? What is ctx?
-  "ctx" is an alias for the "context" object.
-  Provides access to Request object & other useful props/methods for handling requests.
-*/
-
-// = Get Routes
 router.get("/", (ctx) => {
   ctx.response.status = 200;
   ctx.response.body = {
     "Routes": {
-      "/n": "Return all nodes with the label \":Person\"",
-      "/n/s/:name": "Return relationships with \":name\" as subject",
-      "/n/o/:name": "Return relationships with \":name\" as object",
+      "/n": 'Return all nodes with the label ":Person"',
+      "/n/s/:name": 'Return relationships with ":name" as subject',
+      "/n/o/:name": 'Return relationships with ":name" as object',
       "/v": "Return relationships",
-    }
-  }}
-);
+    },
+  };
+});
 
+// = Routes
+// == Test Routes
+router.get("/breaker", async (ctx) => {
+  console.groupCollapsed(`=== get "/breaker" ===`)
+  console.groupCollapsed(`=== Input ===`);
+  try {
+    const testText:string =  "The user submitted an empty text";
+    console.log(`Fallback Text: ${testText}`);
+
+    // const { text:string } = await ctx.request.body.text();
+    let text:string = await ctx.request.body.text();
+    text = text ? text : testText;
+    
+    console.log(`Submitted Text: ${text}`);
+    
+    if (!text) {
+      console.log("Error: No Text");
+      ctx.response.status = 400;
+      ctx.response.body = { error: "Missing 'text' in request body" };
+      return;
+    }
+
+    console.groupEnd();
+
+    console.log(`Calling breaker(${text})`);
+    const result = await breaker(text);
+
+    console.group(`=== Result ===`);
+      // console.log(`Result: ${Object.entries(result)}`);
+      console.log(`Subject: ${Object.values(result.subject)}`);
+      console.log(`Verb: ${Object.values(result.verb)}`);
+      console.log(`Object: ${result.object ? Object.values(result.object) : "None"}`);
+    console.groupEnd();
+
+    ctx.response.body = JSON.stringify(result);
+  } catch (err) {
+    ctx.response.status = 500;
+    ctx.response.body = { error: err.message };
+  }
+  console.groupEnd();
+});
+
+// == Get All
+// Get Nouns
 router.get("/n", async (ctx) => {
   try {
     const records = await getNouns();
 
-    if (!records) {  
+    if (!records) {
       ctx.response.status = 500,
       ctx.response.body = { error: "Failed to fetch records from the database" };
       return;
-
     }
     ctx.response.status = 200;
     ctx.response.body = records;
-    
   } catch (error) {
     console.error("Error fetching data:", error);
     ctx.response.status = 500,
-    ctx.response.body = { error: "Internal Server Error" };
+      ctx.response.body = { error: "Internal Server Error" };
   }
 });
 
-router.get("/n/s/:n", async (ctx) => {
-  try {
-    const records = await getSubject(ctx.params.n);
-    if (!records) {
-      ctx.response.status = 500;
-      ctx.response.body = { error: "Failed to fetch records from the database" };
-      return;
-    }
-    ctx.response.status = 200;
-    ctx.response.body = records;
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    ctx.response.status = 500;
-    ctx.response.body = { error: "Internal Server Error" };
-  }
-});
-
-router.get("/n/o/:n", async (ctx) => {
-  try {
-    const records = await getObject(ctx.params.n);
-    if (!records) {
-      ctx.response.status = 500;
-      ctx.response.body = { error: "Failed to fetch records from the database" };
-      return;
-    }
-    ctx.response.status = 200;
-    ctx.response.body = records;
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    ctx.response.status = 500;
-    ctx.response.body = { error: "Internal Server Error" };
-  }
-});
-
-
+// Get Verbs
 router.get("/v", async (ctx) => {
   try {
     const records = await getVerbs();
 
     if (!records) {
       ctx.response.status = 500;
-      ctx.response.body = { error: "Failed to fetch records from the database" };
+      ctx.response.body = {
+        error: "Failed to fetch records from the database",
+      };
       return;
     }
     ctx.response.status = 200;
@@ -102,12 +101,52 @@ router.get("/v", async (ctx) => {
   }
 });
 
+// == Get Search Term
+// Search by Subject
+router.get("/n/s/:n", async (ctx) => {
+  try {
+    const records = await getSubject(ctx.params.n);
+    if (!records) {
+      ctx.response.status = 500;
+      ctx.response.body = {
+        error: "Failed to fetch records from the database",
+      };
+      return;
+    }
+    ctx.response.status = 200;
+    ctx.response.body = records;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    ctx.response.status = 500;
+    ctx.response.body = { error: "Internal Server Error" };
+  }
+});
 
-// = Post Routes
+// Search by Object
+router.get("/n/o/:n", async (ctx) => {
+  try {
+    const records = await getObject(ctx.params.n);
+    if (!records) {
+      ctx.response.status = 500;
+      ctx.response.body = {
+        error: "Failed to fetch records from the database",
+      };
+      return;
+    }
+    ctx.response.status = 200;
+    ctx.response.body = records;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    ctx.response.status = 500;
+    ctx.response.body = { error: "Internal Server Error" };
+  }
+});
+
+// == Post
 router.post("/newEntry", async (ctx) => {
   try {
     const body = await ctx.request.body.json();
-    const entry = body as In;  // Ensure your type cast if needed
+    const entry = body as In; // Ensure your type cast if needed
 
     if (
       !entry.subject ||
@@ -128,16 +167,14 @@ router.post("/newEntry", async (ctx) => {
       [entry.subject],
       [entry.object],
       [entry.verb],
-      []  // Pass additional data if needed, otherwise an empty array.
+      [], // Pass additional data if needed, otherwise an empty array.
     );
-    
   } catch (error) {
     console.error("Error processing entry:", error);
     ctx.response.status = 400;
     ctx.response.body = { error: "Invalid input format" };
   }
 });
-
 
 // = Exports
 export default router;

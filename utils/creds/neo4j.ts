@@ -1,5 +1,5 @@
 //import * as dotenv from "dotenv";
-import { CredsN4J } from "types";
+import { CredsN4J } from "../types/interfaces.ts";
 
 const uri = await Deno.env.get("NEO4J_URI") ?? "";
 const user = await Deno.env.get("NEO4J_USERNAME") ?? "";

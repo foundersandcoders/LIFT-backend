@@ -31,6 +31,8 @@
     "jsr:@valibot/valibot@0.42": "0.42.1",
     "npm:@types/node@*": "22.5.4",
     "npm:buffer@6": "6.0.3",
+    "npm:compromise@*": "14.14.4",
+    "npm:compromise@14.10.0": "14.10.0",
     "npm:hyperid@^3.3.0": "3.3.0",
     "npm:neo4j-driver@^5.27.0": "5.27.0",
     "npm:path-to-regexp@^6.3.0": "6.3.0",
@@ -239,6 +241,22 @@
         "get-intrinsic"
       ]
     },
+    "compromise@14.10.0": {
+      "integrity": "sha512-ViDNmO4N8xezb6NKYWUUcOckWE9tYEi5Yr2AYN2L5MaJCSMmwLRmgdajpN5u1snNOmg/RdJ37fONQ2+fd4UPfQ==",
+      "dependencies": [
+        "efrt",
+        "grad-school",
+        "suffix-thumb"
+      ]
+    },
+    "compromise@14.14.4": {
+      "integrity": "sha512-QdbJwronwxeqb7a5KFK/+Y5YieZ4PE1f7ai0vU58Pp4jih+soDCBMuKVbhDEPQ+6+vI3vSiG4UAAjTAXLJw1Qw==",
+      "dependencies": [
+        "efrt",
+        "grad-school",
+        "suffix-thumb"
+      ]
+    },
     "dunder-proto@1.0.1": {
       "integrity": "sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==",
       "dependencies": [
@@ -246,6 +264,9 @@
         "es-errors",
         "gopd"
       ]
+    },
+    "efrt@2.7.0": {
+      "integrity": "sha512-/RInbCy1d4P6Zdfa+TMVsf/ufZVotat5hCw3QXmWtjU+3pFEOvOQ7ibo3aIxyCJw2leIeAMjmPj+1SLJiCpdrQ=="
     },
     "es-define-property@1.0.1": {
       "integrity": "sha512-e3nRfgfUZ4rNGL232gUgX06QNyyez04KdjFrF+LTRoOXmrOgFKDg4BCdsjW8EnT69eqdYGmRpJwiPVYNrCaW3g=="
@@ -286,6 +307,9 @@
     },
     "gopd@1.2.0": {
       "integrity": "sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg=="
+    },
+    "grad-school@0.0.5": {
+      "integrity": "sha512-rXunEHF9M9EkMydTBux7+IryYXEZinRk6g8OBOGDBzo/qWJjhTxy86i5q7lQYpCLHN8Sqv1XX3OIOc7ka2gtvQ=="
     },
     "has-symbols@1.1.0": {
       "integrity": "sha512-1cDNdwJ2Jaohmb3sg4OmKaMBwuC48sYni5HUw2DvsC8LjGTLK9h+eb1X6RyuOHe4hT0ULCW68iomhjUoKUqlPQ=="
@@ -395,6 +419,9 @@
         "safe-buffer"
       ]
     },
+    "suffix-thumb@5.0.2": {
+      "integrity": "sha512-I5PWXAFKx3FYnI9a+dQMWNqTxoRt6vdBdb0O+BJ1sxXCWtSoQCusc13E58f+9p4MYx/qCnEMkD5jac6K2j3dgA=="
+    },
     "tslib@2.8.1": {
       "integrity": "sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w=="
     },
@@ -417,6 +444,14 @@
     "https://deno.land/x/oak/mod.ts": "https://deno.land/x/oak@v17.1.4/mod.ts"
   },
   "remote": {
+    "https://cdn.skypack.dev/-/compromise@v14.14.4-hHRcIrgGWSgObsZe4HUf/dist=es2019,mode=imports/optimized/common/one-bb333108.js": "e3c12793bb0391dd7c4a026aa1fd30a70b6e59f300445d01c2a0078284835d3c",
+    "https://cdn.skypack.dev/-/compromise@v14.14.4-hHRcIrgGWSgObsZe4HUf/dist=es2019,mode=imports/optimized/compromise.js": "d2472b71342b7e4ed9246a679a166ad087b8c34d09f7dc3f877c617478462ee2",
+    "https://cdn.skypack.dev/-/compromise@v14.14.4-hHRcIrgGWSgObsZe4HUf/dist=es2019,mode=imports/optimized/compromise/two.js": "d2b6f148edfe63f05058dda7d8b0b3574ef8d1ccb6618538d31c8de1b1621aa9",
+    "https://cdn.skypack.dev/-/efrt@v2.7.0-ZZiJIO9KpuBZmfZiBZWg/dist=es2019,mode=imports/optimized/common/index-3ca8276d.js": "08e1a018359660f9a669f7a7a7f3de7d8611c199966f9fbe6257d160dc12f9f8",
+    "https://cdn.skypack.dev/-/efrt@v2.7.0-ZZiJIO9KpuBZmfZiBZWg/dist=es2019,mode=imports/optimized/efrt.js": "57446d0b01b3204d021e653c1d852b9b59ae8919eb4a0e3f9216e6785f2f1bf0",
+    "https://cdn.skypack.dev/-/grad-school@v0.0.5-gtkMHv8p7BLdLPigLdGb/dist=es2019,mode=imports/optimized/grad-school.js": "977a8f25258cab23493b89bf4b38e479e244831625cdfe8783a9375034ac17f6",
+    "https://cdn.skypack.dev/-/suffix-thumb@v5.0.2-H0S8D77klJBYDLYpqlXk/dist=es2019,mode=imports/optimized/suffix-thumb.js": "6ab049f8b31df3d9f77c1df1dba373d8bb68fdfc151396bbb379188f9de33cfb",
+    "https://cdn.skypack.dev/compromise": "fb5e71eeafc877351f911d338753db875ab92fcefab3ab7d0eea487a7c856a16",
     "https://deno.land/x/case@2.2.0/camelCase.ts": "b9a4cf361a7c9740ecb75e00b5e2c006bd4e5d40e442d26c5f2760286fa66796",
     "https://deno.land/x/case@2.2.0/constantCase.ts": "c698fc32f00cd267c1684b1d413d784260d7e7798f2bf506803e418497d839b5",
     "https://deno.land/x/case@2.2.0/dotCase.ts": "03ae55d5635e6a4ca894a003d9297cd9cd283af2e7d761dd3de13663849a9423",
@@ -480,6 +515,7 @@
     "dependencies": [
       "jsr:@oak/acorn@^1.1.1",
       "jsr:@std/dotenv@*",
+      "npm:compromise@14.10.0",
       "npm:neo4j-driver@^5.27.0"
     ]
   }
