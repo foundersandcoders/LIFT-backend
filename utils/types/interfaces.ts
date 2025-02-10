@@ -1,5 +1,5 @@
 // import { Grammar } from "./languageA.ts";
-import { Grammar } from "./languageB.ts";
+import { Grammar } from "./language.ts";
 
 export interface CredsN4J {
   URI: string;

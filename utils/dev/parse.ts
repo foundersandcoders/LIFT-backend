@@ -1,5 +1,5 @@
 import nlp from "npm:compromise@14.10.0";
-import { parseSentence } from "../language/breakerA.ts";
+import { breaker } from "../language/breaker.ts";
 
 const input = Deno.args.join(" ");
 
@@ -18,7 +18,7 @@ try {
     throw new Error("NLP initialization failed");
   }
 
-  const result = parseSentence(input);
+  const result = breaker(input);
 
   const grammar = JSON.stringify(result, null, 2);
   // console.log(grammar);

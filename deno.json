@@ -3,7 +3,7 @@
     "dev": "deno run -A --watch --unstable-cron --env-file=.env.local main.ts",
     "prod": "deno run -A --watch --unstable-cron --env-file=.env.production main.ts",
     "lint": "deno lint",
-    "parse": "deno run -A utils/dev/parse.ts",
+    "parseA": "deno run -A utils/dev/parse.ts",
     "dbGet": "deno run -A --watch queries/get.ts",
     "dbSeedLocal": "deno run -A --env-file=.env.local queries/seed.ts",
     "dbSeedProd": "deno run -A --env-file=.env.production queries/seed.ts",

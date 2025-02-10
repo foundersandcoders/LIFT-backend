@@ -1,6 +1,6 @@
 // import nlp from "https://cdn.skypack.dev/compromise";
 import nlp from "npm:compromise@14.10.0";
-import { Grammar, Subject, Verb, Object } from "../types/languageA.ts";
+import { Grammar, Subject, Verb, Object } from "../types/language.ts";
 
 // -------------------------------------------------------------------------
 // Helper functions
@@ -150,7 +150,7 @@ function parseVerbPhrase(phrase: string): Verb {
  * - If an adverb immediately precedes the head verb, it is attached to the verb.
  * - If the final token of the sentence is an adverb, it is reattached to the verb.
  */
-export function parseSentence(sentence: string): Grammar {
+export function breaker(sentence: string): Grammar {
   const doc = nlp(sentence);
   const termData = doc.terms().data();
 
