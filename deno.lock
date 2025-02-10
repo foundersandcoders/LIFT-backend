@@ -440,7 +440,8 @@
   },
   "redirects": {
     "https://deno.land/x/case/mod.ts": "https://deno.land/x/case@2.2.0/mod.ts",
-    "https://deno.land/x/cors/mod.ts": "https://deno.land/x/cors@v1.2.2/mod.ts"
+    "https://deno.land/x/cors/mod.ts": "https://deno.land/x/cors@v1.2.2/mod.ts",
+    "https://deno.land/x/oak/mod.ts": "https://deno.land/x/oak@v17.1.4/mod.ts"
   },
   "remote": {
     "https://cdn.skypack.dev/-/compromise@v14.14.4-hHRcIrgGWSgObsZe4HUf/dist=es2019,mode=imports/optimized/common/one-bb333108.js": "e3c12793bb0391dd7c4a026aa1fd30a70b6e59f300445d01c2a0078284835d3c",
@@ -479,7 +480,36 @@
     "https://deno.land/x/cors@v1.2.2/mod.ts": "2b351913f56d77ad80cb3b8633d4539c9eeddb426dae79437ada0e6a9cb4f1a6",
     "https://deno.land/x/cors@v1.2.2/oakCors.ts": "1348dc7673c61b85d2e80559a7b44f8e0246eaa6bcc6ec744fafe5d9b13b5c71",
     "https://deno.land/x/cors@v1.2.2/opineCors.ts": "fb5790115c26b7061d84b8d6c17d258a1e241bcab75b0bc3ca1fdb2e57bc5072",
-    "https://deno.land/x/cors@v1.2.2/types.ts": "97546633ccc7f0df7a29bacba5d91dc6f61decdd1b65258300244dba905d34b8"
+    "https://deno.land/x/cors@v1.2.2/types.ts": "97546633ccc7f0df7a29bacba5d91dc6f61decdd1b65258300244dba905d34b8",
+    "https://deno.land/x/oak@v17.1.4/application.ts": "69fb6462eed013562ee61239e60ea77e5df3abb2b0df34568593b9774d72e98f",
+    "https://deno.land/x/oak@v17.1.4/body.ts": "f91d8e0298abbabe6acb543d1090e2a41aa665375918a575d72bd6b98b538e40",
+    "https://deno.land/x/oak@v17.1.4/context.ts": "e04c3d67d68ee01a279aeded457b0d66255450593dacab22251e7eb0cf6a92e5",
+    "https://deno.land/x/oak@v17.1.4/deps.ts": "c71a9421d2ead7803468cd40559cf122ee91d4e81e8a3a98706956f6654e2550",
+    "https://deno.land/x/oak@v17.1.4/http_server_bun.ts": "c7f3eb6464d4f047fcc9335e632ffb6bfc24e5ef7dc9a53017a6e453d4197e4b",
+    "https://deno.land/x/oak@v17.1.4/http_server_native.ts": "34bab402cc9b6fdf53706699ac2c2ab88faf5c14be2ae18aa105bdc4fd6a8471",
+    "https://deno.land/x/oak@v17.1.4/http_server_native_request.ts": "aa98a2f4bbf6f7651c62eb0332a95a1b0faff1d76f7a07fa8bd600766eb24488",
+    "https://deno.land/x/oak@v17.1.4/http_server_node.ts": "bfbf7585fcda5a1464cd0f904ec97cbb4d67367757f3ed8cdc99a590a94b34e1",
+    "https://deno.land/x/oak@v17.1.4/middleware.ts": "a701caf9d872b93d26759f77c7ad545cb29bc3d197c8375b79b2fbe7e9e60958",
+    "https://deno.land/x/oak@v17.1.4/middleware/etag.ts": "f5cf8eb2a7c99ae7e11a4e31dc60beda398aec7a08be343e0de6b632f8064e4d",
+    "https://deno.land/x/oak@v17.1.4/middleware/proxy.ts": "e611b7d45f58a1b2caa1cb6c435774822d7b56aa136b8dbb8691fb52d07c5182",
+    "https://deno.land/x/oak@v17.1.4/middleware/serve.ts": "66f1e405ac006bfa863e8852092e03951b93dd4ba8381996a719d93d00aa62fe",
+    "https://deno.land/x/oak@v17.1.4/mod.ts": "1f42341a6138310eceaf7b8e9b72be4d2a913817d1e823090dee4e7d27c68e98",
+    "https://deno.land/x/oak@v17.1.4/node_shims.ts": "e411aef698dca26dfc577d8581ddab678f528bd52bf681337f3c3bcc73845a0a",
+    "https://deno.land/x/oak@v17.1.4/request.ts": "5123fd70841a540809702059527a192d22f78042db1bfc4a01eebd77ec25b0fb",
+    "https://deno.land/x/oak@v17.1.4/response.ts": "483f8ddd7618325e6ac28f88a3ea9926a09b3c90fa53b481a7a5202d23a0755f",
+    "https://deno.land/x/oak@v17.1.4/router.ts": "e8eb2f88806dfdd303f3a663fefb7d9e614342bf40738692e9ef4b2243e1bccd",
+    "https://deno.land/x/oak@v17.1.4/send.ts": "42faed583f218ed85d5da7704f36b385537947ec4de6125e20ad8acbfe8d8f68",
+    "https://deno.land/x/oak@v17.1.4/testing.ts": "d6489e78d689da08b9896cd0b9b9add243466b407ce6fd63d38e29f8c0a19f5c",
+    "https://deno.land/x/oak@v17.1.4/types.ts": "0e74c6c46e0fcfddd87e90fe0216c4ae50c73b113e06d3bdc4283afc7b2570d6",
+    "https://deno.land/x/oak@v17.1.4/utils/clone_state.ts": "5a0784d802b86cc3dbf415dfd286025f03a261b3a8f9b3b6fd671be8e51ff027",
+    "https://deno.land/x/oak@v17.1.4/utils/consts.ts": "9e14324837558d7af3d4bfc8ba5f13216a0b5d2f8dac14a3a782bc1bbfb756ef",
+    "https://deno.land/x/oak@v17.1.4/utils/create_promise_with_resolvers.ts": "f7eeaf65ffa7b6cef03b8dc3fa3a3e35ae5553c6abf1a2260d7797e076acd63a",
+    "https://deno.land/x/oak@v17.1.4/utils/decode.ts": "434802a09534a26cc8b8cd009ecc422b4695d22859021fe34f8093784b2483b7",
+    "https://deno.land/x/oak@v17.1.4/utils/decode_component.ts": "d68e6da33bf6e733d218c0b7ce7112520640e836f4cfa2760c4aee8facf1c581",
+    "https://deno.land/x/oak@v17.1.4/utils/encode_url.ts": "16b213d70f5e211fb3633f97c704f9613d2f8033669d59e0c9ca4fc26551fad6",
+    "https://deno.land/x/oak@v17.1.4/utils/resolve_path.ts": "aa39d54a003b38fee55f340a0cba3f93a7af85b8ddd5fbfb049a98fc0109b36d",
+    "https://deno.land/x/oak@v17.1.4/utils/streams.ts": "c85ae197f5046d58d5a3e42221254a6c8e63172f9f01b77631e480e1dcc90e05",
+    "https://deno.land/x/oak@v17.1.4/utils/type_guards.ts": "92ab7dae4bc5ce10206fb21ca13bedd13a4638848be15f9752146aedeab1fea4"
   },
   "workspace": {
     "dependencies": [
