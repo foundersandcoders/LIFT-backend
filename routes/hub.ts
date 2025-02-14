@@ -1,5 +1,5 @@
 import { Router } from "https://deno.land/x/oak@v17.1.4/mod.ts";
-import { EntryInput as In } from "../utils/types/interfaces.ts";
+import { EntryInput as Input } from "../utils/types/interfaces.ts";
 import { getNouns, getObject, getSubject, getVerbs } from "../queries/get.ts";
 import { write } from "../queries/write.ts";
 import { breaker } from "../utils/language/breaker.ts";
@@ -18,8 +18,124 @@ router.get("/", (ctx) => {
   };
 });
 
-// = Routes
-// == Test Routes
+// = Get by Type
+router.get("/n", async (ctx) => {
+  try {
+    const records = await getNouns();
+
+    if (!records) {
+      ctx.response.status = 500,
+      ctx.response.body = { error: "Failed to fetch records from the database" };
+      return;
+    }
+    ctx.response.status = 200;
+    ctx.response.body = records;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    ctx.response.status = 500,
+      ctx.response.body = { error: "Internal Server Error" };
+  }
+});
+
+router.get("/v", async (ctx) => {
+  try {
+    const records = await getVerbs();
+
+    if (!records) {
+      ctx.response.status = 500;
+      ctx.response.body = {
+        error: "Failed to fetch records from the database",
+      };
+      return;
+    }
+    ctx.response.status = 200;
+    ctx.response.body = records;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    ctx.response.status = 500;
+    ctx.response.body = { error: "Internal Server Error" };
+  }
+});
+
+// = Get by Term
+router.get("/n/s/:n", async (ctx) => {
+  try {
+    const records = await getSubject(ctx.params.n);
+    if (!records) {
+      ctx.response.status = 500;
+      ctx.response.body = {
+        error: "Failed to fetch records from the database",
+      };
+      return;
+    }
+    ctx.response.status = 200;
+    ctx.response.body = records;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    ctx.response.status = 500;
+    ctx.response.body = { error: "Internal Server Error" };
+  }
+});
+
+router.get("/n/o/:n", async (ctx) => {
+  try {
+    const records = await getObject(ctx.params.n);
+    if (!records) {
+      ctx.response.status = 500;
+      ctx.response.body = {
+        error: "Failed to fetch records from the database",
+      };
+      return;
+    }
+    ctx.response.status = 200;
+    ctx.response.body = records;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    ctx.response.status = 500;
+    ctx.response.body = { error: "Internal Server Error" };
+  }
+});
+
+// = Post
+router.post("/newEntry", async (ctx) => {
+  try {
+    const body = await ctx.request.body.json();
+    const statement = body.statement;
+
+    console.log(`=== Statement ===`)
+    console.log(statement);
+
+    const entry = await breaker(statement);
+
+    console.log("=== Entry ===")
+    console.log(entry);
+
+    // TODO(@AlexVOiceover)
+    // Checks all input fields are passed, delete when this is handled on front end
+    if ( !entry.subject || !entry.verb || !entry.object ) {
+      throw new Error("Missing or invalid required fields")
+    }
+
+    console.log("Received new entry:", entry);
+    ctx.response.status = 200;
+    ctx.response.body = { message: "Entry received successfully" };
+
+    await write(
+      [entry.subject],
+      [entry.object],
+      [entry.verb],
+      [], // Pass additional data if needed, otherwise an empty array.
+    );
+  } catch (error) {
+    console.error("Error processing entry:", error);
+    ctx.response.status = 400;
+    ctx.response.body = {
+      error: "Invalid input format"
+    };
+  }
+});
+
+// = Feature Tests
 router.get("/breaker", async (ctx) => {
   console.groupCollapsed(`=== get "/breaker" ===`)
   console.groupCollapsed(`=== Input ===`);
@@ -58,122 +174,6 @@ router.get("/breaker", async (ctx) => {
     ctx.response.body = { error: err.message };
   }
   console.groupEnd();
-});
-
-// == Get All
-// Get Nouns
-router.get("/n", async (ctx) => {
-  try {
-    const records = await getNouns();
-
-    if (!records) {
-      ctx.response.status = 500,
-      ctx.response.body = { error: "Failed to fetch records from the database" };
-      return;
-    }
-    ctx.response.status = 200;
-    ctx.response.body = records;
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    ctx.response.status = 500,
-      ctx.response.body = { error: "Internal Server Error" };
-  }
-});
-
-// Get Verbs
-router.get("/v", async (ctx) => {
-  try {
-    const records = await getVerbs();
-
-    if (!records) {
-      ctx.response.status = 500;
-      ctx.response.body = {
-        error: "Failed to fetch records from the database",
-      };
-      return;
-    }
-    ctx.response.status = 200;
-    ctx.response.body = records;
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    ctx.response.status = 500;
-    ctx.response.body = { error: "Internal Server Error" };
-  }
-});
-
-// == Get Search Term
-// Search by Subject
-router.get("/n/s/:n", async (ctx) => {
-  try {
-    const records = await getSubject(ctx.params.n);
-    if (!records) {
-      ctx.response.status = 500;
-      ctx.response.body = {
-        error: "Failed to fetch records from the database",
-      };
-      return;
-    }
-    ctx.response.status = 200;
-    ctx.response.body = records;
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    ctx.response.status = 500;
-    ctx.response.body = { error: "Internal Server Error" };
-  }
-});
-
-// Search by Object
-router.get("/n/o/:n", async (ctx) => {
-  try {
-    const records = await getObject(ctx.params.n);
-    if (!records) {
-      ctx.response.status = 500;
-      ctx.response.body = {
-        error: "Failed to fetch records from the database",
-      };
-      return;
-    }
-    ctx.response.status = 200;
-    ctx.response.body = records;
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    ctx.response.status = 500;
-    ctx.response.body = { error: "Internal Server Error" };
-  }
-});
-
-// == Post
-router.post("/newEntry", async (ctx) => {
-  try {
-    const body = await ctx.request.body.json();
-    const entry = body as In; // Ensure your type cast if needed
-
-    if (
-      !entry.subject ||
-      !entry.verb ||
-      !entry.object ||
-      typeof entry.isPublic !== "boolean"
-    ) {
-      throw new Error("Missing or invalid required fields");
-    }
-
-    console.log("Received new entry:", entry);
-    ctx.response.status = 200;
-    ctx.response.body = { message: "Entry received successfully" };
-
-    // Write to the database.
-    // Since your write() function expects arrays, pass the values as arrays.
-    await write(
-      [entry.subject],
-      [entry.object],
-      [entry.verb],
-      [], // Pass additional data if needed, otherwise an empty array.
-    );
-  } catch (error) {
-    console.error("Error processing entry:", error);
-    ctx.response.status = 400;
-    ctx.response.body = { error: "Invalid input format" };
-  }
 });
 
 // = Exports
