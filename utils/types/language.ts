@@ -1,6 +1,6 @@
 export interface Grammar {
   subject: Subject;
-  object?: Object;
+  object: Object;
   verb: Verb;
 }
 
