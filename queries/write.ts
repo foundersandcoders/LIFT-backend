@@ -45,23 +45,21 @@ export async function write(input:Grammar) {
     console.groupEnd();
   console.groupEnd();
 
-  if (ogObject) {
-    console.groupCollapsed("=== === Object === ===");
-      await driver.executeQuery( /* Object */
-        "MERGE (object:Person {name: $ogObject[0]})",
-        { object: ogObject },
-        { database: "neo4j" },
-      );
+  console.groupCollapsed("=== === Object === ===");
+    await driver.executeQuery( /* Object */
+      "MERGE (object:Person {name: $ogObject[0]})",
+      { object: ogObject },
+      { database: "neo4j" },
+    );
 
-      objectMain = ogObject[0];
-      console.log(`Created ${objectMain}`);
-      ogObject.shift();
+    objectMain = ogObject[0];
+    console.log(`Created ${objectMain}`);
+    ogObject.shift();
 
-      console.groupCollapsed("=== Not Encoded ===");
-        for (const term of ogObject) console.log(term);
-      console.groupEnd();
+    console.groupCollapsed("=== Not Encoded ===");
+      for (const term of ogObject) console.log(term);
     console.groupEnd();
-  }
+  console.groupEnd();
 
   console.groupCollapsed("=== === Verb === ===");
     const query = `
@@ -76,26 +74,16 @@ export async function write(input:Grammar) {
       { database: "neo4j" },
     );
 
-    console.log(`Created ${v[0]}`);
-    v.shift();
+    verbMain = ogVerb[0];
+    console.log(`Created ${verbMain}`);
+    ogVerb.shift();
 
     console.groupCollapsed("=== Not Encoded ===");
-      for (const term of v) console.log(term);
+      for (const term of ogVerb) console.log(term);
     console.groupEnd();
-  console.groupEnd();
-
-  console.groupCollapsed("=== === Additional === ===");
-  console.groupCollapsed("=== Not Encoded ===");
-  for (const term of a) console.log(term);
-  console.groupEnd();
   console.groupEnd();
 
   console.log("Entry Complete");
 
   await driver.close();
-}
-
-if (import.meta.main) {
-  write(["pig", "small"], ["idea", "ambitious"], ["steal", "attempts to"], ["regularly"]);
-  write(["Alex", "Galician"], ["Jason", "???"], ["ignore"], [""]);
 }
