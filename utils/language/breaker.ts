@@ -1,7 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
-// import nlp from "https://cdn.skypack.dev/compromise";
-import nlp from "npm:compromise@14.10.0";
-import { Grammar, Object, Subject, Verb } from "../types/language.ts";
+import nlp from "compromise";
+import { Grammar, Object, Subject, Verb } from "utils/types/language.ts";
 
 // -------------------------------------------------------------------------
 // Helper functions

@@ -1,8 +1,12 @@
 import { Router } from "https://deno.land/x/oak@v17.1.4/mod.ts";
-import { EntryInput as Input } from "../utils/types/interfaces.ts";
-import { getNouns, getObject, getSubject, getVerbs } from "../queries/get.ts";
-import { write } from "../queries/write.ts";
-import { breaker } from "../utils/language/breaker.ts";
+
+// = Processing
+import { breaker } from "utils/language/breaker.ts";
+
+// = DB Queries
+import { getNouns, getVerbs } from "queries/get.ts";
+import { findSubject, findObject, findVerb } from "queries/find.ts";
+import { write } from "queries/write.ts";
 
 const router = new Router();
 
@@ -18,7 +22,9 @@ router.get("/", (ctx) => {
   };
 });
 
-// = Get by Type
+// = Routes
+
+// == Get
 router.get("/n", async (ctx) => {
   try {
     const records = await getNouns();
@@ -59,10 +65,10 @@ router.get("/v", async (ctx) => {
   }
 });
 
-// = Get by Term
+// == Find
 router.get("/n/s/:n", async (ctx) => {
   try {
-    const records = await getSubject(ctx.params.n);
+    const records = await findSubject(ctx.params.n);
     if (!records) {
       ctx.response.status = 500;
       ctx.response.body = {
@@ -81,7 +87,7 @@ router.get("/n/s/:n", async (ctx) => {
 
 router.get("/n/o/:n", async (ctx) => {
   try {
-    const records = await getObject(ctx.params.n);
+    const records = await findObject(ctx.params.n);
     if (!records) {
       ctx.response.status = 500;
       ctx.response.body = {
@@ -98,7 +104,26 @@ router.get("/n/o/:n", async (ctx) => {
   }
 });
 
-// = Post
+router.get("/v/:v", async (ctx) => {
+  try {
+    const records = await findVerb(ctx.params.v);
+    if (!records) {
+      ctx.response.status = 500;
+      ctx.response.body = {
+        error: "Failed to fetch records from the database",
+      };
+      return;
+    }
+    ctx.response.status = 200;
+    ctx.response.body = records;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    ctx.response.status = 500;
+    ctx.response.body = { error: "Internal Server Error" };
+  }
+});
+
+// == Write
 router.post("/newEntry", async (ctx) => {
   try {
     const body = await ctx.request.body.json();
@@ -132,7 +157,7 @@ router.post("/newEntry", async (ctx) => {
   }
 });
 
-// = Feature Tests
+// == Test
 router.get("/breaker", async (ctx) => {
   console.groupCollapsed(`=== get "/breaker" ===`);
   console.groupCollapsed(`=== Input ===`);

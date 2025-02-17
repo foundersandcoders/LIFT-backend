@@ -21,8 +21,9 @@
     "dotenv": "jsr:@std/dotenv",
     "compromise": "npm:compromise@14.10.0",
     "neo4j": "npm:neo4j-driver@^5.27.0",
+    "queries/": "./queries/",
     "utils/": "./utils/",
-    "router/": "./routes/"
+    "routes/": "./routes/"
   },
   "lint": {
     "rules": {

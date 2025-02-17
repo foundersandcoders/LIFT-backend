@@ -1,6 +1,6 @@
 import * as dotenv from "dotenv";
 import { Application, Context } from "https://deno.land/x/oak@v17.1.4/mod.ts";
-import router from "router";
+import router from "routes/hub.ts";
 import { nudgeDb, nudgeSched } from "./utils/nudgeDb.ts";
 
 // = Setup
