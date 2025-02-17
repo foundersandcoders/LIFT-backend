@@ -14,11 +14,10 @@
   "imports": {
     "acorn": "jsr:@oak/acorn@^1.1.1",
     "dotenv": "jsr:@std/dotenv",
+    "compromise": "npm:compromise@14.10.0",
     "neo4j": "npm:neo4j-driver@^5.27.0",
-    "types": "./utils/interfaces.ts",
-    "calc": "./utils/calc.ts",
-    "router": "./routes/hub.ts",
-    "compromise": "npm:compromise@14.10.0"
+    "utils/": "./utils/",
+    "router/": "./routes/"
   },
   "lint": {
     "rules": {

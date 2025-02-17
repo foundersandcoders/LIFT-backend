@@ -24,7 +24,8 @@ export async function write(input:Grammar) {
   const ogSubject = input.subject.head;
   const ogObject = input.object?.head;
   const ogVerb = input.verb.head;
-
+  
+  // 
   let subjectMain:string;
   let objectMain:string;
   let verbMain:string;
