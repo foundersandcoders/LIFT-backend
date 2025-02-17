@@ -30,9 +30,9 @@ export async function write(input:Grammar) {
   let verbMain:string;
 
   console.groupCollapsed("=== === Subject === ===");
-    await driver.executeQuery( /* Subject */
-      "MERGE (subject:Person {name: $ogSubject[0]})",
-      { subject: ogSubject },
+    await driver.executeQuery( `
+      MERGE (subject:Person {name: $name})`,
+      { name: ogSubject[0] },
       { database: "neo4j" },
     );
 
@@ -46,9 +46,9 @@ export async function write(input:Grammar) {
   console.groupEnd();
 
   console.groupCollapsed("=== === Object === ===");
-    await driver.executeQuery( /* Object */
-      "MERGE (object:Person {name: $ogObject[0]})",
-      { object: ogObject },
+    await driver.executeQuery( `
+      MERGE (object:Person {name: $name})`,
+      { name: ogObject[0] },
       { database: "neo4j" },
     );
 
@@ -62,15 +62,16 @@ export async function write(input:Grammar) {
   console.groupEnd();
 
   console.groupCollapsed("=== === Verb === ===");
+    const verbName = ogVerb[0];
     const query = `
         MATCH (subject:Person {name: $subject})
         MATCH (object:Person {name: $object})
-        MERGE (subject)-[:\`${ogVerb[0]}\`]->(object)
+        MERGE (subject)-[:\`${verbName}\`]->(object)
     `;
 
     await driver.executeQuery(
       query,
-      { subject: subjectMain, object: objectMain }, // Correct references
+      { subject: subjectMain, object: objectMain },
       { database: "neo4j" },
     );
 
