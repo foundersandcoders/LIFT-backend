@@ -1,8 +1,13 @@
 {
   "tasks": {
-    "dev": "deno run -A --watch --unstable-cron --env-file=.env.local main.ts",
-    "prod": "deno run -A --watch --unstable-cron --env-file=.env.production main.ts",
-    "lint": "deno lint",
+    "dev": {
+      "description": "Run the local development build",
+      "command": "deno run -A --watch --unstable-cron --env-file=.env.local main.ts"
+    },
+    "prod": {
+      "description": "Run the local production build",
+      "command": "deno run -A --watch --unstable-cron --env-file=.env.production main.ts"
+    },
     "parseA": "deno run -A utils/dev/parse.ts",
     "dbGet": "deno run -A --watch queries/get.ts",
     "dbSeedLocal": "deno run -A --env-file=.env.local queries/seed.ts",

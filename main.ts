@@ -17,15 +17,15 @@ async function customCors(ctx: Context, next: () => Promise<unknown>) {
 
   const allowedOrigin = Deno.env.get("FRONTEND_ORIGIN") || "*";
   console.log(`Allowed Origin ${allowedOrigin}`);
-  
+
   // Set CORS headers
   ctx.response.headers.set("Access-Control-Allow-Origin", allowedOrigin);
-  
+
   ctx.response.headers.set(
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, DELETE, OPTIONS",
   );
-  
+
   ctx.response.headers.set(
     "Access-Control-Allow-Headers",
     "Content-Type, Authorization",

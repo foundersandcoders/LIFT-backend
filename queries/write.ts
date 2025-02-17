@@ -4,7 +4,7 @@ import { Grammar } from "../utils/types/language.ts";
 
 await dotenv.load({ export: true });
 
-export async function write(input:Grammar) {
+export async function write(input: Grammar) {
   const URI = await Deno.env.get("NEO4J_URI") ?? "";
   const USER = await Deno.env.get("NEO4J_USERNAME") ?? "";
   const PASSWORD = await Deno.env.get("NEO4J_PASSWORD") ?? "";
@@ -23,12 +23,13 @@ export async function write(input:Grammar) {
   const ogSubject = input.subject.head;
   const ogObject = input.object?.head;
   const ogVerb = input.verb.head;
-  
+
   // deno-lint-ignore prefer-const
-  let subjectMain:string, objectMain:string, verbMain:string;
+  let subjectMain: string, objectMain: string, verbMain: string;
 
   console.log("=== Subject ===");
-  await driver.executeQuery( `
+  await driver.executeQuery(
+    `
     MERGE (subject:Person {name: $name})`,
     { name: ogSubject[0] },
     { database: "neo4j" },
@@ -40,7 +41,8 @@ export async function write(input:Grammar) {
   for (const term of ogSubject) console.log(term);
 
   console.log("=== Object ===");
-  await driver.executeQuery( `
+  await driver.executeQuery(
+    `
     MERGE (object:Person {name: $name})`,
     { name: ogObject[0] },
     { database: "neo4j" },
@@ -50,7 +52,7 @@ export async function write(input:Grammar) {
   ogObject.shift();
   console.log("Not Encoded:");
   for (const term of ogObject) console.log(term);
-  
+
   console.log("=== Verb ===");
   const verbName = ogVerb[0];
   const query = `
