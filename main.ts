@@ -3,15 +3,12 @@ import { Application, Context } from "https://deno.land/x/oak@v17.1.4/mod.ts";
 import router from "router";
 import { nudgeDb, nudgeSched } from "./utils/nudgeDb.ts";
 
+// = Setup
 await dotenv.load({ export: true });
-
-// = Start Up
 const port = parseInt(Deno.env.get("PORT") ?? "8080");
-
-// == Create an Oak application instance
 const app = new Application();
 
-// == Custom CORS middleware
+// == CORS
 async function customCors(ctx: Context, next: () => Promise<unknown>) {
   /* Retrieve the allowed origin from the environment.
     In production, FRONTEND_ORIGIN will be set (e.g., "https://lift-backend.deno.dev/").
@@ -42,10 +39,9 @@ async function customCors(ctx: Context, next: () => Promise<unknown>) {
   await next();
 }
 
-// = Middleware
-// == 1. CORS middleware
 app.use(customCors);
-// == 2. Router middleware
+
+// = Router
 app.use(router.routes());
 app.use(router.allowedMethods());
 
