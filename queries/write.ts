@@ -4,7 +4,7 @@ import { Grammar } from "../utils/types/language.ts";
 
 await dotenv.load({ export: true });
 
-export async function write(input:Grammar) {
+export async function write(input: Grammar) {
   const URI = await Deno.env.get("NEO4J_URI") ?? "";
   const USER = await Deno.env.get("NEO4J_USERNAME") ?? "";
   const PASSWORD = await Deno.env.get("NEO4J_PASSWORD") ?? "";
@@ -20,71 +20,60 @@ export async function write(input:Grammar) {
     return;
   }
 
-  // Store original subject and object before shifting
   const ogSubject = input.subject.head;
   const ogObject = input.object?.head;
   const ogVerb = input.verb.head;
 
-  let subjectMain:string;
-  let objectMain:string;
-  let verbMain:string;
+  // deno-lint-ignore prefer-const
+  let subjectMain: string, objectMain: string, verbMain: string;
 
-  console.groupCollapsed("=== === Subject === ===");
-    await driver.executeQuery( `
-      MERGE (subject:Person {name: $name})`,
-      { name: ogSubject[0] },
-      { database: "neo4j" },
-    );
+  console.log("=== Subject ===");
+  await driver.executeQuery(
+    `
+    MERGE (subject:Person {name: $name})`,
+    { name: ogSubject[0] },
+    { database: "neo4j" },
+  );
+  subjectMain = ogSubject[0];
+  console.log(`Created ${subjectMain}`);
+  ogSubject.shift();
+  console.log("Not Encoded:");
+  for (const term of ogSubject) console.log(term);
 
-    subjectMain = ogSubject[0];
-    console.log(`Created ${subjectMain}`);
-    ogSubject.shift();
+  console.log("=== Object ===");
+  await driver.executeQuery(
+    `
+    MERGE (object:Person {name: $name})`,
+    { name: ogObject[0] },
+    { database: "neo4j" },
+  );
+  objectMain = ogObject[0];
+  console.log(`Created ${objectMain}`);
+  ogObject.shift();
+  console.log("Not Encoded:");
+  for (const term of ogObject) console.log(term);
 
-    console.groupCollapsed("=== Not Encoded ===");
-      for (const term of ogSubject) console.log(term);
-    console.groupEnd();
-  console.groupEnd();
+  console.log("=== Verb ===");
+  const verbName = ogVerb[0];
+  const query = `
+      MATCH (subject:Person {name: $subject})
+      MATCH (object:Person {name: $object})
+      MERGE (subject)-[:\`${verbName}\`]->(object)
+  `;
 
-  console.groupCollapsed("=== === Object === ===");
-    await driver.executeQuery( `
-      MERGE (object:Person {name: $name})`,
-      { name: ogObject[0] },
-      { database: "neo4j" },
-    );
+  await driver.executeQuery(
+    query,
+    { subject: subjectMain, object: objectMain },
+    { database: "neo4j" },
+  );
 
-    objectMain = ogObject[0];
-    console.log(`Created ${objectMain}`);
-    ogObject.shift();
+  verbMain = ogVerb[0];
+  console.log(`Created ${verbMain}`);
+  ogVerb.shift();
 
-    console.groupCollapsed("=== Not Encoded ===");
-      for (const term of ogObject) console.log(term);
-    console.groupEnd();
-  console.groupEnd();
-
-  console.groupCollapsed("=== === Verb === ===");
-    const verbName = ogVerb[0];
-    const query = `
-        MATCH (subject:Person {name: $subject})
-        MATCH (object:Person {name: $object})
-        MERGE (subject)-[:\`${verbName}\`]->(object)
-    `;
-
-    await driver.executeQuery(
-      query,
-      { subject: subjectMain, object: objectMain },
-      { database: "neo4j" },
-    );
-
-    verbMain = ogVerb[0];
-    console.log(`Created ${verbMain}`);
-    ogVerb.shift();
-
-    console.groupCollapsed("=== Not Encoded ===");
-      for (const term of ogVerb) console.log(term);
-    console.groupEnd();
-  console.groupEnd();
+  console.log("=== Not Encoded ===");
+  for (const term of ogVerb) console.log(term);
 
   console.log("Entry Complete");
-
   await driver.close();
 }

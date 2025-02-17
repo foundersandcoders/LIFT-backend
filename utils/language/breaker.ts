@@ -1,7 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
-// import nlp from "https://cdn.skypack.dev/compromise";
-import nlp from "npm:compromise@14.10.0";
-import { Grammar, Subject, Verb, Object } from "../types/language.ts";
+import nlp from "compromise";
+import { Grammar, Object, Subject, Verb } from "utils/types/language.ts";
 
 // -------------------------------------------------------------------------
 // Helper functions
@@ -49,7 +48,7 @@ function extractNounDescriptors(phrase: string, head: string): string[] {
   // Extract verb phrases used as modifiers (e.g. "called Jason")
   const verbModifiers = doc.match("#Verb+ #ProperNoun+").out("array");
   // Remove any words that match the head noun from adjectives list
-  const filteredAdjectives = adjectives.filter((adj:string) =>
+  const filteredAdjectives = adjectives.filter((adj: string) =>
     adj.toLowerCase() !== head.toLowerCase()
   );
   return [...filteredAdjectives, ...prepPhrases, ...verbModifiers];
@@ -118,7 +117,7 @@ function parseVerbPhrase(phrase: string): Verb {
 
   // First, get all verbs and filter out auxiliaries
   const verbs = doc.verbs().out("array");
-  const mainVerb = verbs.find((v:string) =>
+  const mainVerb = verbs.find((v: string) =>
     !nlp(v).has("#Auxiliary") &&
     !nlp(v).has("#Adverb")
   ) || phrase.trim();
@@ -153,7 +152,7 @@ function parseVerbPhrase(phrase: string): Verb {
  */
 export function breaker(sentence: string): Grammar {
   // console.groupCollapsed(`=== Breaker ===`);
-  const doc:any = nlp(sentence);
+  const doc: any = nlp(sentence);
 
   // console.log(`doc: ${doc}`);
 
@@ -175,7 +174,7 @@ export function breaker(sentence: string): Grammar {
     if (term.tags.includes("Verb") && !term.tags.includes("Auxiliary")) {
       if (term.normal === "called" && i < termData.length - 1) {
         const nextTerm = termData[i + 1].terms[0];
-        if (nextTerm.tags.includes("ProperNoun")) { continue };
+        if (nextTerm.tags.includes("ProperNoun")) continue;
       }
       verbIndex = i;
       // console.log(`verbIndex: ${verbIndex}`);
@@ -191,7 +190,7 @@ export function breaker(sentence: string): Grammar {
       verb: parseVerbPhrase(sentence),
     };
   }
-  
+
   let subjectEndIndex = verbIndex;
   // console.log(`subjectEndIndex: ${subjectEndIndex}`);
 
@@ -202,7 +201,7 @@ export function breaker(sentence: string): Grammar {
     // console.log(`subjectEndIndex: ${subjectEndIndex}`);
   }
 
-  const subjectTerms = termData.slice(0, subjectEndIndex).map((t:any) => {
+  const subjectTerms = termData.slice(0, subjectEndIndex).map((t: any) => {
     // Skip auxiliary verbs in the subject
     if (!t.terms[0].tags.includes("Auxiliary")) {
       return t.text;
@@ -224,7 +223,7 @@ export function breaker(sentence: string): Grammar {
       verbTerms.push(termData[i].text);
     }
   }
-  
+
   verbTerms.push(termData[verbIndex].text);
   // console.log(`verbTerms: ${verbTerms}`);
 
@@ -237,7 +236,7 @@ export function breaker(sentence: string): Grammar {
   let verbPhrase = verbTerms.join(" ");
   // console.log(`verbPhrase: ${verbPhrase}`);
 
-  const objectTerms = termData.slice(i).map((t:any) => t.text);
+  const objectTerms = termData.slice(i).map((t: any) => t.text);
   // console.log(`objectTerms: ${objectTerms}`);
   if (objectTerms.length > 0) {
     const lastToken = termData[termData.length - 1];
@@ -252,8 +251,8 @@ export function breaker(sentence: string): Grammar {
   // console.log(`objectPhrase: ${objectPhrase}`);
 
   const subject = subjectPhrase
-  ? parseNounPhrase(subjectPhrase)
-  : { head: ["", ""], quantity: [] };
+    ? parseNounPhrase(subjectPhrase)
+    : { head: ["", ""], quantity: [] };
   // console.log(`subjectPhrase: ${subjectPhrase}`);
 
   const verb = parseVerbPhrase(verbPhrase);
@@ -261,7 +260,7 @@ export function breaker(sentence: string): Grammar {
 
   const object = objectPhrase ? parseNounPhrase(objectPhrase) : undefined;
   // console.log(`object: ${object}`);
-  
+
   // console.groupEnd();
 
   return { subject, verb, object };

@@ -1,6 +1,6 @@
 import * as dotenv from "dotenv";
 import { Application, Context } from "https://deno.land/x/oak@v17.1.4/mod.ts";
-import router from "router";
+import router from "routes/hub.ts";
 import { nudgeDb, nudgeSched } from "./utils/nudgeDb.ts";
 
 // = Setup
@@ -17,15 +17,15 @@ async function customCors(ctx: Context, next: () => Promise<unknown>) {
 
   const allowedOrigin = Deno.env.get("FRONTEND_ORIGIN") || "*";
   console.log(`Allowed Origin ${allowedOrigin}`);
-  
+
   // Set CORS headers
   ctx.response.headers.set("Access-Control-Allow-Origin", allowedOrigin);
-  
+
   ctx.response.headers.set(
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, DELETE, OPTIONS",
   );
-  
+
   ctx.response.headers.set(
     "Access-Control-Allow-Headers",
     "Content-Type, Authorization",
