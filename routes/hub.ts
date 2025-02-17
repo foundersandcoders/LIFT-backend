@@ -120,12 +120,7 @@ router.post("/newEntry", async (ctx) => {
     ctx.response.status = 200;
     ctx.response.body = { message: "Entry received successfully" };
 
-    await write(
-      [entry.subject],
-      [entry.object],
-      [entry.verb],
-      [], // Pass additional data if needed, otherwise an empty array.
-    );
+    await write(entry);
   } catch (error) {
     console.error("Error processing entry:", error);
     ctx.response.status = 400;
@@ -169,9 +164,9 @@ router.get("/breaker", async (ctx) => {
     console.groupEnd();
 
     ctx.response.body = JSON.stringify(result);
-  } catch (err) {
+  } catch (error: unknown) {
     ctx.response.status = 500;
-    ctx.response.body = { error: err.message };
+    ctx.response.body = { error: error instanceof Error ? error.message : "An unknown error occurred" };
   }
   console.groupEnd();
 });
