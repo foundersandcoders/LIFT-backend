@@ -10,11 +10,21 @@
     },
     "parseA": "deno run -A utils/dev/parse.ts",
     "dbGet": "deno run -A --watch queries/get.ts",
-    "dbSeedLocal": "deno run -A --env-file=.env.local queries/seed.ts",
-    "dbSeedProd": "deno run -A --env-file=.env.production queries/seed.ts",
-    "dbResetLocal": "deno run -A --env-file=.env.local queries/reset.ts",
-    "dbResetProduction": "deno run -A --env-file=.env.production queries/reset.ts",
-    "dbWrite": "deno run -A --watch queries/write.ts"
+    "dbSeedLocal": {
+      "command": "deno run -A --env-file=.env.local queries/seed.ts"
+    },
+    "dbSeedProd": {
+      "command": "deno run -A --env-file=.env.production queries/seed.ts"
+    },
+    "dbResetLocal": {
+      "command": "deno run -A --env-file=.env.local queries/reset.ts"
+    },
+    "dbResetProduction": {
+      "command": "deno run -A --env-file=.env.production queries/reset.ts"
+    },
+    "dbWrite": {
+      "command": "deno run -A --watch queries/write.ts"
+    }
   },
   "imports": {
     "acorn": "jsr:@oak/acorn@^1.1.1",
