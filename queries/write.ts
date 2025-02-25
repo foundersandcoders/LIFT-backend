@@ -1,6 +1,6 @@
 import * as dotenv from "jsr:@std/dotenv";
 import neo4j, { Driver } from "neo4j";
-import { Grammar } from "../utils/types/language.ts";
+import { Grammar } from "../types/language.ts";
 
 await dotenv.load({ export: true });
 

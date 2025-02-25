@@ -33,13 +33,19 @@
     "neo4j": "npm:neo4j-driver@^5.27.0",
     "queries/": "./queries/",
     "utils/": "./utils/",
-    "routes/": "./routes/"
+    "routes/": "./routes/",
+    "types/": "./types/"
   },
   "lint": {
     "rules": {
-      "tags": ["recommended"],
-      "include": ["ban-untagged-todo"],
-      "exclude": ["no-unused-vars"]
+      "tags": [
+        "recommended"
+      ],
+      "include": [],
+      "exclude": [
+        "ban-untagged-todo",
+        "no-unused-vars"
+      ]
     }
   }
 }

@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 import nlp from "compromise";
-import { Grammar, Object, Subject, Verb } from "utils/types/language.ts";
+import { Grammar, Object, Subject, Verb } from "../../types/language.ts";
 
 // -------------------------------------------------------------------------
 // Helper functions
