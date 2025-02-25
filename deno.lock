@@ -9,7 +9,6 @@
     "jsr:@coven/predicates@~0.3.3": "0.3.3",
     "jsr:@coven/types@~0.3.3": "0.3.3",
     "jsr:@coven/utils@~0.3.3": "0.3.3",
-    "jsr:@oak/acorn@^1.1.1": "1.1.1",
     "jsr:@oak/commons@1": "1.0.0",
     "jsr:@oak/oak@*": "17.1.4",
     "jsr:@std/assert@1": "1.0.10",
@@ -20,15 +19,10 @@
     "jsr:@std/encoding@1": "1.0.6",
     "jsr:@std/encoding@^1.0.5": "1.0.6",
     "jsr:@std/expect@*": "1.0.12",
-    "jsr:@std/fmt@^1.0.4": "1.0.4",
-    "jsr:@std/fs@^1.0.9": "1.0.10",
     "jsr:@std/http@1": "1.0.12",
     "jsr:@std/internal@^1.0.5": "1.0.5",
-    "jsr:@std/io@0.225": "0.225.1",
-    "jsr:@std/log@0.224": "0.224.13",
     "jsr:@std/media-types@1": "1.1.0",
     "jsr:@std/path@1": "1.0.8",
-    "jsr:@valibot/valibot@0.42": "0.42.1",
     "npm:@types/node@*": "22.5.4",
     "npm:buffer@6": "6.0.3",
     "npm:compromise@*": "14.14.4",
@@ -97,22 +91,6 @@
         "jsr:@coven/types"
       ]
     },
-    "@oak/acorn@1.1.1": {
-      "integrity": "a6157ef41a7886c14b296bf91b058492b5fd642102666bf8d71c57b92a4e94c0",
-      "dependencies": [
-        "jsr:@oak/commons",
-        "jsr:@std/assert@1",
-        "jsr:@std/http",
-        "jsr:@std/log",
-        "jsr:@valibot/valibot",
-        "npm:buffer",
-        "npm:hyperid",
-        "npm:path-to-regexp@^8.2.0",
-        "npm:qs",
-        "npm:string_decoder",
-        "npm:undici"
-      ]
-    },
     "@oak/commons@1.0.0": {
       "integrity": "49805b55603c3627a9d6235c0655aa2b6222d3036b3a13ff0380c16368f607ac",
       "dependencies": [
@@ -167,12 +145,6 @@
         "jsr:@std/internal"
       ]
     },
-    "@std/fmt@1.0.4": {
-      "integrity": "e14fe5bedee26f80877e6705a97a79c7eed599e81bb1669127ef9e8bc1e29a74"
-    },
-    "@std/fs@1.0.10": {
-      "integrity": "bf041f9d7a0a460817f0421be8946d0e06011b3433e6c83a215628de5e3c7c2c"
-    },
     "@std/http@1.0.12": {
       "integrity": "85246d8bfe9c8e2538518725b158bdc31f616e0869255f4a8d9e3de919cab2aa",
       "dependencies": [
@@ -182,25 +154,11 @@
     "@std/internal@1.0.5": {
       "integrity": "54a546004f769c1ac9e025abd15a76b6671ddc9687e2313b67376125650dc7ba"
     },
-    "@std/io@0.225.1": {
-      "integrity": "0a055fa523288d596f09ba11af5e006f17cecc75bab949b233ceba7eba40293e"
-    },
-    "@std/log@0.224.13": {
-      "integrity": "f04d82f676c9eb4306194ca166d296d9f1456fe4b7edf2a404a0d55c94d31df7",
-      "dependencies": [
-        "jsr:@std/fmt",
-        "jsr:@std/fs",
-        "jsr:@std/io"
-      ]
-    },
     "@std/media-types@1.1.0": {
       "integrity": "c9d093f0c05c3512932b330e3cc1fe1d627b301db33a4c2c2185c02471d6eaa4"
     },
     "@std/path@1.0.8": {
       "integrity": "548fa456bb6a04d3c1a1e7477986b6cffbce95102d0bb447c67c4ee70e0364be"
-    },
-    "@valibot/valibot@0.42.1": {
-      "integrity": "ba0f6f7964aaeec0e4b1f793d575061f325ae6254cbb9d7ff01fb65068a0a23b"
     }
   },
   "npm": {
@@ -513,7 +471,7 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@oak/acorn@^1.1.1",
+      "jsr:@oak/oak@*",
       "jsr:@std/dotenv@*",
       "npm:compromise@14.10.0",
       "npm:neo4j-driver@^5.27.0"

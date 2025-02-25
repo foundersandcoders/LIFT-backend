@@ -1,9 +1,8 @@
 import * as dotenv from "dotenv";
-import { Application, Context } from "https://deno.land/x/oak@v17.1.4/mod.ts";
+import { Application, Context } from "oak";
 import router from "routes/hub.ts";
 import { nudgeDb, nudgeSched } from "utils/nudgeDb.ts";
 
-// = Setup
 await dotenv.load({ export: true });
 const port = parseInt(Deno.env.get("PORT") ?? "8080");
 const app = new Application();
@@ -45,7 +44,6 @@ app.use(customCors);
 app.use(router.routes());
 app.use(router.allowedMethods());
 
-// = Start listening
 await app.listen({ port });
 console.log(`Server running on port ${port}`);
 
