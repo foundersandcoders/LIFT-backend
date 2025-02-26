@@ -10,8 +10,7 @@
     "jsr:@coven/types@~0.3.3": "0.3.3",
     "jsr:@coven/utils@~0.3.3": "0.3.3",
     "jsr:@oak/commons@1": "1.0.0",
-    "jsr:@oak/oak@*": "17.1.4",
-    "jsr:@std/assert@1": "1.0.10",
+    "jsr:@std/assert@1": "1.0.11",
     "jsr:@std/assert@^1.0.11": "1.0.11",
     "jsr:@std/bytes@1": "1.0.4",
     "jsr:@std/crypto@1": "1.0.3",
@@ -100,24 +99,6 @@
         "jsr:@std/encoding@1",
         "jsr:@std/http",
         "jsr:@std/media-types"
-      ]
-    },
-    "@oak/oak@17.1.4": {
-      "integrity": "60530b582bf276ff741e39cc664026781aa08dd5f2bc5134d756cc427bf2c13e",
-      "dependencies": [
-        "jsr:@oak/commons",
-        "jsr:@std/assert@1",
-        "jsr:@std/bytes",
-        "jsr:@std/http",
-        "jsr:@std/media-types",
-        "jsr:@std/path",
-        "npm:path-to-regexp@^6.3.0"
-      ]
-    },
-    "@std/assert@1.0.10": {
-      "integrity": "59b5cbac5bd55459a19045d95cc7c2ff787b4f8527c0dd195078ff6f9481fbb3",
-      "dependencies": [
-        "jsr:@std/internal"
       ]
     },
     "@std/assert@1.0.11": {
@@ -471,7 +452,6 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@oak/oak@*",
       "jsr:@std/dotenv@*",
       "npm:compromise@14.10.0",
       "npm:neo4j-driver@^5.27.0"

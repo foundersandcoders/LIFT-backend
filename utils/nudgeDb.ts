@@ -9,7 +9,7 @@ const nextRun = () => {
 };
 
 export async function nudgeDb() {
-  let driver: Driver;
+  let driver: Driver | null = null;
   console.groupCollapsed("=== DB Nudger ===");
 
   console.log(`Opening driver`);
@@ -19,7 +19,7 @@ export async function nudgeDb() {
   } catch (err) {
     console.error("Nudge failed:", err);
   } finally {
-    await driver.close();
+    if (driver) await driver.close();
     console.log(`Driver closed`);
     console.log(`Next run: ${nextRun}`);
   }
