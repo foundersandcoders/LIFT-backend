@@ -2,10 +2,11 @@ import { Router } from "oak";
 import { findSubject, findObject, findVerb } from "queries/find.ts";
 
 const router = new Router();
+const routes: string[] = [];
 
-router.get("/n/s/:n", async (ctx) => {
+router.get("/subject/:subject", async (ctx) => {
   try {
-    const records = await findSubject(ctx.params.n);
+    const records = await findSubject(ctx.params.subject);
     if (!records) {
       ctx.response.status = 500;
       ctx.response.body = {
@@ -21,10 +22,11 @@ router.get("/n/s/:n", async (ctx) => {
     ctx.response.body = { error: "Internal Server Error" };
   }
 });
+routes.push("/subject/:subject");
 
-router.get("/n/o/:n", async (ctx) => {
+router.get("/object/:object", async (ctx) => {
   try {
-    const records = await findObject(ctx.params.n);
+    const records = await findObject(ctx.params.object);
     if (!records) {
       ctx.response.status = 500;
       ctx.response.body = {
@@ -40,10 +42,11 @@ router.get("/n/o/:n", async (ctx) => {
     ctx.response.body = { error: "Internal Server Error" };
   }
 });
+routes.push("/object/:object");
 
-router.get("/v/:v", async (ctx) => {
+router.get("/verb/:verb", async (ctx) => {
   try {
-    const records = await findVerb(ctx.params.v);
+    const records = await findVerb(ctx.params.verb);
     if (!records) {
       ctx.response.status = 500;
       ctx.response.body = {
@@ -59,5 +62,9 @@ router.get("/v/:v", async (ctx) => {
     ctx.response.body = { error: "Internal Server Error" };
   }
 });
+routes.push("/verb/:verb");
 
-export { router as findRoutes };
+export {
+  router as findRouter,
+  routes as findRoutes
+};

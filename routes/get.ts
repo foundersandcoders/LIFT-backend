@@ -2,6 +2,7 @@ import { Router } from "oak";
 import { getNouns, getVerbs } from "queries/get.ts";
 
 const router = new Router();
+const routes: string[] = [];
 
 router.get("/n", async (ctx) => {
   try {
@@ -22,6 +23,7 @@ router.get("/n", async (ctx) => {
       ctx.response.body = { error: "Internal Server Error" };
   }
 });
+routes.push("/n");
 
 router.get("/v", async (ctx) => {
   try {
@@ -42,6 +44,9 @@ router.get("/v", async (ctx) => {
     ctx.response.body = { error: "Internal Server Error" };
   }
 });
+routes.push("/v");
 
-// = Exports
-export { router as getRoutes };
+export { 
+  router as getRouter,
+  routes as getRoutes
+};
