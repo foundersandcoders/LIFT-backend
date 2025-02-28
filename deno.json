@@ -1,30 +1,54 @@
 {
   "tasks": {
-    "dev": "deno run -A --watch --unstable-cron --env-file=.env.local main.ts",
-    "prod": "deno run -A --watch --unstable-cron --env-file=.env.production main.ts",
-    "lint": "deno lint",
-    "parseA": "deno run -A utils/dev/parse.ts",
-    "dbGet": "deno run -A --watch queries/get.ts",
-    "dbSeedLocal": "deno run -A --env-file=.env.local queries/seed.ts",
-    "dbSeedProd": "deno run -A --env-file=.env.production queries/seed.ts",
-    "dbResetLocal": "deno run -A --env-file=.env.local queries/reset.ts",
-    "dbResetProduction": "deno run -A --env-file=.env.production queries/reset.ts",
-    "dbWrite": "deno run -A --watch queries/write.ts"
+    "dev": {
+      "description": "Run the local development build",
+      "command": "deno run -A --watch --unstable-cron --env-file=.env.local main.ts"
+    },
+    "prod": {
+      "description": "Run the local production build",
+      "command": "deno run -A --watch --unstable-cron --env-file=.env.production main.ts"
+    },
+    "parseA": {
+      "command": "deno run -A utils/dev/parse.ts"
+    },
+    "dbGet": {
+      "command": "deno run -A --watch queries/get.ts"
+    },
+    "dbSeedLocal": {
+      "description": "Seed the local instance of neo4j",
+      "command": "deno run -A --env-file=.env.local queries/seed.ts"
+    },
+    "dbSeedProd": {
+      "command": "deno run -A --env-file=.env.production queries/seed.ts"
+    },
+    "dbResetLocal": {
+      "command": "deno run -A --env-file=.env.local queries/reset.ts"
+    },
+    "dbResetProduction": {
+      "command": "deno run -A --env-file=.env.production queries/reset.ts"
+    },
+    "dbWrite": {
+      "command": "deno run -A --watch queries/write.ts"
+    }
   },
   "imports": {
-    "acorn": "jsr:@oak/acorn@^1.1.1",
+    "oak": "https://deno.land/x/oak@v17.1.4/mod.ts",
     "dotenv": "jsr:@std/dotenv",
+    "compromise": "npm:compromise@14.10.0",
     "neo4j": "npm:neo4j-driver@^5.27.0",
-    "types": "./utils/interfaces.ts",
-    "calc": "./utils/calc.ts",
-    "router": "./routes/hub.ts",
-    "compromise": "npm:compromise@14.10.0"
+    "queries/": "./queries/",
+    "routes/": "./routes/",
+    "types/": "./types/",
+    "utils/": "./utils/"
   },
   "lint": {
     "rules": {
       "tags": ["recommended"],
-      "include": ["ban-untagged-todo"],
-      "exclude": ["no-unused-vars"]
+      "include": [],
+      "exclude": [
+        "ban-untagged-todo",
+        "no-unused-vars"
+      ]
     }
   }
 }

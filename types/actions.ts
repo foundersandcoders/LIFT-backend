@@ -1,11 +1,4 @@
-// import { Grammar } from "./languageA.ts";
-import { Grammar } from "./language.ts";
-
-export interface CredsN4J {
-  URI: string;
-  USER: string;
-  PASSWORD: string;
-}
+import { Grammar } from "types/language.ts";
 
 export interface Action {
   creationDate: string;

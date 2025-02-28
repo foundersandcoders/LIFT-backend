@@ -1,9 +1,8 @@
-//import * as dotenv from "dotenv";
-import { CredsN4J } from "../types/interfaces.ts";
+import { CredsN4J } from "types/security.ts";
 
-const uri = await Deno.env.get("NEO4J_URI") ?? "";
-const user = await Deno.env.get("NEO4J_USERNAME") ?? "";
-const password = await Deno.env.get("NEO4J_PASSWORD") ?? "";
+const uri = Deno.env.get("NEO4J_URI") ?? "";
+const user = Deno.env.get("NEO4J_USERNAME") ?? "";
+const password = Deno.env.get("NEO4J_PASSWORD") ?? "";
 
 export const creds: CredsN4J = {
   URI: uri,
