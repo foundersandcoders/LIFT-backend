@@ -22,12 +22,7 @@ docker info
 Docker:
 
 ```bash
-docker run --name neo4j \
-  -p 7474:7474 \
-  -p 7687:7687 \
-  -e NEO4J_AUTH=neo4j/thisisthelocalpassword \
-  -d neo4j
-```
+docker compose run```
 
 ✅ Step 4: Verify That the Container Is Running Check if the Neo4j container is
 running:
