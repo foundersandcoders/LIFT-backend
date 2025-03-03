@@ -1,6 +1,6 @@
 import { Router } from "oak";
 import { breaker } from "utils/language/breaker.ts";
-import { write } from "queries/write.ts";
+import { write } from "../api/db/write.ts";
 
 const router = new Router();
 const routes: string[] = [];

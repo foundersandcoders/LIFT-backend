@@ -2,8 +2,9 @@ import { Router } from "oak";
 import { Subrouter } from "types/project.ts";
 import { getRouter, getRoutes } from "routes/get.ts";
 import { findRouter, findRoutes } from "routes/find.ts";
-import { writeRouter, writeRoutes } from "routes/write.ts";
+import { pingRouter, pingRoutes } from "routes/ping.ts";
 import { toolRouter, toolRoutes } from "routes/tool.ts";
+import { writeRouter, writeRoutes } from "routes/write.ts";
 
 const router = new Router();
 const registeredRoutes: string[] = []; /* Notes
@@ -12,9 +13,7 @@ const registeredRoutes: string[] = []; /* Notes
   Then we can use `router.get("/")` to create a dynamic menu of routes
 */
 const registerRoutes = (prefix: string, subRouter: Subrouter) => {
-  subRouter.routes.forEach((route) => {
-    registeredRoutes.push(`${prefix}${route}`)
-  });
+  subRouter.routes.forEach((route) => { registeredRoutes.push(`${prefix}${route}`) });
 
   router.use(
     prefix,
@@ -26,12 +25,11 @@ const registerRoutes = (prefix: string, subRouter: Subrouter) => {
 const subRouters = {
   "/get": { router: getRouter, routes: getRoutes },
   "/find": { router: findRouter, routes: findRoutes },
-  "/write": { router: writeRouter, routes: writeRoutes },
+  "/ping": { router: pingRouter, routes: pingRoutes },
   "/tool": { router: toolRouter, routes: toolRoutes },
+  "/write": { router: writeRouter, routes: writeRoutes },
 };
-for ( const [prefix, subRouter] of Object.entries(subRouters) ) {
-  registerRoutes(prefix, subRouter)
-}
+for ( const [prefix, subRouter] of Object.entries(subRouters) ) { registerRoutes(prefix, subRouter) }
 
 router.get("/", (ctx) => {
   const html = `
@@ -64,9 +62,10 @@ router.get("/", (ctx) => {
   ctx.response.body = html;
 });
 
-router.use("/get", getRouter.routes());
 router.use("/find", findRouter.routes());
-router.use("/write", writeRouter.routes());
+router.use("/get", getRouter.routes());
+router.use("/ping", pingRouter.routes());
 router.use("/tool", toolRouter.routes());
+router.use("/write", writeRouter.routes());
 
 export default router;

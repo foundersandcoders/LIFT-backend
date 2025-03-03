@@ -1,5 +1,5 @@
 import neo4j, { Driver } from "neo4j";
-import { creds } from "../utils/creds/neo4j.ts";
+import { creds } from "../../utils/creds/neo4j.ts";
 
 const data = {
   people: [

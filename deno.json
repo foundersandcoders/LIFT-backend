@@ -1,15 +1,8 @@
 {
   "tasks": {
-    "dev": {
-      "description": "Run the local development build",
-      "command": "deno run -A --watch --unstable-cron --env-file=.env.local main.ts"
-    },
-    "prod": {
-      "description": "Run the local production build",
-      "command": "deno run -A --watch --unstable-cron --env-file=.env.production main.ts"
-    },
-    "parseA": {
-      "command": "deno run -A utils/dev/parse.ts"
+    "checkResend": {
+      "description": "Tests the Resend API",
+      "command": "deno run -A --watch --unstable-cron --env-file=.env.local ./utils/emails/sendTest.ts"
     },
     "dbGet": {
       "command": "deno run -A --watch queries/get.ts"
@@ -29,6 +22,17 @@
     },
     "dbWrite": {
       "command": "deno run -A --watch queries/write.ts"
+    },
+    "dev": {
+      "description": "Run the local development build",
+      "command": "deno run -A --watch --unstable-cron --env-file=.env.local main.ts"
+    },
+    "parseA": {
+      "command": "deno run -A utils/dev/parse.ts"
+    },
+    "prod": {
+      "description": "Run the local production build",
+      "command": "deno run -A --watch --unstable-cron --env-file=.env.production main.ts"
     }
   },
   "imports": {
@@ -36,7 +40,8 @@
     "dotenv": "jsr:@std/dotenv",
     "compromise": "npm:compromise@14.10.0",
     "neo4j": "npm:neo4j-driver@^5.27.0",
-    "queries/": "./queries/",
+    "db/": "./api/db/",
+    "email/": "./api/email/",
     "routes/": "./routes/",
     "types/": "./types/",
     "utils/": "./utils/"

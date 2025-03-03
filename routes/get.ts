@@ -1,5 +1,5 @@
 import { Router } from "oak";
-import { getNouns, getVerbs } from "queries/get.ts";
+import { getNouns, getVerbs } from "db/get.ts";
 
 const router = new Router();
 const routes: string[] = [];

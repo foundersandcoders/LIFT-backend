@@ -1,8 +1,7 @@
 import * as dotenv from "jsr:@std/dotenv";
 import neo4j, { Driver } from "neo4j";
-import { Grammar } from "../types/language.ts";
-
-await dotenv.load({ export: true });
+import { Grammar } from "../../types/language.ts";
+dotenv.load({ export: true });
 
 export async function write(input: Grammar) {
   const URI = await Deno.env.get("NEO4J_URI") ?? "";

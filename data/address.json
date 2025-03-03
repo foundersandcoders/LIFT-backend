@@ -1,0 +1,18 @@
+{
+  "facTeam": {
+    "to": [
+      "alex@foundersandcoders.com",
+      "dan@foundersandcoders.com",
+      "jason@foundersandcoders.com"
+    ],
+    "names": "Alex, Dan & Jason"
+  },
+  "liftTeam": {
+    "to": [
+      "alex@foundersandcoders.com",
+      "dan@foundersandcoders.com",
+      "jason@foundersandcoders.com"
+    ],
+    "names": "Alex & Jason"
+  }
+}
