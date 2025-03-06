@@ -1,6 +1,6 @@
 import * as dotenv from "dotenv";
 import { Application, Context } from "oak";
-import router from "routes/hub.ts";
+import router from "./routes/hubRoutes.ts";
 import { nudgeDb, nudgeSched } from "utils/nudgeDb.ts";
 console.log("Imports Done");
 
@@ -15,7 +15,10 @@ console.log("App created");
 
 
 // == CORS
-async function customCors(ctx: Context, next: () => Promise<unknown>) {
+async function customCors(
+  ctx: Context,
+  next: () => Promise<unknown>
+) {
   const allowedOrigin = Deno.env.get("FRONTEND_ORIGIN") || "*"; /*
     Retrieve the allowed origin from the environment.
     In production, FRONTEND_ORIGIN will be set (e.g., "https://lift-backend.deno.dev/").
@@ -44,18 +47,17 @@ async function customCors(ctx: Context, next: () => Promise<unknown>) {
 
   await next();
 }
-
 app.use(customCors);
-console.log("customCors Done");
 
 // = Router
 app.use(router.routes());
-console.log("routes used");
 app.use(router.allowedMethods());
-console.log("methods allowed");
 
 app.listen({ port });
 console.log(`Server running on port ${port}`);
 
 // = Scheduled Jobs
-Deno.cron("Keep the DB awake", nudgeSched, nudgeDb);
+Deno.cron("Keep the DB awake",
+  nudgeSched,
+  nudgeDb
+);

@@ -40,6 +40,7 @@
     "dotenv": "jsr:@std/dotenv",
     "compromise": "npm:compromise@14.10.0",
     "neo4j": "npm:neo4j-driver@^5.27.0",
+    "content/": "./content/",
     "db/": "./api/db/",
     "email/": "./api/email/",
     "routes/": "./routes/",

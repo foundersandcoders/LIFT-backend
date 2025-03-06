@@ -1,19 +1,27 @@
 import { Router } from "oak";
 import { Subrouter } from "types/project.ts";
-import { getRouter, getRoutes } from "routes/get.ts";
-import { findRouter, findRoutes } from "routes/find.ts";
-import { pingRouter, pingRoutes } from "routes/ping.ts";
-import { toolRouter, toolRoutes } from "routes/tool.ts";
-import { writeRouter, writeRoutes } from "routes/write.ts";
+import { getRouter, getRoutes } from "./getRoutes.ts";
+import { findRouter, findRoutes } from "./findRoutes.ts";
+import { emailRouter, emailRoutes } from "./emailRoutes.ts";
+import { toolRouter, toolRoutes } from "./toolRoutes.ts";
+import { writeRouter, writeRoutes } from "./writeRoutes.ts";
 
 const router = new Router();
-const registeredRoutes: string[] = []; /* Notes
+
+/* Note: Registered Routes
   This is longwinded, but...
   We explicitly track an array of routes & subrouters
   Then we can use `router.get("/")` to create a dynamic menu of routes
-*/
+  */
+const registeredRoutes: string[] = [];
 const registerRoutes = (prefix: string, subRouter: Subrouter) => {
-  subRouter.routes.forEach((route) => { registeredRoutes.push(`${prefix}${route}`) });
+  subRouter.routes.forEach((route) => {
+    console.groupCollapsed(`${route} -->`);
+    registeredRoutes.push(`${prefix}${route}`)
+    console.log(`--> ${route} Done`);
+    console.groupEnd();
+    console.log(`----------------------------`);
+  });
 
   router.use(
     prefix,
@@ -23,17 +31,37 @@ const registerRoutes = (prefix: string, subRouter: Subrouter) => {
 };
 
 const subRouters = {
-  "/get": { router: getRouter, routes: getRoutes },
-  "/find": { router: findRouter, routes: findRoutes },
-  "/ping": { router: pingRouter, routes: pingRoutes },
-  "/tool": { router: toolRouter, routes: toolRoutes },
-  "/write": { router: writeRouter, routes: writeRoutes },
+  "/get": {
+    router: getRouter,
+    routes: getRoutes
+  },
+  "/email": {
+    router: emailRouter,
+    routes: emailRoutes
+  },
+  "/find": {
+    router: findRouter,
+    routes: findRoutes
+  },
+  "/tool": {
+    router: toolRouter,
+    routes: toolRoutes
+  },
+  "/write": {
+    router: writeRouter,
+    routes: writeRoutes
+  },
 };
-for ( const [prefix, subRouter] of Object.entries(subRouters) ) { registerRoutes(prefix, subRouter) }
+for (const [prefix, subRouter] of Object.entries(subRouters)) {
+  console.group(`Registering ${prefix} routes`);
+  registerRoutes(prefix, subRouter);
+  console.log(`${prefix} routes registered`);
+  console.groupEnd();
+  console.log(`================================`);
+}
 
 router.get("/", (ctx) => {
-  const html = `
-    <!DOCTYPE html>
+  const html = `<!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -63,8 +91,8 @@ router.get("/", (ctx) => {
 });
 
 router.use("/find", findRouter.routes());
+router.use("/email", emailRouter.routes());
 router.use("/get", getRouter.routes());
-router.use("/ping", pingRouter.routes());
 router.use("/tool", toolRouter.routes());
 router.use("/write", writeRouter.routes());
 

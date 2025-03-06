@@ -1,7 +1,10 @@
 import neo4j, { Driver } from "neo4j";
 import { creds as c } from "utils/creds/neo4j.ts";
 
-export async function findUser(id:number, publicOnly: boolean = true):Promise<string[]> {
+export async function findUser(
+  id:number,
+  publicOnly: boolean = true
+):Promise<string[]> {
   let driver: Driver | null = null;
   let records;
   const statements:string[] = [];
