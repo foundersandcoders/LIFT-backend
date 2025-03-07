@@ -14,49 +14,26 @@ router.get("/test", async (ctx) => {
 });
 routes.push("/test");
 
-/* Note: Old GET Route
-  router.get("/ping", async (ctx) => {
-    const { userId, managerName, managerEmail, userName } = ctx.params;
-    if (!userId || !managerName || !managerEmail || !userName) { ctx.throw(400, "Missing required parameters") };
-    const userIdNum = parseInt(userId!, 10);
-    await sendPing(userIdNum, userName!, managerName!, managerEmail!);
-  }); */
-
 router.post("/ping", async (ctx) => {
   console.group(`=== POST("/email/ping") ===`);
     console.group(`=== Parse Request ===`)
       const data:EmailRequest = await ctx.request.body.json();
-      console.log(data);
-      const {
-        userId,
-        userName,
-        managerName,
-        managerEmail
-      } = data;
+      const { userId, userName, managerName, managerEmail } = data;
 
-      if (
-        !userId
-        || !userName
-        || !managerName
-        || !managerEmail
-      ) { ctx.throw(400, "Missing required parameters") } else {
-        console.table([
-          {is: "userId", value: userId},
-          {is: "userName", value: userName},
-          {is: "managerName", value: managerName},
-          {is: "managerEmail", value: managerEmail}
-        ]);
-      }
+      if ( !userId || !userName || !managerName || !managerEmail ) {
+        ctx.throw(400, "Missing required parameters")
+      } else { console.table([ /* Show Parameters */
+        {is: "userId", value: userId},
+        {is: "userName", value: userName},
+        {is: "managerName", value: managerName},
+        {is: "managerEmail", value: managerEmail}
+      ]) }
       console.info(`=====================`);
     console.groupEnd();
 
-    console.group(`=== Call sendPing() ===`);
-      await sendPing(
-        userId,
-        userName,
-        managerName,
-        managerEmail
-      );
+    console.group(`=== Calling sendPing() ===`);
+      console.log(`Sending (${userId}, ${userName}, ${managerName}, ${managerEmail})`);
+      await sendPing(userId, userName, managerName, managerEmail);
       console.info(`=======================`);
     console.groupEnd();
 

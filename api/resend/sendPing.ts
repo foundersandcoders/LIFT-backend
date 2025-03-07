@@ -1,33 +1,20 @@
 import { EmailContent } from "../../types/emails.ts";
-import { generatePing } from "content/generatePing.ts";
+import { buildPing } from "../../content/builders/buildPing.ts";
 
 const resendKey = Deno.env.get("RESEND_KEY");
 
-export async function sendPing (
-  userId: number,
-  userName: string,
-  readerName: string,
-  readerEmail: string
-): Promise<Response | undefined> {
-  console.group(`=== sendPing() ===`);
-    console.group(`=== Call generatePing() ===`);
-      const content:EmailContent = await generatePing(
-        userId,
-        userName,
-        readerName
-      );
-      console.info(`===========================`);
-    console.groupEnd();
-
-    console.group(`=== Check Content ===`);
-      console.log(content.sendable ? 
-        content.html : `No entries to send`
-      );
-      console.info(`===============`);
-    console.groupEnd();
+export async function sendPing (userId: number, userName: string, readerName: string, readerEmail: string): Promise<Response | Error> {
+  console.group(`=== Running sendPing() ===`);
+    console.log(`Received (${userId}, ${userName}, ${readerName}, ${readerEmail})`);
+    
+    console.group(`=== Calling buildPing() ===`);
+      console.log(`Sending (${userId}, ${userName}, ${readerName})`);
+      const content:EmailContent = await buildPing(userId, userName, readerName);
+      console.groupEnd();
+    console.info(`===========================`);
 
     if (content.sendable) {
-      console.group(`=== Fetch Resend API ===`);
+      console.info(`fetching from Resend API`);
         const res = await fetch("https://api.resend.com/emails", {
           method: "POST",
           headers: {
@@ -44,26 +31,29 @@ export async function sendPing (
 
         if (res.ok) {
           const data = await res.json();
+          console.info(`Email sent successfully`);
           console.log(data);
-      
-          console.info(`===========================`);
+
           console.groupEnd();
-          return new Response(
-            data,
-            {
-              status: 200,
-              headers: { "Content-Type": "application/json" }
-            }
-          );
+          console.info(`===========================`);
+
+          return new Response(data, {
+            status: 200,
+            headers: { "Content-Type": "application/json" }
+          });
         } else {
           const errorData = await res.text();
           console.warn("Error:", errorData);
+
+          console.groupEnd();
+          console.info(`===========================`);
+
+          return new Error(errorData);
         }
-        console.info(`=======================`);
+    } else {
       console.groupEnd();
+      console.info(`===========================`);
+      
+      return new Error(`Cannot send email: No entries to send`);
     }
-    console.info(`===============`);
-  console.groupEnd();
-  
-  return;
 };

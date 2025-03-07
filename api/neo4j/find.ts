@@ -5,14 +5,19 @@ export async function findUser(
   id:number,
   publicOnly: boolean = true
 ):Promise<string[]> {
-  console.group(`=== findUser() ===`);
+  console.group(`=== Running findUser() ===`);
+    console.log(`Received (id: ${id}, publicOnly: ${publicOnly})`);
+
     let driver: Driver | null = null, records, result;
     const statements:string[] = [];
 
+    console.info(`Running try/catch`);
     try {
       driver = neo4j.driver(c.URI, neo4j.auth.basic(c.USER, c.PASSWORD));
 
+      console.info(`Selecting Query Type`);
       if (id && publicOnly) {
+        console.info(`Query: Public Beacons for user #${id}`);
         result = await driver.executeQuery(
           `MATCH statement =
             (user {id: $id})-[link {isPublic: true}]-()
@@ -21,6 +26,7 @@ export async function findUser(
           {database: 'neo4j'}
         );
       } else if (id && !publicOnly) {
+        console.info(`Query: All Beacons for user #${id}`);
         result = await driver.executeQuery(
           `MATCH statement =
             (user {id: $id})-[link]-()
@@ -29,6 +35,7 @@ export async function findUser(
           {database: 'neo4j'}
         );
       } else {
+        console.info(`Query: All Public Beacons`);
         result = await driver.executeQuery(
           `MATCH statement =
             (p)-[r {isPublic: true}]->(q)
@@ -48,8 +55,12 @@ export async function findUser(
         statements.push(`${subject} ${verb} ${object}`);
       }
     } catch (err) {
-      console.error("Error in get function:", err);
-    } finally { await driver?.close() }
+      console.error(`DB Get Error: ${err}`);
+    } finally {
+      console.info(`Closing Driver`);
+      await driver?.close();
+      console.info(`Driver Closed`);
+    }
 
     console.info(`==================`);
   console.groupEnd();
