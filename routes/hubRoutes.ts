@@ -1,10 +1,10 @@
 import { Router } from "oak";
-import { Subrouter } from "types/project.ts";
-import { getRouter, getRoutes } from "./getRoutes.ts";
-import { findRouter, findRoutes } from "./findRoutes.ts";
-import { emailRouter, emailRoutes } from "./emailRoutes.ts";
-import { toolRouter, toolRoutes } from "./toolRoutes.ts";
-import { writeRouter, writeRoutes } from "./writeRoutes.ts";
+import { Subrouter } from "../types/project.ts";
+import { getRouter, getRoutes } from "./neo4j/getRoutes.ts";
+import { findRouter, findRoutes } from "./neo4j/findRoutes.ts";
+import { emailRouter, emailRoutes } from "./resend/emailRoutes.ts";
+import { toolRouter, toolRoutes } from "./neo4j/toolRoutes.ts";
+import { writeRouter, writeRoutes } from "./neo4j/writeRoutes.ts";
 
 const router = new Router();
 

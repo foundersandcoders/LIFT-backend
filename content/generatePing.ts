@@ -1,22 +1,55 @@
-import { findUser } from "db/find.ts";
+import { EmailContent } from "../types/emails.ts";
+import { findUser } from "neo4jApi/find.ts";
 
 export async function generatePing(
   userId: number,
   userName: string,
   managerName: string
 ) {
-  const entries = await findUser(userId, true);
-  const quantity = entries.length;
+  console.group(`=== generatePing() ===`);
+    const content:EmailContent = {
+      sendable: false,
+      html: ``
+    };
 
-  return (`<div>
-    <p>
-      Dear ${managerName},
+    console.group(`=== Call findUser() ===`);
+      const entries = await findUser(userId, true);
+      console.info(`=======================`);
+    console.groupEnd();
 
-      ${userName} has shared ${ quantity > 1 ? "some beacons" : "a beacon" } with you.
+    const quantity = entries.length;
+    const noun = (quantity > 1 ?
+      "some beacons" : quantity < 1 ?
+      "a beacon" : "no beacons"
+    );
 
-      <ul>
-        ${entries.map(entry => `<li>${entry}</li>`).join('')}
-      </ul>
-    </p>
-  </div>`)
+    console.groupCollapsed(`=== Entries ===`);
+      console.log(`Showing ${quantity} Entries`);
+      for (const entry of entries) { console.log(entry) }
+      console.info(`===============`)
+    console.groupEnd();
+
+    console.group(`=== Build Email ===`);
+      if (quantity >= 1) {
+        content.sendable = true;
+        content.html = `<div>
+          <p>
+            Dear ${managerName},
+          </p>
+
+          <p>
+            ${userName} has shared ${noun} with you.
+          </p>
+
+          <ul>
+            ${entries.map(entry => `<li>${entry}</li>`).join('')}
+          </ul>
+        </div>`;
+      }
+      console.info(`===================`);
+    console.groupEnd();
+    console.info(`======================`);
+  console.groupEnd();
+
+  return content;
 }

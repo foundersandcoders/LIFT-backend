@@ -1,6 +1,6 @@
 import { Router } from "oak";
 import { breaker } from "utils/language/breaker.ts";
-import { write } from "../api/db/write.ts";
+import { write } from "neo4jApi/write.ts";
 
 const router = new Router();
 const routes: string[] = [];

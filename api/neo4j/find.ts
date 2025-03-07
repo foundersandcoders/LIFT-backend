@@ -5,49 +5,54 @@ export async function findUser(
   id:number,
   publicOnly: boolean = true
 ):Promise<string[]> {
-  let driver: Driver | null = null;
-  let records;
-  const statements:string[] = [];
+  console.group(`=== findUser() ===`);
+    let driver: Driver | null = null, records, result;
+    const statements:string[] = [];
 
-  try {
-    driver = neo4j.driver(c.URI, neo4j.auth.basic(c.USER, c.PASSWORD));
+    try {
+      driver = neo4j.driver(c.URI, neo4j.auth.basic(c.USER, c.PASSWORD));
 
-    if (id && publicOnly) {
-      const result = await driver.executeQuery(`
-        MATCH statement =
-          (user {id: $id})-[link {isPublic: true}]-()
-        RETURN statement
-      `, { id }, {database: 'neo4j'});
+      if (id && publicOnly) {
+        result = await driver.executeQuery(
+          `MATCH statement =
+            (user {id: $id})-[link {isPublic: true}]-()
+          RETURN statement`,
+          { id },
+          {database: 'neo4j'}
+        );
+      } else if (id && !publicOnly) {
+        result = await driver.executeQuery(
+          `MATCH statement =
+            (user {id: $id})-[link]-()
+          RETURN statement`,
+          { id },
+          {database: 'neo4j'}
+        );
+      } else {
+        result = await driver.executeQuery(
+          `MATCH statement =
+            (p)-[r {isPublic: true}]->(q)
+          RETURN statement
+          LIMIT 25`,
+          {},
+          {database: 'neo4j'}
+        );
+      }
       records = result.records;
-    } else if (id && !publicOnly) {
-      const result = await driver.executeQuery(`
-        MATCH statement =
-          (user {id: $id})-[link]-()
-        RETURN statement
-      `, { id }, {database: 'neo4j'});
-      records = result.records;
-    } else {
-      const result = await driver.executeQuery(`
-        MATCH statement =
-          (p)-[r {isPublic: true}]->(q)
-        RETURN statement
-        LIMIT 25
-      `, {}, {database: 'neo4j'});
 
-      records = result.records;
-    }
+      for (const record of records) {
+        const subject = record.get("p.name");
+        const verb = record.get("rType");
+        const object = record.get("q.name");
 
-    for (const record of records) {
-      const subject = record.get("p.name");
-      const verb = record.get("rType");
-      const object = record.get("q.name");
-      statements.push(`${subject} ${verb} ${object}`);
-    }
-  } catch (err) {
-    console.error("Error in get function:", err);
-  } finally {
-    if (driver) await driver.close();
-  }
+        statements.push(`${subject} ${verb} ${object}`);
+      }
+    } catch (err) {
+      console.error("Error in get function:", err);
+    } finally { await driver?.close() }
+
+    console.info(`==================`);
+  console.groupEnd();
 
   return statements;
 }

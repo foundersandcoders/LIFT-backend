@@ -1,4 +1,4 @@
-import { CredsN4J } from "types/security.ts";
+import { CredsN4J } from "../../types/security.ts";
 
 const uri = Deno.env.get("NEO4J_URI") ?? "";
 const user = Deno.env.get("NEO4J_USERNAME") ?? "";

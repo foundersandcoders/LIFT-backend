@@ -1,5 +1,5 @@
 import { Router } from "oak";
-import { findSubject, findObject, findVerb } from "db/find.ts";
+import { findSubject, findObject, findVerb } from "neo4jApi/find.ts";
 
 const router = new Router();
 const routes: string[] = [];

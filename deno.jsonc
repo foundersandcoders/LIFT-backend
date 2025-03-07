@@ -1,0 +1,93 @@
+{
+  "tasks": {
+    "dev": {
+      "description": "Run the local development build",
+      "command": "deno run -A --watch --unstable-cron --env-file=.env.local main.ts"
+    },
+    "prod": {
+      "description": "Run the local production build",
+      "command": "deno run -A --watch --unstable-cron --env-file=.env.production main.ts"
+    },
+    // Dev Tools
+      "test": {
+        "description": "Run the tests",
+        "command": "deno test -A"
+      },
+    // Resend API
+      "checkResend": {
+        "description": "Tests the Resend API",
+        "command": "deno run -A --watch --unstable-cron --env-file=.env.local ./utils/emails/sendTest.ts"
+      },
+    // Neo4j API
+      "dbSeedLocal": {
+        "description": "Seed the local instance of neo4j",
+        "command": "deno run -A --env-file=.env.local queries/seed.ts"
+      },
+      "dbSeedProd": {
+        "description": "Seed the production instance of neo4j",
+        "command": "deno run -A --env-file=.env.production queries/seed.ts"
+      },
+      "dbResetLocal": {
+        "description": "Reset the local instance of neo4j",
+        "command": "deno run -A --env-file=.env.local queries/reset.ts"
+      },
+      "dbResetProduction": {
+        "description": "Reset the production instance of neo4j",
+        "command": "deno run -A --env-file=.env.production queries/reset.ts"
+      }
+  },
+  "imports": {
+    // Package Imports
+      /* Hotlink */
+      "oak": "https://deno.land/x/oak@v17.1.4/mod.ts",
+      /* JSR Packages */
+      "dotenv": "jsr:@std/dotenv",
+      /* NPM Packages */
+      "compromise": "npm:compromise@14.10.0",
+      "neo4j": "npm:neo4j-driver@^5.27.0",
+      "zod": "npm:zod",
+    // Path Mapping
+      /* API Functions */
+        "api/": "./api/",
+        "neo4jApi/": "./api/neo4j/",
+        "resendApi/": "./api/resend/",
+      "content/": "./content/",
+      "data": "./data/",
+      /* Routers */
+        "routes/": "./routes/",
+        "dbRoutes/": "./routes/neo4j/",
+        "emailRoutes/": "./routes/resend/",
+      /* Utility Functions */
+        "utils/": "./utils/",
+        "credUtils/": "./utils/creds/",
+        "dbUtils/": "./utils/db/",
+        "devUtils/": "./utils/dev/",
+        "langUtils/": "./utils/lang/",
+      "types/": "./types/"
+  },
+  "unstable": [ /* Unstable Features */
+    "cron", /* Cron Jobs */
+    "kv" /* Key-Value Store */
+  ],
+  "fmt": {
+    "semiColons": true,
+    "singleQuote": false,
+    "proseWrap": "preserve",
+    "include": [],
+    "exclude": [
+      "./deno.jsonc",
+      "./content/",
+      "./data/"
+    ]
+  },
+  "lint": {
+    "rules": {
+      "tags": [ "recommended" ],
+      "include": [],
+      "exclude": [
+        "ban-untagged-todo",
+        "no-unused-vars"
+      ]
+    }
+  }
+}
