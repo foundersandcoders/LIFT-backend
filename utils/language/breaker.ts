@@ -2,7 +2,7 @@
 import nlp from "compromise";
 import { Grammar, Object, Subject, Verb } from "../../types/language.ts";
 
-// -------------------------------------------------------------------------
+// ---------------------------------------../../types/language.ts--------------
 // Helper functions
 
 /**

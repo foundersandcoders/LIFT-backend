@@ -1,4 +1,4 @@
-import { Grammar } from "types/language.ts";
+import { Grammar } from "./language.ts";
 
 export interface Action {
   creationDate: string;

@@ -4,3 +4,8 @@ export interface EmailRequest {
   managerName: string,
   managerEmail: string
 }
+
+export interface EmailContent {
+  sendable: boolean,
+  html: string
+}

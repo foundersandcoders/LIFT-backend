@@ -1,5 +1,5 @@
 import neo4j, { Driver } from "neo4j";
-import { creds as c } from "./creds/neo4j.ts";
+import { creds as c } from "../creds/neo4j.ts";
 import { nextDate } from "jsr:@coven/cron";
 
 export const nudgeSched = "0 */4 * * *"; // Once every 4 hours

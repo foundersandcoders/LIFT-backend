@@ -1,10 +1,10 @@
 import { Router } from "oak";
-import { Subrouter } from "types/project.ts";
-import { getRouter, getRoutes } from "./getRoutes.ts";
-import { findRouter, findRoutes } from "./findRoutes.ts";
-import { emailRouter, emailRoutes } from "./emailRoutes.ts";
-import { toolRouter, toolRoutes } from "./toolRoutes.ts";
-import { writeRouter, writeRoutes } from "./writeRoutes.ts";
+import { Subrouter } from "../types/project.ts";
+import { getRouter, getRoutes } from "./neo4j/getRoutes.ts";
+import { findRouter, findRoutes } from "./neo4j/findRoutes.ts";
+import { emailRouter, emailRoutes } from "./resend/emailRoutes.ts";
+import { toolRouter, toolRoutes } from "./neo4j/toolRoutes.ts";
+import { writeRouter, writeRoutes } from "./neo4j/writeRoutes.ts";
 
 const router = new Router();
 
@@ -16,11 +16,9 @@ const router = new Router();
 const registeredRoutes: string[] = [];
 const registerRoutes = (prefix: string, subRouter: Subrouter) => {
   subRouter.routes.forEach((route) => {
-    console.groupCollapsed(`${route} -->`);
+    console.info(`${route} -->`);
     registeredRoutes.push(`${prefix}${route}`)
     console.log(`--> ${route} Done`);
-    console.groupEnd();
-    console.log(`----------------------------`);
   });
 
   router.use(
@@ -54,10 +52,9 @@ const subRouters = {
 };
 for (const [prefix, subRouter] of Object.entries(subRouters)) {
   console.group(`Registering ${prefix} routes`);
-  registerRoutes(prefix, subRouter);
-  console.log(`${prefix} routes registered`);
-  console.groupEnd();
-  console.log(`================================`);
+    registerRoutes(prefix, subRouter);
+    console.groupEnd();
+  console.info(`============================`);
 }
 
 router.get("/", (ctx) => {

@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 import { Application, Context } from "oak";
 import router from "./routes/hubRoutes.ts";
-import { nudgeDb, nudgeSched } from "utils/nudgeDb.ts";
+import { nudgeDb, nudgeSched } from "./utils/db/nudgeDb.ts";
 console.log("Imports Done");
 
 await dotenv.load({ export: true });
