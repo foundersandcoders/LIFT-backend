@@ -1,3 +1,4 @@
+import { join } from "node:path";
 import { EmailContent } from "types/emails.ts";
 
 export function generatePing(entries: string[], userName: string, managerName: string) {
@@ -15,16 +16,22 @@ export function generatePing(entries: string[], userName: string, managerName: s
 
     if (quantity >= 1) {
       content.sendable = true;
-      content.html = `<div><p>
-        Hi ${managerName},
-        <br/><br/>
-        ${userName} has shared ${article} ${noun} with you.
-        <br/><br/>
-        <ul>
-          ${entries.map(entry => `<li>${entry}</li>`).join('')}
-        </ul>
-      </p></div>`;
+      content.html = (
+        "<div><p>Hi "
+        + managerName
+        + "<br/><br/>"
+        + userName
+        + " has shared "
+        + article
+        + " "
+        + noun
+        + " with you.<br/><br/><ul>"
+        + entries.map(entry => `<li>${entry}</li>`).join('')
+        + "</ul></p></div>"
+      );
     }
+
+    console.log(`Content is a ${typeof content.html}`);
 
     console.groupEnd();
   console.info(`==============================`);

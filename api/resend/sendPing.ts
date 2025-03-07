@@ -3,7 +3,12 @@ import { buildPing } from "../../content/builders/buildPing.ts";
 
 const resendKey = Deno.env.get("RESEND_KEY");
 
-export async function sendPing (userId: number, userName: string, readerName: string, readerEmail: string): Promise<Response | Error> {
+export async function sendPing (
+  userId: number,
+  userName: string,
+  readerName: string,
+  readerEmail: string
+): Promise<Response | Error> {
   console.group(`=== Running sendPing() ===`);
     console.log(`Received (${userId}, ${userName}, ${readerName}, ${readerEmail})`);
     
@@ -25,7 +30,7 @@ export async function sendPing (userId: number, userName: string, readerName: st
             from: 'Beacons <nudger@beacons.ink>',
             to: `${readerName} <${readerEmail}>`,
             subject: `${userName} Lit a Beacon`,
-            html: content,
+            html: content.html,
           }),
         });
 
@@ -53,7 +58,7 @@ export async function sendPing (userId: number, userName: string, readerName: st
     } else {
       console.groupEnd();
       console.info(`===========================`);
-      
+
       return new Error(`Cannot send email: No entries to send`);
     }
 };

@@ -16,31 +16,32 @@ routes.push("/test");
 
 router.post("/ping", async (ctx) => {
   console.group(`=== POST("/email/ping") ===`);
-    console.group(`=== Parse Request ===`)
-      const data:EmailRequest = await ctx.request.body.json();
-      const { userId, userName, managerName, managerEmail } = data;
+    const data:EmailRequest = await ctx.request.body.json();
+    const { userId, userName, managerName, managerEmail } = data;
 
-      if ( !userId || !userName || !managerName || !managerEmail ) {
-        ctx.throw(400, "Missing required parameters")
-      } else { console.table([ /* Show Parameters */
-        {is: "userId", value: userId},
-        {is: "userName", value: userName},
-        {is: "managerName", value: managerName},
-        {is: "managerEmail", value: managerEmail}
-      ]) }
-      console.info(`=====================`);
-    console.groupEnd();
+    console.table([ /* Show Parameters */
+      {is: "userId", value: userId },
+      {is: "userName", value: userName},
+      {is: "managerName", value: managerName},
+      {is: "managerEmail", value: managerEmail}
+    ])
+
+    if ( !userName || !managerName || !managerEmail ) {
+      ctx.throw(400, "Missing required parameters")
+    }
 
     console.group(`=== Calling sendPing() ===`);
       console.log(`Sending (${userId}, ${userName}, ${managerName}, ${managerEmail})`);
       await sendPing(userId, userName, managerName, managerEmail);
-      console.info(`=======================`);
-    console.groupEnd();
+      
+      console.groupEnd();
+    console.info(`===========================`);
 
     ctx.response.status = 200;
     ctx.response.body = { success: true };
-    console.info(`===========================`);
-  console.groupEnd();
+    
+    console.groupEnd();
+  console.info(`==========================`);
 });
 routes.push("/ping");
 

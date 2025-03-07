@@ -1,11 +1,11 @@
 import neo4j, { Driver } from "neo4j";
 import { creds as c } from "utils/creds/neo4j.ts";
 
-export async function findUser(
+export async function findUserById(
   id:number,
   publicOnly: boolean = true
 ):Promise<string[]> {
-  console.group(`=== Running findUser() ===`);
+  console.group(`=== Running findUserById() ===`);
     console.log(`Received (id: ${id}, publicOnly: ${publicOnly})`);
 
     let driver: Driver | null = null, records, result;
@@ -53,6 +53,84 @@ export async function findUser(
         const object = record.get("q.name");
 
         statements.push(`${subject} ${verb} ${object}`);
+      }
+    } catch (err) {
+      console.error(`DB Get Error: ${err}`);
+    } finally {
+      console.info(`Closing Driver`);
+      await driver?.close();
+      console.info(`Driver Closed`);
+    }
+
+    console.info(`==================`);
+  console.groupEnd();
+
+  return statements;
+}
+
+export async function findUserByName(
+  name:string,
+  publicOnly: boolean = true
+):Promise<string[]> {
+  console.group(`=== Running findUserByName() ===`);
+    console.log(`Received (name: ${name}, publicOnly: ${publicOnly})`);
+
+    let driver: Driver | null = null, records, result;
+    const statements:string[] = [];
+
+    console.info(`Running try/catch`);
+    try {
+      driver = neo4j.driver(c.URI, neo4j.auth.basic(c.USER, c.PASSWORD));
+
+      console.info(`Selecting Query Type`);
+      if (name == "Piglet") {
+        console.info(`Test: Beacons for ${name}`);
+        result = await driver.executeQuery(
+          `MATCH statement =
+            (user {name: $name})-[link]-(thing)
+          RETURN statement`,
+          { name },
+          {database: 'neo4j'}
+        );
+      } else if (name && publicOnly) {
+        console.info(`Query: Public Beacons for user ${name}`);
+        result = await driver.executeQuery(
+          `MATCH statement =
+            (user {name: $name})-[link {isPublic: true}]-(thing)
+          RETURN statement`,
+          { name },
+          {database: 'neo4j'}
+        );
+      } else if (name && !publicOnly) {
+        console.info(`Query: All Beacons for user ${name}`);
+        result = await driver.executeQuery(
+          `MATCH statement =
+            (user {name: $name})-[link]-(thing)
+          RETURN statement`,
+          { name },
+          {database: 'neo4j'}
+        );
+      } else {
+        console.info(`Query: All Public Beacons`);
+        result = await driver.executeQuery(
+          `MATCH statement =
+            (user)-[link {isPublic: true}]->(thing)
+          RETURN statement
+          LIMIT 25`,
+          {},
+          {database: 'neo4j'}
+        );
+      }
+      records = result.records;
+
+      for (const record of records) {
+        console.log(record);
+        statements.push(record.get("statement"));
+        // const subject = record.get("user.name");
+        // const verb = record.get("linkype");
+        // const object = record.get("thing.name");
+
+        // statements.push(`${subject} ${verb} ${object}`);
       }
     } catch (err) {
       console.error(`DB Get Error: ${err}`);

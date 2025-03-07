@@ -1,15 +1,25 @@
-import { findUser } from "neo4jApi/find.ts";
+import { findUserById, findUserByName } from "neo4jApi/find.ts";
 import { generatePing } from "content/generators/generatePing.ts";
 
-export async function buildPing(userId: number, userName: string, managerName: string) {
+export async function buildPing(userId: number = 0, userName: string, managerName: string) {
   console.group(`=== Running buildPing() ===`);
     console.log(`Received (${userId}, ${userName}, ${managerName})`);
 
-    console.group(`=== Calling findUser() ===`);
-      console.log(`Sending (${userId}, true)`);
-      const entries = await findUser(userId, true);
-      console.groupEnd();
-    console.info(`==========================`);
+    let entries: string[] = [];
+
+    if (userId != 0) {
+      console.group(`=== Calling findUserById() ===`);
+        console.log(`Sending (${userId}, true)`);
+        entries = await findUserById(userId, true);
+        console.groupEnd();
+      console.info(`==========================`);
+    } else {
+      console.group(`=== Calling findUserByName() ===`);
+        console.log(`Sending (${userName}, true)`);
+        entries = await findUserByName(userName, true);
+        console.groupEnd();
+      console.info(`==========================`);
+    }
 
     if (entries.length > 0) {
       console.groupCollapsed(`=== Beacon Log ===`);
