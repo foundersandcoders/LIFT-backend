@@ -1,5 +1,11 @@
 import { Router } from "oak";
-import { findSubject, findObject, findVerb } from "neo4jApi/find.ts";
+import {
+  findUserById,
+  findUserByName,
+  findSubject,
+  findObject,
+  findVerb
+} from "neo4jApi/find.ts";
 
 const router = new Router();
 const routes: string[] = [];
@@ -7,15 +13,15 @@ const routes: string[] = [];
 router.get("/subject/:subject", async (ctx) => {
   try {
     const records = await findSubject(ctx.params.subject);
+
     if (!records) {
       ctx.response.status = 500;
-      ctx.response.body = {
-        error: "Failed to fetch records from the database",
-      };
+      ctx.response.body = { error: "Failed to fetch records from the database" };
       return;
+    } else {
+      ctx.response.status = 200;
+      ctx.response.body = records;
     }
-    ctx.response.status = 200;
-    ctx.response.body = records;
   } catch (error) {
     console.error("Error fetching data:", error);
     ctx.response.status = 500;

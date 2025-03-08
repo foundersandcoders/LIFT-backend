@@ -1,33 +1,35 @@
 import { Router } from "oak";
+import type * as Client from "types/language/client.ts";
+import type * as Server from "types/language/server.ts";
 import { breaker } from "utils/language/breaker.ts";
-import { write } from "neo4jApi/write.ts";
+import { writeBeacon } from "../../api/neo4j/writeBeacon.ts";
 
 const router = new Router();
 const routes: string[] = [];
 
+// TODO: pass the invidiual Atoms to the breaker instead of the whole statement
 router.post("/beacon", async (ctx) => {
   try {
-    const body = await ctx.request.body.json();
-    const e = breaker(body.statement);
-    
-    /* TODO(@AlexVOiceover)
-      Checks all input fields are passed, delete when this is handled on front end
-    */ if (!e.subject || !e.verb || !e.object) { throw new Error("Missing required fields") }
+    const body:Client.Entry = await ctx.request.body.json();
 
-    console.log("Received new entry:", e);
-    ctx.response.status = 200;
-    ctx.response.body = { message: "Entry received successfully" };
+    const atoms:Server.Atoms = breaker(body);
+    const entry:Server.Entry = { ...body, atoms };
 
-    await write(e);
+    const newEntry:Server.Entry = await writeBeacon(entry);
+
+    if (newEntry.error?.isError) {
+      ctx.response.status = 400;
+      ctx.response.body = { newEntry };
+    } else {
+      ctx.response.status = 200;
+      ctx.response.body = { newEntry };
+    }
   } catch (error) {
     console.error("Error processing entry:", error);
     ctx.response.status = 400;
-    ctx.response.body = { error: "Invalid input format" };
+    ctx.response.body = {  details: error instanceof Error ? error.message : String(error) };
   }
 });
-routes.push("/write");
+routes.push("/beacon");
 
-export {
-  router as writeRouter,
-  routes as writeRoutes
-};
+export { router as writeRouter, routes as writeRoutes };

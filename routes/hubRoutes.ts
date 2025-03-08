@@ -8,15 +8,9 @@ import { writeRouter, writeRoutes } from "./neo4j/writeRoutes.ts";
 
 const router = new Router();
 
-/* Note: Registered Routes
-  This is longwinded, but...
-  We explicitly track an array of routes & subrouters
-  Then we can use `router.get("/")` to create a dynamic menu of routes
-  */
 const registeredRoutes: string[] = [];
 const registerRoutes = (prefix: string, subRouter: Subrouter) => {
   subRouter.routes.forEach((route) => {
-    console.info(`${route} -->`);
     registeredRoutes.push(`${prefix}${route}`)
     console.log(`--> ${route} Done`);
   });
@@ -50,12 +44,14 @@ const subRouters = {
     routes: writeRoutes
   },
 };
-for (const [prefix, subRouter] of Object.entries(subRouters)) {
-  console.group(`Registering ${prefix} routes`);
-    registerRoutes(prefix, subRouter);
-    console.groupEnd();
-  console.info(`============================`);
-}
+
+console.group(`=== REGISTERING ROUTES ===`);
+  for (const [prefix, subRouter] of Object.entries(subRouters)) {
+    console.group(`${prefix}`);
+      registerRoutes(prefix, subRouter);
+      console.groupEnd();
+  }
+  console.groupEnd();
 
 router.get("/", (ctx) => {
   const html = `<!DOCTYPE html>

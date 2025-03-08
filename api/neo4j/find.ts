@@ -142,11 +142,12 @@ export async function findUserByName(
 
     console.info(`==================`);
   console.groupEnd();
-
   return statements;
 }
 
-export async function findSubject(subject:string):Promise<string[]> {
+export async function findSubject(
+  subject:string
+):Promise<string[]> {
   console.log(`Subject: ${subject}`);
   let driver: Driver | null = null;
   let records;
@@ -156,26 +157,32 @@ export async function findSubject(subject:string):Promise<string[]> {
     driver = neo4j.driver(c.URI, neo4j.auth.basic(c.USER, c.PASSWORD));
 
     if (subject) {
-      const result = await driver.executeQuery(`
-        MATCH (p {name: $subject})-[r {isPublic: true}]->(q)
-        RETURN p.name, type(r) as rType, q.name
-      `, { subject }, { database: "neo4j" });
+      const result = await driver.executeQuery(
+        `MATCH
+          statement = (p {name: $subject})-[r {isPublic: true}]->()
+        RETURN statement`,
+        { subject },
+        { database: "neo4j" }
+      );
       
       records = result.records;
     } else {
-      const result = await driver.executeQuery(`
-        MATCH (p)-[r]->(q)
+      const result = await driver.executeQuery(
+        `MATCH (p)-[r]->(q)
         RETURN p, r, q
-        LIMIT 100
-      `, {}, { database: "neo4j" });
+        LIMIT 100`,
+        {},
+        { database: "neo4j" }
+      );
       records = result.records;
     }
 
     for (const record of records) {
-      const subject = record.get("p.name");
-      const verb = record.get("rType");
-      const object = record.get("q.name");
-      statements.push(`${subject} ${verb} ${object}`);
+      // const subject = record.get("statement.p.name");
+      // const verb = record.get("statement.rType");
+      // const object = record.get("statement.q.name");
+      // statements.push(`${subject} ${verb} ${object}`);
+      statements.push(record.get("statement.r"));
     }
   } catch (err) {
     console.error("Error in get function:", err);
@@ -186,7 +193,9 @@ export async function findSubject(subject:string):Promise<string[]> {
   return statements;
 }
 
-export async function findObject(object:string):Promise<string[]> {
+export async function findObject(
+  object:string
+):Promise<string[]> {
   let driver: Driver | null = null;
   let records;
   const statements:string[] = [];
@@ -215,7 +224,9 @@ export async function findObject(object:string):Promise<string[]> {
   return statements;
 }
 
-export async function findVerb(relationship:string):Promise<string[]>{
+export async function findVerb(
+  relationship:string
+):Promise<string[]>{
   let driver: Driver | null = null;
   let records;
   const statements:string[] = [];

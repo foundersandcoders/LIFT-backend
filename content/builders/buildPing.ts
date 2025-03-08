@@ -8,12 +8,14 @@ export async function buildPing(userId: number = 0, userName: string, managerNam
     let entries: string[] = [];
 
     if (userId != 0) {
+      console.log(`userId is ${userId}`);
       console.group(`=== Calling findUserById() ===`);
         console.log(`Sending (${userId}, true)`);
         entries = await findUserById(userId, true);
         console.groupEnd();
       console.info(`==========================`);
     } else {
+      console.log(`userId is ${userId}`);
       console.group(`=== Calling findUserByName() ===`);
         console.log(`Sending (${userName}, true)`);
         entries = await findUserByName(userName, true);

@@ -1,92 +1,9 @@
 import neo4j, { Driver } from "neo4j";
 import { creds } from "../../utils/creds/neo4j.ts";
 
-const data = {
-  people: [
-    {
-      name: "Alex",
-      worksFor: ["Dan"],
-      worksWith: ["Jason"],
-      species: "Human",
-      enjoys: [],
-    },
-    {
-      name: "Alphonso",
-      worksFor: ["Biela", "Islington Council"],
-      worksWith: ["Nich"],
-      species: "Human",
-      enjoys: [],
-    },
-    {
-      name: "Anna",
-      worksFor: ["Dan"],
-      worksWith: ["Jess"],
-      species: "Human",
-      enjoys: [],
-    },
-    {
-      name: "Biela",
-      worksFor: [],
-      worksWith: ["Jess"],
-      species: "Dog",
-      enjoys: [],
-    },
-    { name: "Dan", worksFor: [], worksWith: [], species: "Human", enjoys: [] },
-    {
-      name: "Harriet",
-      worksFor: [],
-      worksWith: [],
-      species: "Human",
-      enjoys: ["blanket", "treat"],
-    },
-    {
-      name: "Jack",
-      worksFor: ["Dan"],
-      worksWith: ["Max"],
-      species: "Human",
-      enjoys: [],
-    },
-    {
-      name: "Jason",
-      worksFor: ["Dan"],
-      worksWith: ["Alex"],
-      species: "Goblin",
-      enjoys: [],
-    },
-    {
-      name: "Jess",
-      worksFor: ["Dan"],
-      worksWith: ["Biela", "Anna"],
-      species: "Human",
-      enjoys: [],
-    },
-    {
-      name: "Max",
-      worksFor: ["Dan"],
-      worksWith: ["Jack"],
-      species: "Human",
-      enjoys: [],
-    },
-    {
-      name: "Nich",
-      worksFor: ["Dan"],
-      worksWith: [],
-      species: "Human",
-      enjoys: [],
-    },
-    {
-      name: "Shaughn",
-      worksFor: ["Dan"],
-      worksWith: [],
-      species: "Human",
-      enjoys: [],
-    },
-  ],
-  items: [
-    { name: "blanket" },
-    { name: "treat" },
-  ],
-};
+const data = JSON.parse(
+  await Deno.readTextFile("./data/seeds/facSeed.json"),
+);
 
 export async function seed() {
   let driver: Driver;
@@ -185,4 +102,5 @@ export async function seed() {
 
   await driver.close();
 }
+
 await seed();
