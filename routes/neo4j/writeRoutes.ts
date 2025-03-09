@@ -1,8 +1,8 @@
 import { Router } from "oak";
-import type * as Client from "types/language/client.ts";
-import type * as Server from "types/language/server.ts";
+import type * as Client from "types/input.ts";
+import type * as Server from "types/output.ts";
 import { breaker } from "utils/language/breaker.ts";
-import { writeBeacon } from "../../api/neo4j/writeBeacon.ts";
+import { writeBeacon } from "neo4jApi/writeBeacon.ts";
 
 const router = new Router();
 const routes: string[] = [];
