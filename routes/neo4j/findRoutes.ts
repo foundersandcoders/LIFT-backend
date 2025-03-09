@@ -10,6 +10,27 @@ import {
 const router = new Router();
 const routes: string[] = [];
 
+router.get("/user", async (ctx) => {
+  try {
+    const records = await findUserById(ctx.params.subject);
+
+    if (!records) {
+      ctx.response.status = 500;
+      ctx.response.body = { error: "Failed to fetch records from the database" };
+      return;
+    } else {
+      ctx.response.status = 200;
+      ctx.response.body = records;
+    }
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    ctx.response.status = 500;
+    ctx.response.body = { error: "Internal Server Error" };
+  }
+});
+routes.push("/subject/:subject");
+
+// FIXME: This is just returning the subject's name
 router.get("/subject/:subject", async (ctx) => {
   try {
     const records = await findSubject(ctx.params.subject);
