@@ -1,6 +1,6 @@
 import * as dotenv from "dotenv";
 import neo4j, { Driver } from "neo4j";
-import type * as Server from "types/language/server.ts";
+import type * as Server from "../../types/output.ts";
 
 dotenv.load({ export: true });
 

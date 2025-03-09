@@ -1,4 +1,4 @@
-// TODO: Update Client.Entry type to include authentication ID
+// WAIT: Update Client.Entry type to include authentication ID
 export interface Entry {
   id: string;
   input: string;

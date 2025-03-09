@@ -1,5 +1,5 @@
 import { Router } from "oak";
-import { Subrouter } from "../types/project.ts";
+import { Subrouter } from "../types/server.ts";
 import { getRouter, getRoutes } from "./neo4j/getRoutes.ts";
 import { findRouter, findRoutes } from "./neo4j/findRoutes.ts";
 import { emailRouter, emailRoutes } from "./resend/emailRoutes.ts";
