@@ -1,10 +1,10 @@
 import * as dotenv from "dotenv";
 import neo4j, { Driver } from "neo4j";
-import type * as Server from "../../types/output.ts";
+import type * as Server from "../../types/outputTypes.ts";
 
 dotenv.load({ export: true });
 
-// TODO: Use authentication ID for matching subject 
+// [ ] tdMd: Use authentication ID for matching subject 
 export async function writeBeacon(entry:Server.Entry): Promise<Server.Entry> {
   const URI = Deno.env.get("NEO4J_URI") ?? "";
   const USER = Deno.env.get("NEO4J_USERNAME") ?? "";

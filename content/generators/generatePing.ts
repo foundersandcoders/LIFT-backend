@@ -1,11 +1,11 @@
 import { join } from "node:path";
-import { EmailContent } from "types/emails.ts";
+import { EmailContent } from "../../types/emailTypes.ts";
 
 export function generatePing(entries: string[], userName: string, managerName: string) {
   console.group(`=== Running generatePing() ===`);
     console.log(`Received (${entries}, ${userName}, ${managerName})`);
 
-    // TODO: Turn this into a class
+    // tdIdea: Turn this into a class
     const content:EmailContent = { sendable: false, html: `` };
 
     const quantity = entries.length;

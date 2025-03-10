@@ -1,4 +1,3 @@
-// TODO: Update Server.Input type to include authentication ID
 export interface Input {
   input: string;
   isPublic: boolean;

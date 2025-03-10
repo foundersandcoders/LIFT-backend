@@ -1,14 +1,14 @@
 import { Router } from "oak";
-import type * as Client from "types/input.ts";
-import type * as Server from "types/output.ts";
+import type * as Client from "../../types/inputTypes.ts";
+import type * as Server from "../../types/outputTypes.ts";
 import { breaker } from "utils/language/breaker.ts";
 import { writeBeacon } from "neo4jApi/writeBeacon.ts";
 
 const router = new Router();
 const routes: string[] = [];
 
-// TODO: pass the invidiual Atoms to the breaker instead of the whole statement
-router.post("/beacon", async (ctx) => {
+// [ ] tdMd: pass the invidiual Atoms to the breaker instead of the whole statement
+router.post("/newBeacon", async (ctx) => {
   try {
     const body:Client.Entry = await ctx.request.body.json();
 
@@ -30,6 +30,10 @@ router.post("/beacon", async (ctx) => {
     ctx.response.body = {  details: error instanceof Error ? error.message : String(error) };
   }
 });
-routes.push("/beacon");
+
+router.post("/createUser", (ctx) => {});
+
+routes.push("/newBeacon");
+routes.push("/createUser");
 
 export { router as writeRouter, routes as writeRoutes };

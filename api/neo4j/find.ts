@@ -1,10 +1,8 @@
 import neo4j, { Driver } from "neo4j";
 import { creds as c } from "utils/creds/neo4j.ts";
 
-export async function findUserById(
-  id:number,
-  publicOnly: boolean = true
-):Promise<string[]> {
+// [ ] tdMd: I need to store Client.Atoms AND Server.Atoms
+export async function findUserById(id:number, publicOnly: boolean = true):Promise<string[]> {
   console.group(`=== Running findUserById() ===`);
     console.log(`Received (id: ${id}, publicOnly: ${publicOnly})`);
 
@@ -68,10 +66,7 @@ export async function findUserById(
   return statements;
 }
 
-export async function findUserByName(
-  name:string,
-  publicOnly: boolean = true
-):Promise<string[]> {
+export async function findUserByName(name:string, publicOnly: boolean = true):Promise<string[]> {
   console.group(`=== Running findUserByName() ===`);
     console.log(`Received (name: ${name}, publicOnly: ${publicOnly})`);
 
@@ -145,9 +140,7 @@ export async function findUserByName(
   return statements;
 }
 
-export async function findSubject(
-  subject:string
-):Promise<string[]> {
+export async function findSubject(subject:string):Promise<string[]> {
   console.log(`Subject: ${subject}`);
   let driver: Driver | null = null;
   let records;
@@ -193,9 +186,7 @@ export async function findSubject(
   return statements;
 }
 
-export async function findObject(
-  object:string
-):Promise<string[]> {
+export async function findObject(object:string):Promise<string[]> {
   let driver: Driver | null = null;
   let records;
   const statements:string[] = [];
@@ -224,9 +215,7 @@ export async function findObject(
   return statements;
 }
 
-export async function findVerb(
-  relationship:string
-):Promise<string[]>{
+export async function findVerb(relationship:string):Promise<string[]>{
   let driver: Driver | null = null;
   let records;
   const statements:string[] = [];

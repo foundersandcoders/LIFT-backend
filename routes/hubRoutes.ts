@@ -1,57 +1,38 @@
 import { Router } from "oak";
-import { Subrouter } from "../types/server.ts";
-import { getRouter, getRoutes } from "./neo4j/getRoutes.ts";
-import { findRouter, findRoutes } from "./neo4j/findRoutes.ts";
-import { emailRouter, emailRoutes } from "./resend/emailRoutes.ts";
-import { toolRouter, toolRoutes } from "./neo4j/toolRoutes.ts";
-import { writeRouter, writeRoutes } from "./neo4j/writeRoutes.ts";
+import { Subrouter } from "types/serverTypes.ts";
+import { getRouter, getRoutes } from "routes/dbRoutes/getRoutes.ts";
+import { findRouter, findRoutes } from "routes/dbRoutes/findRoutes.ts";
+import { sendRouter, sendRoutes } from "routes/emailRoutes/sendRoutes.ts";
+import { toolRouter, toolRoutes } from "routes/dbRoutes/toolRoutes.ts";
+import { writeRouter, writeRoutes } from "routes/dbRoutes/writeRoutes.ts";
 
 const router = new Router();
 
 const registeredRoutes: string[] = [];
-const registerRoutes = (prefix: string, subRouter: Subrouter) => {
-  subRouter.routes.forEach((route) => {
-    registeredRoutes.push(`${prefix}${route}`)
+const registerRoutes = (pre: string, sub: Subrouter) => {
+  sub.routes.forEach((route) => {
+    registeredRoutes.push(`${pre}${route}`)
     console.log(`--> ${route} Done`);
   });
 
   router.use(
-    prefix,
-    subRouter.router.routes(),
-    subRouter.router.allowedMethods()
+    pre,
+    sub.router.routes(),
+    sub.router.allowedMethods()
   );
 };
 
-const subRouters = {
-  "/get": {
-    router: getRouter,
-    routes: getRoutes
-  },
-  "/email": {
-    router: emailRouter,
-    routes: emailRoutes
-  },
-  "/find": {
-    router: findRouter,
-    routes: findRoutes
-  },
-  "/tool": {
-    router: toolRouter,
-    routes: toolRoutes
-  },
-  "/write": {
-    router: writeRouter,
-    routes: writeRoutes
-  },
+const subs = {
+  "/get": { router: getRouter, routes: getRoutes },
+  "/send": { router: sendRouter, routes: sendRoutes },
+  "/find": { router: findRouter, routes: findRoutes },
+  "/tool": { router: toolRouter, routes: toolRoutes },
+  "/write": { router: writeRouter, routes: writeRoutes },
 };
 
 console.group(`=== REGISTERING ROUTES ===`);
-  for (const [prefix, subRouter] of Object.entries(subRouters)) {
-    console.group(`${prefix}`);
-      registerRoutes(prefix, subRouter);
-      console.groupEnd();
-  }
-  console.groupEnd();
+  for (const [pre, sub] of Object.entries(subs)) { registerRoutes(pre, sub) };
+console.groupEnd();
 
 router.get("/", (ctx) => {
   const html = `<!DOCTYPE html>
@@ -84,9 +65,9 @@ router.get("/", (ctx) => {
 });
 
 router.use("/find", findRouter.routes());
-router.use("/email", emailRouter.routes());
 router.use("/get", getRouter.routes());
 router.use("/tool", toolRouter.routes());
 router.use("/write", writeRouter.routes());
+router.use("/send", sendRouter.routes());
 
 export default router;

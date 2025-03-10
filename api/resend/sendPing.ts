@@ -1,4 +1,4 @@
-import { EmailContent } from "../../types/emails.ts";
+import { EmailContent } from "../../types/emailTypes.ts";
 import { buildPing } from "../../content/builders/buildPing.ts";
 
 const resendKey = Deno.env.get("RESEND_KEY");

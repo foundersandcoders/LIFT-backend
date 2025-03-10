@@ -1,7 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 import nlp from "compromise";
-import { Atoms, Object, Subject, Verb } from "types/output.ts"
-import type { Entry as ClientEntry } from "types/input.ts";
+import { Atoms, Object, Subject, Verb } from "../../types/outputTypes.ts"
+import type { Entry as ClientEntry } from "../../types/inputTypes.ts";
 
 function singularise(word:string): string {
   const singular = nlp(word).nouns().toSingular().out("text");
