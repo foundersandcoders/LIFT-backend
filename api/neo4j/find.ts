@@ -67,28 +67,19 @@ export async function findUserById(id:number, publicOnly: boolean = true):Promis
 }
 
 export async function findUserByName(name:string, publicOnly: boolean = true):Promise<string[]> {
-  console.group(`=== Running findUserByName() ===`);
-    console.log(`Received (name: ${name}, publicOnly: ${publicOnly})`);
-
-    let driver: Driver | null = null, records, result;
+  console.group(`=== findUserByName(${name}, ${publicOnly}) ===`);
+    let driver:(Driver|null) = null, records, result;
     const statements:string[] = [];
 
-    console.info(`Running try/catch`);
     try {
       driver = neo4j.driver(c.URI, neo4j.auth.basic(c.USER, c.PASSWORD));
+      driver.getServerInfo();
 
-      console.info(`Selecting Query Type`);
-      if (name == "Piglet") {
-        console.info(`Test: Beacons for ${name}`);
-        result = await driver.executeQuery(
-          `MATCH statement =
-            (user {name: $name})-[link]-(thing)
-          RETURN statement`,
-          { name },
-          {database: 'neo4j'}
-        );
-      } else if (name && publicOnly) {
+      console.info(`Starting Query`);
+
+      if (name && publicOnly) {
         console.info(`Query: Public Beacons for user ${name}`);
+
         result = await driver.executeQuery(
           `MATCH statement =
             (user {name: $name})-[link {isPublic: true}]-(thing)
@@ -98,6 +89,7 @@ export async function findUserByName(name:string, publicOnly: boolean = true):Pr
         );
       } else if (name && !publicOnly) {
         console.info(`Query: All Beacons for user ${name}`);
+
         result = await driver.executeQuery(
           `MATCH statement =
             (user {name: $name})-[link]-(thing)
@@ -107,6 +99,7 @@ export async function findUserByName(name:string, publicOnly: boolean = true):Pr
         );
       } else {
         console.info(`Query: All Public Beacons`);
+
         result = await driver.executeQuery(
           `MATCH statement =
             (user)-[link {isPublic: true}]->(thing)
@@ -135,8 +128,9 @@ export async function findUserByName(name:string, publicOnly: boolean = true):Pr
       console.info(`Driver Closed`);
     }
 
-    console.info(`==================`);
   console.groupEnd();
+  console.info("========================");
+
   return statements;
 }
 

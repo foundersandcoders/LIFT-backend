@@ -1,5 +1,6 @@
 import { Router } from "oak";
 import { Search } from "types/serverTypes.ts";
+import { checkId, checkName } from "utils/checkId.ts";
 import {
   findUserById,
   findUserByName,
@@ -12,36 +13,19 @@ const router = new Router();
 const routes: string[] = [];
 
 router.post("/user", async (ctx) => {
+  console.groupCollapsed("=== POST /find/user ===");
   try {
     const body = ctx.request.body;
-    console.groupCollapsed("Body");
-      console.log(body);
-    console.groupEnd();
-
     const bodyJson = await body.json();
-    console.groupCollapsed("Body JSON");
-      console.log(bodyJson);
-    console.groupEnd();
 
-    let records:string[] = [];
-    console.groupCollapsed("Records");
-      console.log(records);
-    console.groupEnd();
-
-    const search:Search = {
-      public: true,
-      type: "init",
-      id: parseInt(bodyJson.id) ?? -1,
-      name: bodyJson.name ?? ""
-    }
-    console.groupCollapsed("Search Object: Init");
-      console.log(search);
-    console.groupEnd();
+    const id:number = checkId(bodyJson.id);
+    const name:string = checkName(bodyJson.name);
+    const search = new Search(true, "init", id, name);
 
     if (search.id != -1) {
       search.type = "id";
       // [ ] tdWait: Change this once auth is implemented
-      search.public = false;
+      search.publicOnly = false;
     } else if (search.name != "") {
       search.type = "name";
       search.name = bodyJson.name;
@@ -54,6 +38,7 @@ router.post("/user", async (ctx) => {
     console.groupEnd();
 
     // [ ] tdWait: This should check for and pass the authentication ID
+    let records:string[] = [];
     switch (search.type) {
       case "id": {
         records = await findUserById(search.id, search.public);
@@ -65,27 +50,22 @@ router.post("/user", async (ctx) => {
       }
       case "error": {
         ctx.response.status = 400;
-        ctx.response.body = {
-          error: "No user ID or name provided"
-        };
+        ctx.response.body = { error: "No user ID or name provided" };
         break;
       }
       default: {
         ctx.response.status = 500;
-        ctx.response.body = {
-          error: "Unhandled request type"
-        };
+        ctx.response.body = { error: "Unhandled request type" };
         break;
       }
     }
 
     if (records.length === 0) {
+      console.info("No records found");
       ctx.response.status = 200;
-      ctx.response.body = { 
-        message: "No records found"
-      };
-      return;
+      ctx.response.body = { message: "No records found" };
     } else {
+      console.info("Records found");
       ctx.response.status = 200;
       ctx.response.body = records;
     }
@@ -94,6 +74,8 @@ router.post("/user", async (ctx) => {
     ctx.response.status = 500;
     ctx.response.body = { error: "Internal Server Error" };
   }
+  console.groupEnd();
+  console.info("=======================");
 });
 
 // [ ] tdFix: This is just returning the subject's name

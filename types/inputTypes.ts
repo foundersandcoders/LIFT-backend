@@ -1,4 +1,3 @@
-// [ ] tdWait: Update Client.Entry type to include authentication ID
 export interface Entry {
   id: string;
   input: string;

@@ -11,9 +11,16 @@ export interface DBCreds {
   PASSWORD:string;
 }
 
-export interface Search {
-  public:boolean;
-  type:string;
-  id:number;
-  name:string;
+export class Search {
+  publicOnly: boolean;
+  type: string;
+  id: number;
+  name: string;
+
+  constructor(publicOnly: boolean, type: string, id: number, name: string) {
+    this.publicOnly = publicOnly;
+    this.type = type;
+    this.id = id;
+    this.name = name;
+  }
 }
