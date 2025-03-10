@@ -1,7 +1,7 @@
 export function checkId(id:string):number {
-  return isNaN(parseInt(id)) ? -1 : parseInt(id);
-}
-
-export function checkName(name:string):string {
-  return name ?? "";
+  console.groupCollapsed(`=== checkId(${id}) ===`);
+  const newId = isNaN(parseInt(id)) ? -1 : parseInt(id);
+  console.log(`newId: ${newId}`);
+  console.groupEnd();
+  return newId;
 }

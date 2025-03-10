@@ -68,44 +68,26 @@ export async function findUserById(id:number, publicOnly: boolean = true):Promis
 
 export async function findUserByName(name:string, publicOnly: boolean = true):Promise<string[]> {
   console.group(`=== findUserByName(${name}, ${publicOnly}) ===`);
-    let driver:(Driver|null) = null, records, result;
+    let driver:(Driver|null) = null // [ ] tdCheck: What's the type of driver??
+    let records, result;
     const statements:string[] = [];
 
     try {
       driver = neo4j.driver(c.URI, neo4j.auth.basic(c.USER, c.PASSWORD));
-      driver.getServerInfo();
-
-      console.info(`Starting Query`);
+      await driver.getServerInfo();
 
       if (name && publicOnly) {
-        console.info(`Query: Public Beacons for user ${name}`);
-
         result = await driver.executeQuery(
-          `MATCH statement =
-            (user {name: $name})-[link {isPublic: true}]-(thing)
-          RETURN statement`,
+          `MATCH (s {name: $name})-[v {isPublic: true}]-(o)
+          RETURN v`,
           { name },
           {database: 'neo4j'}
         );
       } else if (name && !publicOnly) {
-        console.info(`Query: All Beacons for user ${name}`);
-
         result = await driver.executeQuery(
-          `MATCH statement =
-            (user {name: $name})-[link]-(thing)
-          RETURN statement`,
+          `MATCH (s {name: $name})-[v]-(o)
+          RETURN v`,
           { name },
-          {database: 'neo4j'}
-        );
-      } else {
-        console.info(`Query: All Public Beacons`);
-
-        result = await driver.executeQuery(
-          `MATCH statement =
-            (user)-[link {isPublic: true}]->(thing)
-          RETURN statement
-          LIMIT 25`,
-          {},
           {database: 'neo4j'}
         );
       }
@@ -113,15 +95,10 @@ export async function findUserByName(name:string, publicOnly: boolean = true):Pr
 
       for (const record of records) {
         console.log(record);
-        statements.push(record.get("statement"));
-        // const subject = record.get("user.name");
-        // const verb = record.get("linkype");
-        // const object = record.get("thing.name");
-
-        // statements.push(`${subject} ${verb} ${object}`);
+        statements.push(record.get("v"));
       }
     } catch (err) {
-      console.error(`DB Get Error: ${err}`);
+      console.error(`Neo4j Error: ${err}`);
     } finally {
       console.info(`Closing Driver`);
       await driver?.close();

@@ -1,5 +1,6 @@
 import { Router } from "oak";
 import { Subrouter } from "types/serverTypes.ts";
+import { editRouter, editRoutes } from "routes/dbRoutes/editRoutes.ts";
 import { getRouter, getRoutes } from "routes/dbRoutes/getRoutes.ts";
 import { findRouter, findRoutes } from "routes/dbRoutes/findRoutes.ts";
 import { sendRouter, sendRoutes } from "routes/emailRoutes/sendRoutes.ts";
@@ -7,25 +8,30 @@ import { toolRouter, toolRoutes } from "routes/dbRoutes/toolRoutes.ts";
 import { writeRouter, writeRoutes } from "routes/dbRoutes/writeRoutes.ts";
 
 const router = new Router();
-
 const registeredRoutes: string[] = [];
 const registerRoutes = (pre: string, sub: Subrouter) => {
+  const registeredSubs:string[] = [];
+
   sub.routes.forEach((route) => {
-    registeredRoutes.push(`${pre}${route}`)
-    console.log(`--> ${route} Done`);
+    registeredSubs.push(`${pre}${route}`);
+    console.log(`---${pre}${route}-->`);
   });
 
-  router.use(
-    pre,
-    sub.router.routes(),
-    sub.router.allowedMethods()
-  );
+  if (registeredSubs.length == 0) {
+    console.log(`No routes found for ${pre}`);  
+  } else {
+    registeredSubs.forEach((sub) => { registeredRoutes.push(sub) });
+  }
+  console.log(`----------------------------`);
+
+  router.use(pre, sub.router.routes(), sub.router.allowedMethods());
 };
 
 const subs = {
   "/get": { router: getRouter, routes: getRoutes },
-  "/send": { router: sendRouter, routes: sendRoutes },
+  "/edit": { router: editRouter, routes: editRoutes },
   "/find": { router: findRouter, routes: findRoutes },
+  "/send": { router: sendRouter, routes: sendRoutes },
   "/tool": { router: toolRouter, routes: toolRoutes },
   "/write": { router: writeRouter, routes: writeRoutes },
 };

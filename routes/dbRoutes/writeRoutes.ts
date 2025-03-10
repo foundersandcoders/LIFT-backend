@@ -1,6 +1,6 @@
 import { Router } from "oak";
-import type * as Client from "../../types/inputTypes.ts";
-import type * as Server from "../../types/outputTypes.ts";
+import type * as Client from "types/inputTypes.ts";
+import type * as Server from "types/outputTypes.ts";
 import { breaker } from "utils/language/breaker.ts";
 import { writeBeacon } from "neo4jApi/writeBeacon.ts";
 
@@ -12,8 +12,15 @@ router.post("/newBeacon", async (ctx) => {
   try {
     const body:Client.Entry = await ctx.request.body.json();
 
-    const atoms:Server.Atoms = breaker(body);
-    const entry:Server.Entry = { ...body, atoms };
+    const serverAtoms:Server.Atoms = breaker(body);
+    const entry:Server.Entry = {
+      ...body,
+      atoms: {
+        client: body.atoms,
+        server: serverAtoms
+      },
+      actions: []
+    };
 
     const newEntry:Server.Entry = await writeBeacon(entry);
 
@@ -27,7 +34,9 @@ router.post("/newBeacon", async (ctx) => {
   } catch (error) {
     console.error("Error processing entry:", error);
     ctx.response.status = 400;
-    ctx.response.body = {  details: error instanceof Error ? error.message : String(error) };
+    ctx.response.body = {
+      details: error instanceof Error ? error.message : String(error)
+    };
   }
 });
 

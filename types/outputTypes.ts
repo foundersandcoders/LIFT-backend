@@ -1,15 +1,25 @@
+import type * as Client from "types/inputTypes.ts";
 // [ ] tdWait: Update Server.Input type to include authentication ID
 export interface Input {
   input: string;
   isPublic: boolean;
-  atoms: Atoms;
+  atoms: Client.Atoms;
   category: string;
   presetId?: string;
   isResolved?: boolean;
 }
 
-export interface Entry extends Input {
+export interface Entry {
   id: string;
+  input: string;
+  isPublic: boolean;
+  atoms: {
+    client: Client.Atoms;
+    server: Atoms;
+  };
+  category: string;
+  presetId?: string;
+  isResolved?: boolean;
   actions?: Action[];
   error?: {
     isError: boolean;

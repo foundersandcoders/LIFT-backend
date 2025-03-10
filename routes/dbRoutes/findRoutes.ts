@@ -1,6 +1,7 @@
 import { Router } from "oak";
 import { Search } from "types/serverTypes.ts";
-import { checkId, checkName } from "utils/checkId.ts";
+import { checkId } from "utils/checkId.ts";
+import { checkName } from "utils/checkName.ts";
 import {
   findUserById,
   findUserByName,
@@ -20,32 +21,29 @@ router.post("/user", async (ctx) => {
 
     const id:number = checkId(bodyJson.id);
     const name:string = checkName(bodyJson.name);
-    const search = new Search(true, "init", id, name);
+    const publicOnly:boolean = bodyJson.publicOnly;
+
+    const search = new Search(publicOnly, "init", id, name);
 
     if (search.id != -1) {
       search.type = "id";
-      // [ ] tdWait: Change this once auth is implemented
-      search.publicOnly = false;
     } else if (search.name != "") {
       search.type = "name";
-      search.name = bodyJson.name;
     } else {
       search.type = "error";
     }
 
-    console.groupCollapsed("Search Object: Input Type");
-      console.log(search);
-    console.groupEnd();
+    console.log(search);
 
     // [ ] tdWait: This should check for and pass the authentication ID
     let records:string[] = [];
     switch (search.type) {
       case "id": {
-        records = await findUserById(search.id, search.public);
+        records = await findUserById(search.id, search.publicOnly);
         break; 
       }
       case "name": {
-        records = await findUserByName(search.name, search.public);
+        records = await findUserByName(search.name, search.publicOnly);
         break;
       }
       case "error": {
@@ -59,16 +57,10 @@ router.post("/user", async (ctx) => {
         break;
       }
     }
+    console.log(`${records.length} records found`);
 
-    if (records.length === 0) {
-      console.info("No records found");
-      ctx.response.status = 200;
-      ctx.response.body = { message: "No records found" };
-    } else {
-      console.info("Records found");
-      ctx.response.status = 200;
-      ctx.response.body = records;
-    }
+    ctx.response.status = 200;
+    ctx.response.body = records;
   } catch (error) {
     console.error("Error fetching data:", error);
     ctx.response.status = 500;
