@@ -9,12 +9,12 @@ import { writeRouter, writeRoutes } from "routes/dbRoutes/writeRoutes.ts";
 
 const router = new Router();
 const registeredRoutes: string[] = [];
+
 const registerRoutes = (pre: string, sub: Subrouter) => {
   const registeredSubs:string[] = [];
 
   sub.routes.forEach((route) => {
     registeredSubs.push(`${pre}${route}`);
-    console.log(`---${pre}${route}-->`);
   });
 
   if (registeredSubs.length == 0) {
@@ -22,9 +22,12 @@ const registerRoutes = (pre: string, sub: Subrouter) => {
   } else {
     registeredSubs.forEach((sub) => { registeredRoutes.push(sub) });
   }
-  console.log(`----------------------------`);
 
-  router.use(pre, sub.router.routes(), sub.router.allowedMethods());
+  router.use(
+    pre,
+    sub.router.routes(),
+    sub.router.allowedMethods()
+  );
 };
 
 const subs = {
@@ -36,9 +39,9 @@ const subs = {
   "/write": { router: writeRouter, routes: writeRoutes },
 };
 
-console.group(`=== REGISTERING ROUTES ===`);
-  for (const [pre, sub] of Object.entries(subs)) { registerRoutes(pre, sub) };
-console.groupEnd();
+for (const [pre, sub] of Object.entries(subs)) {
+  registerRoutes(pre, sub)
+};
 
 router.get("/", (ctx) => {
   const html = `<!DOCTYPE html>

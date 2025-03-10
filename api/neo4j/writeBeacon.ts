@@ -1,12 +1,13 @@
 import * as dotenv from "dotenv";
 import neo4j, { Driver } from "neo4j";
-import type * as Server from "../../types/outputTypes.ts";
+import type * as Server from "types/outputTypes.ts";
 import { creds as c } from "utils/creds/neo4j.ts";
 
 dotenv.load({ export: true });
 
-// [ ] tdMd: Use authentication ID for matching subject 
-export async function writeBeacon(entry:Server.Entry)/* : Promise<Server.Entry> */ {
+export async function writeBeacon(
+  entry: Server.Entry
+)/* : Promise<Server.Entry> */ {
   console.group(`writeBeacon(${entry.input})`);
   let driver: Driver;
   let newEntry/* :Server.Entry */;
@@ -16,42 +17,50 @@ export async function writeBeacon(entry:Server.Entry)/* : Promise<Server.Entry> 
   const verbTerms:string[] = entry.atoms.server.verb.head;
 
   try {
-    driver = neo4j.driver(c.URI, neo4j.auth.basic(c.USER, c.PASSWORD));
+    // tdLo: use creds
+    driver = neo4j.driver(
+      c.URI,
+      neo4j.auth.basic(
+        c.USER,
+        c.PASSWORD
+      )
+    );
     await driver.getServerInfo();
 
-    await driver.executeQuery( // note: Subject 
+    // =1 Node Queries
+    /* Subject Query */ await driver.executeQuery(
+      // [ ] tdMd: Use authentication ID for matching subject 
       `MERGE (subject {name: $name})`,
       { name: subjectTerms[0] },
       { database: "neo4j" },
     );
   
-    await driver.executeQuery( // note: Object 
+    /* Object Query */ await driver.executeQuery(
       `MERGE (object:Person {name: $name})`,
       { name: objectTerms[0] },
       { database: "neo4j" },
     );
   
+    // =1 Edge Queries
+    /* Verb Props */
     const verbProps = {
       input: entry.input,
       isPublic: entry.isPublic,
       category: entry.category,
-      atoms: {
-        client: entry.atoms.client,
-        server: entry.atoms.server
-      },
+      atoms: {},
       presetId: entry.presetId,
       isResolved: entry.isResolved,
       actions: []
     };
-  
+    /* Verb Query Builder */
     const query =`
       MATCH (s {name: $subject})
       MATCH (o {name: $object})
-      MERGE (s)-[v :\`${verbTerms[0]}\`]->(o)
+      MERGE (s)-[v :\`${verbTerms[0]} \`]->(o)
       SET v = $verbProps
       RETURN v
     `;
-  
+    /* Verb Query */
     const result = await driver.executeQuery(
       query,
       {
@@ -72,7 +81,7 @@ export async function writeBeacon(entry:Server.Entry)/* : Promise<Server.Entry> 
       { database: "neo4j" },
     );
   
-    // note: Build New Entry
+    // =1 Build New Entry
     newEntry = {
       statement: result.records[0].get("v"),
       /* ...entry, */

@@ -1,8 +1,10 @@
 import neo4j, { Driver } from "neo4j";
 import { creds as c } from "utils/creds/neo4j.ts";
 
-// [ ] tdMd: I need to store Client.Atoms AND Server.Atoms
-export async function findUserById(id:number, publicOnly: boolean = true):Promise<string[]> {
+export async function findUserById(
+  id: number,
+  publicOnly: boolean = true
+):Promise<string[]> {
   console.group(`=== Running findUserById() ===`);
     console.log(`Received (id: ${id}, publicOnly: ${publicOnly})`);
 
@@ -14,6 +16,7 @@ export async function findUserById(id:number, publicOnly: boolean = true):Promis
       driver = neo4j.driver(c.URI, neo4j.auth.basic(c.USER, c.PASSWORD));
 
       console.info(`Selecting Query Type`);
+      
       if (id && publicOnly) {
         console.info(`Query: Public Beacons for user #${id}`);
         result = await driver.executeQuery(
@@ -66,7 +69,10 @@ export async function findUserById(id:number, publicOnly: boolean = true):Promis
   return statements;
 }
 
-export async function findUserByName(name:string, publicOnly: boolean = true):Promise<string[]> {
+export async function findUserByName(
+  name: string,
+  publicOnly: boolean = true
+): Promise<string[]> {
   console.group(`=== findUserByName(${name}, ${publicOnly}) ===`);
     let driver:(Driver|null) = null // [ ] tdCheck: What's the type of driver??
     let records, result;
@@ -111,7 +117,12 @@ export async function findUserByName(name:string, publicOnly: boolean = true):Pr
   return statements;
 }
 
-export async function findSubject(subject:string):Promise<string[]> {
+// [ ] tdMd: store Client.Atoms
+// [ ] tdMd: store Server.Atoms
+
+export async function findSubject(
+  subject: string
+):Promise<string[]> {
   console.log(`Subject: ${subject}`);
   let driver: Driver | null = null;
   let records;
@@ -157,7 +168,9 @@ export async function findSubject(subject:string):Promise<string[]> {
   return statements;
 }
 
-export async function findObject(object:string):Promise<string[]> {
+export async function findObject(
+  object: string
+): Promise<string[]> {
   let driver: Driver | null = null;
   let records;
   const statements:string[] = [];
@@ -186,7 +199,9 @@ export async function findObject(object:string):Promise<string[]> {
   return statements;
 }
 
-export async function findVerb(relationship:string):Promise<string[]>{
+export async function findVerb(
+  relationship: string
+): Promise<string[]>{
   let driver: Driver | null = null;
   let records;
   const statements:string[] = [];

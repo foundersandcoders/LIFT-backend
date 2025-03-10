@@ -1,12 +1,13 @@
 export interface Entry {
   id: string;
-  input: string;
-  isPublic: boolean;
-  atoms: Atoms;
-  actions?: Action[];
-  category: string;
   presetId?: string;
-  isResolved?: boolean;
+  input: string;
+  atoms: Atoms;
+  isPublic: boolean;
+  isArchived: boolean;
+  isSnoozed: boolean;
+  category: string;
+  actions?: Action[];
 }
 
 export interface Atoms {
@@ -21,7 +22,7 @@ export interface Action {
   creationDate: string;
   byDate: string;
   action: string;
-  completed: boolean;
+  isResolved: boolean;
 }
 
 export interface Category {

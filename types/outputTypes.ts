@@ -1,12 +1,14 @@
 import type * as Client from "types/inputTypes.ts";
-// [ ] tdWait: Update Server.Input type to include authentication ID
+
 export interface Input {
+  // [ ] tdWait: Update Server.Input type to include authentication ID
   input: string;
   isPublic: boolean;
   atoms: Client.Atoms;
   category: string;
   presetId?: string;
-  isResolved?: boolean;
+  isArchived: boolean;
+  isSnoozed: boolean;
 }
 
 export interface Entry {
@@ -19,7 +21,8 @@ export interface Entry {
   };
   category: string;
   presetId?: string;
-  isResolved?: boolean;
+  isArchived: boolean;
+  isSnoozed: boolean;
   actions?: Action[];
   error?: {
     isError: boolean;
@@ -61,5 +64,5 @@ export interface Action {
   creationDate: string;
   byDate: string;
   action: string;
-  completed: boolean;
+  isResolved: boolean;
 }

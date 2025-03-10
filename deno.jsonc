@@ -73,6 +73,7 @@
     "semiColons": true,
     "singleQuote": false,
     "proseWrap": "preserve",
+    // tdLo: Deno Format rules ({ "markdown": { "wordWrap": "on" }})
     "include": [],
     "exclude": [
       "./deno.jsonc",

@@ -1,6 +1,8 @@
 import { Router } from "oak";
-import type * as Client from "types/inputTypes.ts";
-import type * as Server from "types/outputTypes.ts";
+// import type * as Client from "types/inputTypes.ts";
+// import type * as Server from "types/outputTypes.ts";
+import type { Entry as ClientEntry, Atoms as ClientAtoms } from "types/inputTypes.ts";
+import type { Entry as ServerEntry, Atoms as ServerAtoms } from "types/outputTypes.ts";
 import { breaker } from "utils/language/breaker.ts";
 import { writeBeacon } from "neo4jApi/writeBeacon.ts";
 
@@ -9,11 +11,13 @@ const routes: string[] = [];
 
 // [ ] tdMd: pass the invidiual Atoms to the breaker instead of the whole statement
 router.post("/newBeacon", async (ctx) => {
+  console.groupCollapsed(`=== POST: /write/newBeacon ===`);
   try {
-    const body:Client.Entry = await ctx.request.body.json();
+    const body:ClientEntry = await ctx.request.body.json();
+    console.log(`body.input: ${body.input}`);
 
-    const serverAtoms:Server.Atoms = breaker(body);
-    const entry:Server.Entry = {
+    const serverAtoms:ServerAtoms = breaker(body);
+    const entry:ServerEntry = {
       ...body,
       atoms: {
         client: body.atoms,
@@ -22,12 +26,15 @@ router.post("/newBeacon", async (ctx) => {
       actions: []
     };
 
-    const newEntry:Server.Entry = await writeBeacon(entry);
+    // [ ] tdHi: Reinstate the type for newEntry
+    const newEntry/* :ServerEntry */ = await writeBeacon(entry);
 
     if (newEntry.error?.isError) {
+      console.log("Error Creating Beacon");
       ctx.response.status = 400;
       ctx.response.body = { newEntry };
     } else {
+      console.log("Beacon Created");
       ctx.response.status = 200;
       ctx.response.body = { newEntry };
     }
@@ -38,9 +45,13 @@ router.post("/newBeacon", async (ctx) => {
       details: error instanceof Error ? error.message : String(error)
     };
   }
+  
+  console.groupEnd();
 });
 
-router.post("/createUser", (ctx) => {});
+router.post("/createUser", (ctx) => {
+  console.log("Not Implemented");
+});
 
 routes.push("/newBeacon");
 routes.push("/createUser");
