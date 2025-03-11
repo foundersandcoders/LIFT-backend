@@ -1,4 +1,4 @@
-import * as who from "../../data/address.json" with { type: "json" };
+import * as who from "../../data/contacts/facTeam.json" with { type: "json" };
 
 const resendKey = Deno.env.get("RESEND_KEY");
 

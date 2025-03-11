@@ -1,5 +1,5 @@
 import { Router } from "oak";
-import { getNouns, getVerbs } from "db/get.ts";
+import { getNouns, getVerbs } from "neo4jApi/get.ts";
 
 const router = new Router();
 const routes: string[] = [];

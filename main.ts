@@ -1,20 +1,12 @@
 import * as dotenv from "dotenv";
 import { Application, Context } from "oak";
 import router from "./routes/hubRoutes.ts";
-import { nudgeDb, nudgeSched } from "utils/nudgeDb.ts";
-console.log("Imports Done");
+import { nudgeDb, nudgeSched } from "./utils/db/nudgeDb.ts";
 
 await dotenv.load({ export: true });
-console.log("dotenv loaded");
-
 const port = parseInt(Deno.env.get("PORT") ?? "8080");
-console.log(`Port parsed: ${port}`);
-
 const app = new Application();
-console.log("App created");
 
-
-// == CORS
 async function customCors(
   ctx: Context,
   next: () => Promise<unknown>
@@ -49,15 +41,14 @@ async function customCors(
 }
 app.use(customCors);
 
-// = Router
 app.use(router.routes());
 app.use(router.allowedMethods());
 
 app.listen({ port });
-console.log(`Server running on port ${port}`);
 
-// = Scheduled Jobs
-Deno.cron("Keep the DB awake",
-  nudgeSched,
-  nudgeDb
-);
+console.log(`============================`);
+console.log(`== WELCOME = TO = BEACONS ==`);
+console.log(`======== Port ${port} =========`);
+
+Deno.cron("Keep the DB awake", nudgeSched, nudgeDb);
+
