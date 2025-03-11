@@ -44,27 +44,23 @@ function extractNounDescriptors(phrase: string, head: string): string[] {
   console.groupCollapsed(`=== extractNounDescriptors(${phrase}, ${head}) ===`);
   const doc = nlp(phrase);
   
-  console.groupCollapsed(`=== ADJECTIVES ===`);
   const adjectives: string[] = doc.adjectives().out("array");
-  console.log(`adjectives: ${adjectives}`);
-  console.groupEnd();
+  if (adjectives.length) console.log(`adjectives: ${adjectives}`);
 
-  console.groupCollapsed(`=== PREP PHRASES ===`);
   const prepPhrases: string[] = doc.match("#Preposition+ #Noun+").out("array");
-  console.log(`prepPhrases: ${prepPhrases}`);
-  console.groupEnd();
-  
-  console.groupCollapsed(`=== VERB MODIFIERS ===`);
-  const verbModifiers:string[] = doc.match("#Verb+ #ProperNoun+").out("array");
-  console.log(`verbModifiers: ${verbModifiers}`);
-  console.groupEnd();
+  if (prepPhrases.length) console.log(`prepPhrases: ${prepPhrases}`);
 
-  console.groupCollapsed(`=== FILTERED ADJECTIVES ===`);
+  const verbModifiers:string[] = doc.match("#Verb+ #ProperNoun+").out("array");
+  if (verbModifiers.length) console.log(`verbModifiers: ${verbModifiers}`);
+
   const filteredAdjectives:string[] = adjectives.filter((adj: string) =>
     adj.toLowerCase() !== head.toLowerCase()
   );
-  console.log(`filteredAdjectives: ${filteredAdjectives}`);
-  console.groupEnd();
+  if (filteredAdjectives.length) console.log(`filteredAdjectives: ${filteredAdjectives}`);
+
+  if (!filteredAdjectives.length && !prepPhrases.length && !verbModifiers.length) {
+    console.log("No descriptors found");
+  }
 
   console.groupEnd();
   return [
@@ -96,10 +92,8 @@ function parseNounPhrase(phrase: string): ServerSubject | ServerObject {
   console.groupCollapsed(`=== parseNounPhrase(${phrase}) ===`);
   const doc = nlp(phrase);
 
-  console.groupCollapsed(`=== WORDS ===`);
   const words = phrase.trim().split(/\s+/);
   console.log(`words: ${words}`);
-  console.groupEnd();
   
   let article: string | null = null;
   if (words.length && isArticle(words[0])) {
@@ -170,18 +164,16 @@ function parseVerbPhrase(phrase: string): ServerVerb {
 }
 
 export function breaker(entry: ClientEntry): ServerAtoms {
-  console.groupCollapsed(`=== breaker(${entry}) ===`);
+  console.groupCollapsed(`=== breaker(${entry.input}) ===`);
 
   const doc: any = nlp(entry.input);  
   const termData: any = doc.terms().data();
   
   console.groupCollapsed("=== TERM TAGS ===");
+  // [ ] tdLo: enfore the noun tag in the subject atom
   for (const termDatum of termData) {
-    console.groupCollapsed(`=== ${termDatum.text} ===`);
     const tags: string[] = termDatum.terms[0].tags;
-    console.log(tags);
-    for (const tag of tags) { console.log(tag) };
-    console.groupEnd();
+    console.log(`${termDatum.text}: ${tags}`);
   }
   console.groupEnd();
 
@@ -209,6 +201,7 @@ export function breaker(entry: ClientEntry): ServerAtoms {
         };
       }
       verbIndex = i;
+      console.log(`verbIndex: ${verbIndex}`);
       break;
     }
   }
@@ -220,7 +213,6 @@ export function breaker(entry: ClientEntry): ServerAtoms {
   };
 
   console.groupCollapsed(`=== TERMS ===`);
-  console.groupCollapsed("=== TERMS: SUBJECT ===");
   const subjectTerms: string[] = termData.slice(0, subjectEndIndex).map((t: any) => {
     if (!t.terms[0].tags.includes("Auxiliary")) {
       console.log(`${t.text} is not auxiliary`);
@@ -232,9 +224,7 @@ export function breaker(entry: ClientEntry): ServerAtoms {
   }).filter(Boolean);
   const subjectPhrase:string = subjectTerms.join(" ");
   console.log(`subjectPhrase: ${subjectPhrase}`);
-  console.groupEnd();
 
-  console.groupCollapsed("=== TERMS: VERB ===");
   const verbTerms: string[] = [];
   for (let i: number = subjectEndIndex; i < verbIndex; i++) {
     console.groupCollapsed(termData[i].text);
@@ -255,9 +245,7 @@ export function breaker(entry: ClientEntry): ServerAtoms {
   }
   let verbPhrase: string = verbTerms.join(" ");
   console.log(`verbPhrase: ${verbPhrase}`);
-  console.groupEnd();
 
-  console.groupCollapsed("=== TERMS: OBJECT ===");
   const objectTerms:string[] = termData.slice(i).map((t: any) => t.text);
   if (objectTerms.length > 0) {
     const lastToken = termData[termData.length - 1];
@@ -267,8 +255,6 @@ export function breaker(entry: ClientEntry): ServerAtoms {
   }
   const objectPhrase:string = objectTerms.join(" ");
   console.log(`objectPhrase: ${objectPhrase}`);
-  console.groupEnd();
-  
   console.groupEnd();
 
   console.groupCollapsed("=== PARSER FUNCTIONS ==="); 

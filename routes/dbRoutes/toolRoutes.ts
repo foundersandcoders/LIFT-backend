@@ -1,5 +1,5 @@
 import { Router } from "oak";
-import { reset } from "api/neo4j/reset.ts";
+import { reset } from "neo4jApi/reset.ts";
 
 const router = new Router();
 const routes: string[] = [];

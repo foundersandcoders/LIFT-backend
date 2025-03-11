@@ -1,21 +1,19 @@
 import * as dotenv from "dotenv";
 import { Application, Context } from "oak";
-import router from "./routes/hubRoutes.ts";
-import { nudgeDb, nudgeSched } from "./utils/db/nudgeDb.ts";
+import router from "routes/hubRoutes.ts";
+import { nudgeDb, nudgeSched } from "utils/db/nudgeDb.ts";
 
 await dotenv.load({ export: true });
 const port = parseInt(Deno.env.get("PORT") ?? "8080");
 const app = new Application();
 
-async function customCors(
-  ctx: Context,
-  next: () => Promise<unknown>
-) {
-  const allowedOrigin = Deno.env.get("FRONTEND_ORIGIN") || "*"; /*
-    Retrieve the allowed origin from the environment.
+async function customCors(ctx: Context, next: () => Promise<unknown>) {
+  const allowedOrigin = Deno.env.get("FRONTEND_ORIGIN") || "*";
+  /* Retrieve the allowed origin from the environment.
     In production, FRONTEND_ORIGIN will be set (e.g., "https://lift-backend.deno.dev/").
     In development, it will default to "*" if not provided.
-  */ console.log(`Allowed Origin ${allowedOrigin}`);
+  */
+  console.log(`Allowed Origin ${allowedOrigin}`);
 
   ctx.response.headers.set(
     "Access-Control-Allow-Origin",
