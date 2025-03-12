@@ -9,11 +9,13 @@ export interface Input {
   presetId?: string;
   isArchived: boolean;
   isSnoozed: boolean;
+  actions?: Client.Action[];
 }
 
 export interface Entry {
   id: string;
   input: string;
+  name: string;
   isPublic: boolean;
   atoms: {
     client: Client.Atoms;
@@ -26,7 +28,7 @@ export interface Entry {
   actions?: Action[];
   error?: {
     isError: boolean;
-    errorCause: string;
+    errorCause: string|unknown;
   }
 }
 

@@ -5,35 +5,23 @@ import { creds as c } from "utils/creds/neo4j.ts";
 
 dotenv.load({ export: true });
 
-export async function writeBeacon(entry: ServerEntry)/* : Promise<ServerEntry> */ {
-  console.groupCollapsed(`=== writeBeacon(${entry.input}) ===`);
-  let driver: Driver;
-  let newEntry/* :ServerEntry */;
-    
-  const subjectTerms:string[] = entry.atoms.server.subject.head;
-  const objectTerms:string[] = entry.atoms.server.object.head;
-  const verbTerms:string[] = entry.atoms.server.verb.head;
+export async function writeBeacon(entry:ServerEntry):Promise<ServerEntry> {
+  console.groupCollapsed(`=== FUNCTION writeBeacon(${entry.input}) ===`);
+  console.log(`Statement Received: ${entry.input}`);
+
+  let driver:Driver|null = null;
+  let newEntry:ServerEntry;
 
   try {
+    console.groupCollapsed(`=== Driver ===`);
     driver = neo4j.driver(c.URI, neo4j.auth.basic(c.USER, c.PASSWORD));
-    await driver.getServerInfo();
+    console.log("Driver created");
+    const serverInfo = await driver.getServerInfo();
+    console.log(serverInfo);
+    console.groupEnd();
 
-    // =1 Node Queries
-    /* Subject Query */ await driver.executeQuery(
-      // [ ] tdMd: Use authentication ID for matching subject 
-      `MERGE (subject {name: $name})`,
-      { name: subjectTerms[0] },
-      { database: "neo4j" },
-    );
-  
-    /* Object Query */ await driver.executeQuery(
-      `MERGE (object:Person {name: $name})`,
-      { name: objectTerms[0] },
-      { database: "neo4j" },
-    );
-  
-    // =1 Edge Queries
-    /* Verb Props */
+    console.groupCollapsed(`=== Query ===`);
+    console.log("Building query");
     const verbProps = {
       id: entry.id ?? "no id",
       presetId: entry.presetId ?? "no preset id",
@@ -58,26 +46,19 @@ export async function writeBeacon(entry: ServerEntry)/* : Promise<ServerEntry> *
       category: entry.category ?? "",
       actions: entry.actions ?? []
     };
-    
-    /* Verb Query Builder */
-    const query =`
-      MATCH (s {name: $subject})
-      MATCH (o {name: $object})
-      MERGE (s)-[v :\`${verbTerms[0]} \`]->(o)
-      SET v = $verbProps
-      RETURN v
-    `;
-
-    /* Verb Query */
+    console.log("Executing query");
     const result = await driver.executeQuery(
-      query,
+      `MERGE (s:User {name:$sName})-[v:VERB {input: $vInput}]->(o:Concept {name:$oName})
+      SET v = $vProps
+      RETURN s, v, o`,
       {
-        subject: subjectTerms[0],
-        object: objectTerms[0],
-        verbProps: {
+        sName: entry.atoms.server.subject.head,
+        vInput: verbProps.input,
+        vProps: {
           id: verbProps.id,
           presetId: verbProps.presetId,
           input: verbProps.input,
+          name: verbProps.atoms.server.verb.head,
           atomsClientSubject: verbProps.atoms.client.subject,
           atomsClientVerb: verbProps.atoms.client.verb,
           atomsClientObject: verbProps.atoms.client.object,
@@ -101,36 +82,46 @@ export async function writeBeacon(entry: ServerEntry)/* : Promise<ServerEntry> *
           category: verbProps.category,
           actions: verbProps.actions
         },
-      },
-      { database: "neo4j" },
+        oName: entry.atoms.server.object.head
+      }, { database: "neo4j" }
     );
-  
-    // =1 Build New Entry
+    console.log("Query executed");
+    console.groupEnd();
+    
+    console.groupCollapsed(`=== Assembling newEntry:ServerEntry ===`);
     newEntry = {
-      statement: result.records[0].get("v"),
-      /* ...entry, */
-      /* id: result.records[0].get("id") */
+      /* ...entry,
+        id: result.records[0].get("id")
+        */
+      subject: result.records[0].get("s"),
+      verb: result.records[0].get("v"),
+      object: result.records[0].get("o")
     };
-
+    console.log(newEntry);
+    console.groupEnd();
   } catch (err) {
     console.warn(`Connection error`);
     console.warn(err);
-    console.warn(err instanceof Error ? err.cause : "Cause Unknown");
-    
+    console.warn(err instanceof Error ? err.cause : "Cause Unknown");    
     console.groupEnd();
-
-    return {...entry, error: { isError: true, errorCause: "Connection Error" }};
+    return {
+      ...entry,
+      error: {
+        isError: true,
+        errorCause: err instanceof Error ? err.cause : "Cause Unknown"
+      }
+    };
   } finally {
-    await driver?.close();
+    driver?.close();
+    console.log("Driver closed");
   }
 
   console.groupEnd();
-
   return newEntry;
 }
 
 export async function writeBeacons(entries: ServerEntry[]) {
-  console.groupCollapsed(`=== writeBeacons(${entries.length}) ===`);
+  console.groupCollapsed(`=== FUNCTION writeBeacons(${entries.length} entries) ===`);
   let i = 0;
 
   for (const entry of entries) {
