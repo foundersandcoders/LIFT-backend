@@ -3,18 +3,10 @@
 /**
  * Match
  * 
- * A match is a Beacon candidate that has not yet been through the server at any point.
- * i.e. it is newly created by the client.
+ * A Match is a new entry from the client. It does not exist in the database.
  * 
- * ## Transient Type
- * 
- * ### Created By
- * 
- * `writeRouter.post("/write/writeBeacon", {Match})`
- * 
- * ### Before
- * 
- * `breaker(Match)`
+ * - created By `writeRouter.post("/write/writeBeacon", {Match})`
+ * - consumed By `breaker(Match)`
  */
 export interface Match {
   presetId?: string;
@@ -29,18 +21,11 @@ export interface Match {
 /**
  * Lantern
  * 
- * A Lantern is a Beacon candidate that has been through breaker(),
+ * A Lantern is a Match that has been through breaker(),
  * but not yet through writeBeacon().
  * 
- * ## Transient Type
- * 
- * ### Created By
- * 
- * `breaker(Match)`
- * 
- * ### Consumed By
- * 
- * `writeBeacon(Lantern)`
+ * - created By `breaker(Match)`
+ * - consumed By `writeBeacon(Lantern)`
  */
 export interface Lantern extends Match { shards: Shards }
 
@@ -49,9 +34,9 @@ export interface Lantern extends Match { shards: Shards }
  * 
  * A Beacon has been through all steps in the chain and possessesall properties conferred at each step.
  * 
- * ## Source Type
+ * THIS IS THE SOURCE OF TRUTH
  * 
- * Once created, any identifying properties of a Beacon should refer back to this representation.
+ * - created By `writeBeacon(Lantern)`
  */
 export interface Beacon extends Lantern {
   dbId: string;
@@ -59,6 +44,13 @@ export interface Beacon extends Lantern {
   errorLogs?: DBError[];
 }
 
+/**
+ * Ash
+ * 
+ * An Ash is a Lantern that has been through breaker() but errored during writeBeacon().
+ * 
+ * - created By `writeBeacon(Lantern)`
+ */
 export interface Ash extends Lantern {
   dbId?: string;
   actions?: Action[];
@@ -70,12 +62,12 @@ export interface Ash extends Lantern {
  * 
  * An Ember is the condensed representation of a Beacon that is returned to the client.
  * 
- * ## Purpose
+ * The Ember is:
  * 
- * The Ember is used to:
- * 
- * - Act as a memory store for client-side state.
- * - Link Client & Aura representations of a Beacon together
+ * - a memory store for client-side state
+ * - a link between the Client & Aura representations of a Beacon
+ * - the return type from server to client
+ * - the input type for client to server EXCEPT when creating a new Beacon
  */
 export interface Ember extends Omit<Beacon, "shards"> {}
 

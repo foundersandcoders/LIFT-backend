@@ -4,6 +4,6 @@
 
 - 03/09 Sunday
   - [x] tdHi: Review Alex's PR
-  - [ ] tdHi: List routes for Alex
+  - [x] tdHi: List routes for Alex
 - 03/10 Monday
-  - [ ] tdHi: Start group convo with Anni, Alex & Hannah
+  - [x] tdHi: Start group convo with Anni, Alex & Hannah

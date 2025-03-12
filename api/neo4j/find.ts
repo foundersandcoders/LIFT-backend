@@ -74,7 +74,7 @@ export async function findUserByName(
   publicOnly: boolean = true
 ): Promise<string[]> {
   console.group(`=== findUserByName(${name}, ${publicOnly}) ===`);
-    let driver:(Driver|null) = null // [ ] tdCheck: What's the type of driver??
+    let driver:(Driver|null) = null;
     let records, result;
     const statements:string[] = [];
 
@@ -116,9 +116,6 @@ export async function findUserByName(
 
   return statements;
 }
-
-// [ ] tdMd: store Client.Atoms
-// [ ] tdMd: store Server.Atoms
 
 export async function findSubject(
   subject: string

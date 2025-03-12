@@ -2,7 +2,7 @@ import * as dotenv from "dotenv";
 import { Application, Context } from "oak";
 import router from "routes/hubRoutes.ts";
 import { nudgeDb, nudgeSched } from "utils/db/nudgeDb.ts";
-
+import { constrainProps } from "utils/db/contrainProps.ts";
 await dotenv.load({ export: true });
 const port = parseInt(Deno.env.get("PORT") ?? "8080");
 const app = new Application();
@@ -47,6 +47,8 @@ app.listen({ port });
 console.log(`============================`);
 console.log(`== WELCOME = TO = BEACONS ==`);
 console.log(`======== Port ${port} =========`);
+
+await constrainProps();
 
 Deno.cron("Keep the DB awake", nudgeSched, nudgeDb);
 

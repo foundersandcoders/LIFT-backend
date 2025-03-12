@@ -111,9 +111,9 @@ export async function writeBeacon(entry:Lantern):Promise<Beacon|Ash> {
   }
 
   console.groupCollapsed(`--- Return ---`);
-  console.log(newEntry.subject.properties);
-  console.log(newEntry.verb.properties);
-  console.log(newEntry.object.properties);
+  console.log(newEntry.shards.subject);
+  console.log(newEntry.shards.verb);
+  console.log(newEntry.shards.object);
   console.groupEnd();
   
   return newEntry;

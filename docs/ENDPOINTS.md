@@ -78,9 +78,10 @@ These are the request formats for the endpoints that either (a) are working or (
 
 Some of these will need to be updated to include the session token.
 
-- [ ] tdWait: Update endpoints to allow receipt of auth token
-- [ ] tdMd: Change the assignation of verb from `[ v:${verb.toUpperCase()} ]` to `[v:VERB { name:${verb} }]`
 - [ ] tdHi: Add the blocked tasks from Notion to this file
+- [x] tdMd: Change the assignation of verb from `[ v:${verb.toUpperCase()} ]` to `[v:VERB { name:${verb} }]`
+- [ ] tdHi: Update endpoints to allow receipt of auth token
+- [ ] tdCheck: What's the type of driver??
 
 ### 2B. `"/edit/*"`
 
@@ -160,10 +161,12 @@ It's a `POST` endpoint because it's designed to take a JSON body.
 #### 2D1. `POST "/write/newBeacon"`
 
 - [ ] tdHi: Correctly assign nested props to `beacon`
-- [ ] tdMd: Use `authID` for matching subject node
-- [ ] tdMd: Call `breaker(match.atoms)` instead of `breaker(match)` so that they are identical
+- [ ] tdWait: Use `authID` for matching subject node
+- [ ] tdIdea: Call `breaker(match.atoms)` instead of `breaker(match)` so that they are identical
 - [ ] tdLo: Move term extraction from `breaker(match)` to a subfunction
+- [ ] tdHi: Create a unique `dbId` prop when creating a node
 - [ ] tdWait: Return `ember.dbId` to the frontend when creating new statements
+- [ ] tdWait: Create a unique `dbId` prop `ember.dbId` to the frontend when creating new statements
 - [ ] tdIdea: enforce the noun tag on `match.atoms.subject`
 
 This needs editing - I wrote it a few days ago, and at that point we were going to be passing userId from the client rather than generating it in the server.
@@ -289,6 +292,8 @@ Request is `POST` with credentials included
 ### 2F. `/send/*`
 
 #### 2F1. `POST "/send/ping"`
+
+- [ ] tdHi: Pull the manager's email from the user node
 
 ```ts
 function sendPing(/* leads to "/" */): Promise<PingRes> {};
