@@ -1,12 +1,13 @@
-// =1 ====== BEACON STAGES ======
+// =1==== BEACON STAGES ======
 
-/**
- * Match
+/** ## Match
+ * 
+ * > Beacon Stage 1
  * 
  * A Match is a new entry from the client. It does not exist in the database.
  * 
- * - created By `writeRouter.post("/write/writeBeacon", {Match})`
- * - consumed By `breaker(Match)`
+ * - Creator: `writeRouter.post("/write/writeBeacon", {Match})`
+ * - Consumer: `breaker(Match)`
  */
 export interface Match {
   presetId?: string;
@@ -18,25 +19,29 @@ export interface Match {
   category?: string;
 }
 
-/**
- * Lantern
+/** ## Lantern
+ * 
+ * > Beacon Stage 2
  * 
  * A Lantern is a Match that has been through breaker(),
  * but not yet through writeBeacon().
  * 
- * - created By `breaker(Match)`
- * - consumed By `writeBeacon(Lantern)`
+ * - Creator: `breaker(Match)`
+ * - Consumer: `writeBeacon(Lantern)`
  */
-export interface Lantern extends Match { shards: Shards }
+export interface Lantern extends Match {
+  shards: Shards
+}
 
-/**
- * Beacon
+/** ## Beacon
  * 
- * A Beacon has been through all steps in the chain and possessesall properties conferred at each step.
+ * > Beacon Stage 3
+ * 
+ * A Beacon has been through all steps in the chain and possesses all properties conferred at each step.
  * 
  * THIS IS THE SOURCE OF TRUTH
  * 
- * - created By `writeBeacon(Lantern)`
+ * - Creator: `writeBeacon(Lantern)`
  */
 export interface Beacon extends Lantern {
   dbId: string;
@@ -44,12 +49,13 @@ export interface Beacon extends Lantern {
   errorLogs?: DBError[];
 }
 
-/**
- * Ash
+/** ## Ash
  * 
- * An Ash is a Lantern that has been through breaker() but errored during writeBeacon().
+ * > Beacon Edge Case
  * 
- * - created By `writeBeacon(Lantern)`
+ * An Ash is a Lantern/Ember that errored during writeBeacon().
+ * 
+ * - Creator: `writeBeacon(Lantern)`
  */
 export interface Ash extends Lantern {
   dbId?: string;
@@ -57,22 +63,31 @@ export interface Ash extends Lantern {
   errorLogs: DBError[];
 }
 
-/**
- * Ember
+/** ## Ember
  * 
  * An Ember is the condensed representation of a Beacon that is returned to the client.
  * 
- * The Ember is:
+ * ### Purpose
  * 
- * - a memory store for client-side state
- * - a link between the Client & Aura representations of a Beacon
- * - the return type from server to client
- * - the input type for client to server EXCEPT when creating a new Beacon
+ * Ember is the...
+ * 
+ * - memory store for client-side state
+ * - link between the Client & Aura representations of a Beacon
+ * - input type for client to server when editing a Beacon
+ * - return type from server to client
  */
 export interface Ember extends Omit<Beacon, "shards"> {}
 
-// =1 CLIENT INPUT
+// =2==== BEACON FRAGMENTS ======
 
+// =3==== Client Created ======
+
+/** ### Atoms
+ * 
+ * > Beacon Fragment
+ * 
+ * Atoms are the client-defined SOV fragments of a Beacon.
+ */
 export interface Atoms {
   subject: string;
   verb: string;
@@ -97,7 +112,7 @@ export interface Category {
   children?: Category[];
 }
 
-// =1 SERVER PROCESSES
+// =3==== Server Created ======
 
 export interface Shards {
   subject: NounShard;
@@ -120,7 +135,7 @@ export interface VerbShard {
   descriptors?: string[];
 }
 
-// =1 DATABASE RECORDS
+// =3==== Database Records ======
 
 export interface DBError {
   isError: boolean;

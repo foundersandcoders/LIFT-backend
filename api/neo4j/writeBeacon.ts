@@ -5,16 +5,26 @@ import { creds as c } from "utils/creds/neo4j.ts";
 
 dotenv.load({ export: true });
 
-export async function writeBeacon(entry:Lantern):Promise<Beacon|Ash> {
+export async function writeBeacons(entries:Lantern[]) {
+  console.groupCollapsed(`====== FUNCTION writeBeacons(${entries.length} entries) ======`);
+  let i = 0;
+  for (const entry of entries) {
+    console.log(`Passing Beacon ${i}: "${entry.input}"`);
+    await writeBeacon(entry);
+    i++;
+  };
+  console.groupEnd();
+}
+
+export async function writeBeacon(entry:Lantern):Promise<Beacon | Ash> {
   console.groupCollapsed(`====== FUNCTION writeBeacon(${entry.input}) ======`);
-  let driver: Driver|null = null;
-  let newEntry: Beacon|Ash;
+  let driver: Driver;
+  let newEntry: Beacon | Ash;
   
   try {
     console.groupCollapsed(`--- Neo4j ---`);
     console.info("Initialising Driver...");
     driver = neo4j.driver(c.URI, neo4j.auth.basic(c.USER, c.PASSWORD));
-
     console.info("Connecting to Aura...");
     await driver.getServerInfo();
 
@@ -117,15 +127,4 @@ export async function writeBeacon(entry:Lantern):Promise<Beacon|Ash> {
   console.groupEnd();
   
   return newEntry;
-}
-
-export async function writeBeacons(entries:Lantern[]) {
-  console.groupCollapsed(`====== FUNCTION writeBeacons(${entries.length} entries) ======`);
-  let i = 0;
-  for (const entry of entries) {
-    console.log(`--- Passing Beacon ${i}: "${entry.input}" ---`);
-    await writeBeacon(entry);
-    i++;
-  };
-  console.groupEnd();
 }
