@@ -2,7 +2,7 @@ import { Router } from "oak";
 // import type * as Client from "types/inputTypes.ts";
 // import type * as Server from "types/outputTypes.ts";
 import type { Entry as ClientEntry, Atoms as ClientAtoms } from "types/inputTypes.ts";
-import type { Entry as ServerEntry, Atoms as ServerAtoms } from "types/outputTypes.ts";
+import type { Entry as ServerEntry, Atoms as ServerAtoms } from "../../types/beaconTypes.ts";
 import { breaker } from "utils/language/breaker.ts";
 import { writeBeacon } from "neo4jApi/writeBeacon.ts";
 
@@ -45,7 +45,7 @@ router.post("/newBeacon", async (ctx) => {
       details: error instanceof Error ? error.message : String(error)
     };
   }
-  
+
   console.groupEnd();
 });
 

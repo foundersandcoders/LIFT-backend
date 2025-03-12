@@ -5,24 +5,24 @@ import {
   Object as ServerObject,
   Subject as ServerSubject,
   Verb as ServerVerb
-} from "types/outputTypes.ts"
+} from "../../types/beaconTypes.ts"
 import type { Entry as ClientEntry } from "types/inputTypes.ts";
 
-function singularise(word:string): string {
+function singularise(word: string): string {
+  console.info(`function singularise(${word})`);
   const singular = nlp(word).nouns().toSingular().out("text");
   return singular.length ? singular : word;
 }
 
 function isArticle(word: string): boolean {
-  console.groupCollapsed(`=== FUNCTION isArticle(${word}) ===`);
+  console.info(`function isArticle(${word})`);
   const result = ["a", "an", "the", "some"].includes(word.toLowerCase());
-  console.groupEnd();
 
   return result;
 }
 
 function determineQuantity(article:string | null, headWord: string ): (string | number)[] {
-  console.groupCollapsed(`=== FUNCTION determineQuantity(${article}, ${headWord}) ===`);
+  console.info(`function determineQuantity(${article}, ${headWord})`);
   const articleArray = []
   if (article && article.toLowerCase() === "some") {
     articleArray.push("some");
@@ -38,30 +38,23 @@ function determineQuantity(article:string | null, headWord: string ): (string | 
     }
   }  
   // console.log(articleArray);
-  console.groupEnd();
 
   return articleArray;
 }
 
 function extractNounDescriptors(phrase:string, head:string): string[] {
-  console.groupCollapsed(`=== FUNCTION extractNounDescriptors(${phrase}, ${head}) ===`);
+  console.info(`function extractNounDescriptors(${phrase}, ${head})`);
   const doc = nlp(phrase);
   const adj:string[] = doc.adjectives().out("array");
-  // console.log(adj.length > 0 ? `Adjectives: ${adj}` : `No adjectives`);
   const preps:string[] = doc.match("#Preposition+ #Noun+").out("array");
-  // console.log(preps.length > 0 ? `Prepositional phrases: ${preps}` : `No prepositional phrases`);
   const mods:string[] = doc.match("#Verb+ #ProperNoun+").out("array");
-  // console.log(mods.length > 0 ? `Verb modifiers: ${mods}` : `No verb modifiers`);
   const filtered:string[] = adj.filter((adj: string) => adj.toLowerCase() !== head.toLowerCase());
-  // console.log(filtered.length > 0 ? `Filtered adjectives: ${filtered}` : `No filtered adjectives`);
-  if (!filtered.length && !preps.length && !mods.length) // console.log("No descriptors found");
-  console.groupEnd();
 
   return [...filtered, ...preps, ...mods];
 }
 
 function extractVerbDescriptors(phrase:string, head: string): string[] {
-  console.groupCollapsed(`=== FUNCTION extractVerbDescriptors(${phrase}, ${head}) ===`);
+  console.info(`function extractVerbDescriptors(${phrase}, ${head})`);
   const doc = nlp(phrase);
   const descriptors: string[] = [];
 
@@ -70,16 +63,15 @@ function extractVerbDescriptors(phrase:string, head: string): string[] {
 
   const adverbs = doc.adverbs().out("array");
   if (adverbs.length) descriptors.push(...adverbs);
-  console.groupEnd();
   
   return descriptors.filter((desc) => desc.toLowerCase() !== head.toLowerCase());
 }
 
 function parseNounPhrase(phrase: string): ServerSubject | ServerObject {
-  console.groupCollapsed(`=== FUNCTION parseNounPhrase(${phrase}) ===`);
+  console.info(`function parseNounPhrase(${phrase})`);
   const doc = nlp(phrase);
   const words = phrase.trim().split(/\s+/);
-  // console.log(`words: ${words}`);  
+
   let article: string | null = null;
   if (words.length && isArticle(words[0])) article = words[0].toLowerCase();
   const nounDoc = doc.match("#Noun").first();
@@ -87,13 +79,15 @@ function parseNounPhrase(phrase: string): ServerSubject | ServerObject {
     ? nounDoc.out("text")
     : words[words.length - 1];
   const head: [string, string] = [headWord, headWord];
-  // console.log(`headWord: ${headWord}`);
 
+  console.groupCollapsed(`--- Extract Descriptors ---`);
   const descriptors = extractNounDescriptors(phrase, headWord);
-  
+  console.groupEnd();
+
   const trailingPhrases = doc.match("to .+").out("array");
   if (trailingPhrases.length) descriptors.push(...trailingPhrases);
 
+  console.groupCollapsed(`--- Determine Quantity ---`);
   const quantity = determineQuantity(article, headWord);
   console.groupEnd();
 
@@ -107,7 +101,7 @@ function parseNounPhrase(phrase: string): ServerSubject | ServerObject {
 }
 
 function parseVerbPhrase(phrase: string): ServerVerb {
-  console.groupCollapsed(`=== FUNCTION parseVerbPhrase(${phrase}) ===`);
+  console.info(`function parseVerbPhrase(${phrase})`);
   const doc = nlp(phrase);
   const verbs = doc.verbs().out("array");
   const mainVerb = verbs.find((v: string) =>
@@ -121,7 +115,6 @@ function parseVerbPhrase(phrase: string): ServerVerb {
     ? `${auxiliaries.join(" ")} ${mainVerb}`
     : mainVerb;
   const head:[string, string] = [verbInfinitive, fullVerbPhrase];
-  console.groupEnd();
 
   return {
     head,
@@ -131,11 +124,11 @@ function parseVerbPhrase(phrase: string): ServerVerb {
 }
 
 export function breaker(entry: ClientEntry): ServerAtoms {
-  console.groupCollapsed(`=== FUNCTION breaker(${entry.input}) ===`);
+  console.groupCollapsed(`====== FUNCTION breaker(${entry.input}) ======`);
   const doc: any = nlp(entry.input);
   const termData: any = doc.terms().data();
 
-  console.groupCollapsed("=== TERM TAGS ===");
+  console.groupCollapsed("--- Term Tags ---");
   // [ ] tdLo: enfore the noun tag in the subject atom
   // for (const termDatum of termData) {
   //   const tags: string[] = termDatum.terms[0].tags;
@@ -145,7 +138,7 @@ export function breaker(entry: ClientEntry): ServerAtoms {
 
   if (termData.length === 0) throw new Error("Empty sentence provided");
 
-  console.groupCollapsed("=== VERB INDEX ===");
+  console.groupCollapsed("--- Verb Index ---");
   let verbIndex: number = -1;
   for (let i = 0; i < termData.length; i++) {
     const term = termData[i].terms[0];
@@ -171,7 +164,7 @@ export function breaker(entry: ClientEntry): ServerAtoms {
   let subjectEndIndex:number = verbIndex;
   if (verbIndex > 0 && termData[verbIndex - 1].terms[0].tags.includes("Adverb")) subjectEndIndex = verbIndex - 1;
 
-  console.groupCollapsed(`=== TERMS ===`);
+  console.groupCollapsed("--- Terms ---");
   const subjectTerms: string[] = termData.slice(0, subjectEndIndex).map((t: any) => {
     if (!t.terms[0].tags.includes("Auxiliary")) {
       // console.log(`${t.text} is not auxiliary`);
@@ -214,7 +207,7 @@ export function breaker(entry: ClientEntry): ServerAtoms {
   // console.log(`objectPhrase: ${objectPhrase}`);
   console.groupEnd();
 
-  console.groupCollapsed("=== PARSER FUNCTIONS ==="); 
+  console.groupCollapsed("--- Parser Functions ---"); 
   const subject:ServerSubject = parseNounPhrase(subjectPhrase);
   const verb:ServerVerb = parseVerbPhrase(verbPhrase);
   const object:ServerObject = parseNounPhrase(objectPhrase);

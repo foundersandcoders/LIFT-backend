@@ -1,29 +1,26 @@
 import * as dotenv from "dotenv";
 import neo4j, { Driver } from "neo4j";
-import type { Entry as ServerEntry } from "types/outputTypes.ts";
+import type { Lantern, Beacon, Ash } from "types/beaconTypes.ts";
 import { creds as c } from "utils/creds/neo4j.ts";
 
 dotenv.load({ export: true });
 
-export async function writeBeacon(entry:ServerEntry):Promise<ServerEntry> {
-  console.groupCollapsed(`=== FUNCTION writeBeacon(${entry.input}) ===`);
-  console.log(`Statement Received: ${entry.input}`);
-
-  let driver:Driver|null = null;
-  let newEntry:ServerEntry;
-
+export async function writeBeacon(entry:Lantern):Promise<Beacon|Ash> {
+  console.groupCollapsed(`====== FUNCTION writeBeacon(${entry.input}) ======`);
+  let driver: Driver|null = null;
+  let newEntry: Beacon|Ash;
+  
   try {
-    console.groupCollapsed(`=== Driver ===`);
+    console.groupCollapsed(`--- Neo4j ---`);
+    console.info("Initialising Driver...");
     driver = neo4j.driver(c.URI, neo4j.auth.basic(c.USER, c.PASSWORD));
-    console.log("Driver created");
-    const serverInfo = await driver.getServerInfo();
-    console.log(serverInfo);
-    console.groupEnd();
 
-    console.groupCollapsed(`=== Query ===`);
-    console.log("Building query");
+    console.info("Connecting to Aura...");
+    await driver.getServerInfo();
+
+    console.info("Building Query Params...");
     const verbProps = {
-      id: entry.id ?? "no id",
+      dbId: entry.id ?? "no id",
       presetId: entry.presetId ?? "no preset id",
       input: entry.input,
       atoms: {
@@ -46,7 +43,8 @@ export async function writeBeacon(entry:ServerEntry):Promise<ServerEntry> {
       category: entry.category ?? "",
       actions: entry.actions ?? []
     };
-    console.log("Executing query");
+
+    console.info("Executing Cypher Query...");
     const result = await driver.executeQuery(
       `MERGE (s:User {name:$sName})-[v:VERB {input: $vInput}]->(o:Concept {name:$oName})
       SET v = $vProps
@@ -85,50 +83,49 @@ export async function writeBeacon(entry:ServerEntry):Promise<ServerEntry> {
         oName: entry.atoms.server.object.head
       }, { database: "neo4j" }
     );
-    console.log("Query executed");
-    console.groupEnd();
-    
-    console.groupCollapsed(`=== Assembling newEntry:ServerEntry ===`);
+
+    console.info(`Assembling Return Object...`);
     newEntry = {
-      /* ...entry,
-        id: result.records[0].get("id")
-        */
+      // ...entry,
+      // id: result.records[0].get("id")
       subject: result.records[0].get("s"),
       verb: result.records[0].get("v"),
       object: result.records[0].get("o")
     };
-    console.log(newEntry);
-    console.groupEnd();
   } catch (err) {
     console.warn(`Connection error`);
-    console.warn(err);
-    console.warn(err instanceof Error ? err.cause : "Cause Unknown");    
-    console.groupEnd();
-    return {
+    // console.warn(err);
+    const cause = err instanceof Error ? err.cause : "Cause Unknown";
+    console.warn(cause);
+
+    newEntry = {
       ...entry,
-      error: {
-        isError: true,
-        errorCause: err instanceof Error ? err.cause : "Cause Unknown"
-      }
+      errorLogs: [{ isError: true, errorCause: cause }]
     };
+    
+    return newEntry as Ash;
   } finally {
+    console.info("Closing Driver...");
     driver?.close();
-    console.log("Driver closed");
+    console.groupEnd();
   }
 
+  console.groupCollapsed(`--- Return ---`);
+  console.log(newEntry.subject.properties);
+  console.log(newEntry.verb.properties);
+  console.log(newEntry.object.properties);
   console.groupEnd();
+  
   return newEntry;
 }
 
-export async function writeBeacons(entries: ServerEntry[]) {
-  console.groupCollapsed(`=== FUNCTION writeBeacons(${entries.length} entries) ===`);
+export async function writeBeacons(entries:Lantern[]) {
+  console.groupCollapsed(`====== FUNCTION writeBeacons(${entries.length} entries) ======`);
   let i = 0;
-
   for (const entry of entries) {
-    console.groupCollapsed(`=== ${i}: ${entry.input} ===`);
+    console.log(`--- Passing Beacon ${i}: "${entry.input}" ---`);
     await writeBeacon(entry);
     i++;
-    console.groupEnd();
   };
   console.groupEnd();
 }
