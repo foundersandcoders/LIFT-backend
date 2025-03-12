@@ -14,6 +14,7 @@
     - [2X2. `GET "/get/v"`](#2x2-get-getv)
   - [2D. `/write/*`](#2d-write)
     - [2D1. `POST "/write/newBeacon"`](#2d1-post-writenewbeacon)
+    - [2D2. `POST "/write/newUser"`](#2d2-post-writenewuser)
   - [2E. `/auth/*`](#2e-auth)
     - [2E1. `POST "/auth/signin/magic-link"`](#2e1-post-authsigninmagic-link)
     - [2E2. `GET "/auth/verify?token={token}"`](#2e2-get-authverifytokentoken)
@@ -158,9 +159,12 @@ It's a `POST` endpoint because it's designed to take a JSON body.
 
 #### 2D1. `POST "/write/newBeacon"`
 
-- [ ] tdWait: Return the statementId to the frontend when creating new statements
-- [ ] tdHi: Assign nested properties to the statement correctly
-- [ ] tdMd: Use authentication ID for matching subject node
+- [ ] tdHi: Correctly assign nested props to `beacon`
+- [ ] tdMd: Use `authID` for matching subject node
+- [ ] tdMd: Call `breaker(match.atoms)` instead of `breaker(match)` so that they are identical
+- [ ] tdLo: Move term extraction from `breaker(match)` to a subfunction
+- [ ] tdWait: Return `ember.dbId` to the frontend when creating new statements
+- [ ] tdIdea: enforce the noun tag on `match.atoms.subject`
 
 This needs editing - I wrote it a few days ago, and at that point we were going to be passing userId from the client rather than generating it in the server.
 
@@ -201,6 +205,10 @@ And here's the format I'll need to change it to...
 ```
 
 I'll also need to incorporate the authentication token into the request.
+
+#### 2D2. `POST "/write/newUser"`
+
+> WIP
 
 ### 2E. `/auth/*`
 
@@ -285,6 +293,7 @@ Request is `POST` with credentials included
 ```ts
 function sendPing(/* leads to "/" */): Promise<PingRes> {};
 ```
+
 ---
 
 ## 3. Alex's Notes on Auth

@@ -42,7 +42,9 @@ export interface Match {
  * 
  * `writeBeacon(Lantern)`
  */
-export interface Lantern extends Match { shards: Shards }
+export interface Lantern extends Match {
+  shards: Shards
+}
 
 /**
  * Beacon
@@ -53,17 +55,18 @@ export interface Lantern extends Match { shards: Shards }
  * 
  * Once created, any identifying properties of a Beacon should refer back to this representation.
  */
-export interface Beacon extends Lantern {
-  dbId: string;
-  actions: Action[];
-  errorLogs?: DBError[];
-}
-
-export interface Ash extends Lantern {
-  dbId?: string;
-  actions?: Action[];
-  errorLogs: DBError[];
-}
+export type Beacon = {
+  dbId: string
+} & Lantern & (
+  | {
+    actions: Action[];
+    errorLogs?: ErrorLog[];
+  }
+  | {
+    actions?: Action[];
+    errorLogs?: ErrorLog[];
+  }
+);
 
 /**
  * Ember
@@ -130,7 +133,7 @@ export interface VerbShard {
 
 // =1 DATABASE RECORDS
 
-export interface DBError {
+export interface ErrorLog {
   isError: boolean;
   errorCause: string | unknown
 }

@@ -97,9 +97,9 @@ export async function findUserByName(
           {database: 'neo4j'}
         );
       }
-      records = result.records;
+      records = result?.records;
 
-      for (const record of records) {
+      if (records) for (const record of records) {
         console.log(record);
         statements.push(record.get("v"));
       }

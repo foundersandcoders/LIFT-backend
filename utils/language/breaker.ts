@@ -1,12 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 import nlp from "compromise";
-import {
-  Atoms as ServerAtoms,
-  Object as ServerObject,
-  Subject as ServerSubject,
-  Verb as ServerVerb
-} from "../../types/beaconTypes.ts"
-import type { Entry as ClientEntry } from "types/inputTypes.ts";
+import type { Match, Shards, NounShard, VerbShard } from "types/beaconTypes.ts";
 
 function singularise(word: string): string {
   console.info(`function singularise(${word})`);
@@ -67,7 +61,7 @@ function extractVerbDescriptors(phrase:string, head: string): string[] {
   return descriptors.filter((desc) => desc.toLowerCase() !== head.toLowerCase());
 }
 
-function parseNounPhrase(phrase: string): ServerSubject | ServerObject {
+function parseNounPhrase(phrase: string):NounShard {
   console.info(`function parseNounPhrase(${phrase})`);
   const doc = nlp(phrase);
   const words = phrase.trim().split(/\s+/);
@@ -100,7 +94,7 @@ function parseNounPhrase(phrase: string): ServerSubject | ServerObject {
   };
 }
 
-function parseVerbPhrase(phrase: string): ServerVerb {
+function parseVerbPhrase(phrase: string): VerbShard {
   console.info(`function parseVerbPhrase(${phrase})`);
   const doc = nlp(phrase);
   const verbs = doc.verbs().out("array");
@@ -123,77 +117,57 @@ function parseVerbPhrase(phrase: string): ServerVerb {
   };
 }
 
-export function breaker(entry: ClientEntry): ServerAtoms {
+export function breaker(entry:Match):Shards {
   console.groupCollapsed(`====== FUNCTION breaker(${entry.input}) ======`);
   const doc: any = nlp(entry.input);
   const termData: any = doc.terms().data();
 
-  console.groupCollapsed("--- Term Tags ---");
-  // [ ] tdLo: enfore the noun tag in the subject atom
-  // for (const termDatum of termData) {
-  //   const tags: string[] = termDatum.terms[0].tags;
-  //   console.log(`${termDatum.text}: ${tags}`);
-  // }
-  console.groupEnd();
+  if (termData.length === 0) {
+    throw new Error("Empty sentence provided");
+  }
 
-  if (termData.length === 0) throw new Error("Empty sentence provided");
-
-  console.groupCollapsed("--- Verb Index ---");
   let verbIndex: number = -1;
   for (let i = 0; i < termData.length; i++) {
     const term = termData[i].terms[0];
-    // console.log(`${i}: ${term.text}`);
     if (term.tags.includes("Verb") && !term.tags.includes("Auxiliary")) {
-      // console.log(`${term.text} is a verb`);
       if (term.normal === "called" && i < termData.length - 1) {
-        // console.log(term.normal);
         const nextTerm = termData[i + 1].terms[0];
-        // console.log(`nextTerm: ${nextTerm.text}`);
-        if (nextTerm.tags.includes("ProperNoun")) {
-          // console.log(`${nextTerm.text} is a proper noun - skipping`);
-          continue;
-        };
+        if (nextTerm.tags.includes("ProperNoun")) continue;
       }
       verbIndex = i;
-      // console.log(`verbIndex: ${verbIndex}`);
       break;
     }
   }
-  console.groupEnd();
-
   let subjectEndIndex:number = verbIndex;
-  if (verbIndex > 0 && termData[verbIndex - 1].terms[0].tags.includes("Adverb")) subjectEndIndex = verbIndex - 1;
+  if (verbIndex > 0 && termData[verbIndex - 1].terms[0].tags.includes("Adverb")) {
+    subjectEndIndex = verbIndex - 1;
+  }
 
-  console.groupCollapsed("--- Terms ---");
   const subjectTerms: string[] = termData.slice(0, subjectEndIndex).map((t: any) => {
     if (!t.terms[0].tags.includes("Auxiliary")) {
-      // console.log(`${t.text} is not auxiliary`);
       return t.text;
     } else {
-      // console.log(`${t.text} is auxiliary - skipping`);
       return "";
     };
   }).filter(Boolean);
-  const subjectPhrase:string = subjectTerms.join(" ");
-  // console.log(`subjectPhrase: ${subjectPhrase}`);
+  const subjectPhrase: string = subjectTerms.join(" ");
+  
   const verbTerms: string[] = [];
   for (let i: number = subjectEndIndex; i < verbIndex; i++) {
     if (
       termData[i].terms[0].tags.includes("Auxiliary") ||
       termData[i].terms[0].tags.includes("Adverb")
-    ) {
-      // console.log(`${termData[i].text} is auxiliary`);
-      verbTerms.push(termData[i].text);
-    }
+    ) verbTerms.push(termData[i].text);
   }
   verbTerms.push(termData[verbIndex].text);
+
   let i:number = verbIndex + 1;
   while (i < termData.length && termData[i].terms[0].tags.includes("Adverb")) {
     verbTerms.push(termData[i].text);
     i++;
   }
   let verbPhrase: string = verbTerms.join(" ");
-  // console.log(`verbPhrase: ${verbPhrase}`);
+
   const objectTerms: string[] = termData.slice(i).map((t: any) => {
     return t.text
   });
@@ -204,16 +178,15 @@ export function breaker(entry: ClientEntry): ServerAtoms {
     }
   }
   const objectPhrase:string = objectTerms.join(" ");
-  // console.log(`objectPhrase: ${objectPhrase}`);
-  console.groupEnd();
 
   console.groupCollapsed("--- Parser Functions ---"); 
-  const subject:ServerSubject = parseNounPhrase(subjectPhrase);
-  const verb:ServerVerb = parseVerbPhrase(verbPhrase);
-  const object:ServerObject = parseNounPhrase(objectPhrase);
+  const subject:NounShard = parseNounPhrase(subjectPhrase);
+  const verb:VerbShard = parseVerbPhrase(verbPhrase);
+  const object:NounShard = parseNounPhrase(objectPhrase);
   console.groupEnd();
 
   console.groupEnd();
 
-  return { subject, verb, object };
+  const shards:Shards = { subject: subject, verb: verb, object: object };
+  return shards;
 }
