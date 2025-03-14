@@ -16,7 +16,7 @@ function isArticle(word: string): boolean {
 }
 
 function determineQuantity(article:string | null, headWord: string ): (string | number)[] {
-  console.info(`function determineQuantity(${article}, ${headWord})`);
+  console.info(`function determineQuantity(article: ${article}, headWord: ${headWord})`);
   const articleArray = []
   if (article && article.toLowerCase() === "some") {
     articleArray.push("some");

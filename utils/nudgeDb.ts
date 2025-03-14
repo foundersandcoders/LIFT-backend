@@ -1,11 +1,11 @@
 import neo4j, { Driver } from "neo4j";
-import { creds as c } from "../creds/neo4j.ts";
 import { nextDate } from "jsr:@coven/cron";
+import { creds as c } from "utils/auth/neo4jCred.ts";
 
 export const nudgeSched = "0 */4 * * *"; // Once every 4 hours
 
 const nextRun = () => {
-  nextDate(new Date())(nudgeSched);
+  return nextDate(new Date())(nudgeSched);
 };
 
 export async function nudgeDb() {
@@ -21,7 +21,7 @@ export async function nudgeDb() {
   } finally {
     if (driver) await driver.close();
     console.log(`Driver closed`);
-    console.log(`Next run: ${nextRun}`);
+    console.log(`Next run: ${nextRun()}`);
   }
 
   console.groupEnd();

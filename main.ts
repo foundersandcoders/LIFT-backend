@@ -1,8 +1,10 @@
-import * as dotenv from "dotenv";
 import { Application, Context } from "oak";
+import * as dotenv from "dotenv";
+import { nudgeDb, nudgeSched } from "utils/nudgeDb.ts";
+import { constrainUser } from "utils/constrain/user.ts";
+import { constrainVerb } from "utils/constrain/verb.ts";
 import router from "routes/hubRoutes.ts";
-import { nudgeDb, nudgeSched } from "utils/db/nudgeDb.ts";
-import { constrainProps } from "utils/db/contrainProps.ts";
+
 await dotenv.load({ export: true });
 const port = parseInt(Deno.env.get("PORT") ?? "8080");
 const app = new Application();
@@ -13,7 +15,11 @@ async function customCors(ctx: Context, next: () => Promise<unknown>) {
     In production, FRONTEND_ORIGIN will be set (e.g., "https://lift-backend.deno.dev/").
     In development, it will default to "*" if not provided.
   */
+  console.info(``);
+  console.info(`------------------------------------------------`);
+  console.info(``);
   console.log(`Allowed Origin ${allowedOrigin}`);
+  console.info(``);
 
   ctx.response.headers.set(
     "Access-Control-Allow-Origin",
@@ -44,11 +50,13 @@ app.use(router.allowedMethods());
 
 app.listen({ port });
 
-console.log(`============================`);
-console.log(`== WELCOME = TO = BEACONS ==`);
-console.log(`======== Port ${port} =========`);
+console.info(``);
+console.info(`======================================`);
+console.info(`======[ WELCOME • TO • BEACONS ]======`);
+console.info(`============= Port ${port} ==============`);
+console.info(``);
 
-await constrainProps();
+await constrainUser();
+await constrainVerb();
 
 Deno.cron("Keep the DB awake", nudgeSched, nudgeDb);
-

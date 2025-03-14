@@ -1,9 +1,123 @@
 import * as dotenv from "dotenv";
 import neo4j, { Driver } from "neo4j";
-import type { Lantern, Beacon, Ash } from "types/beaconTypes.ts";
-import { creds as c } from "utils/creds/neo4j.ts";
+import type { Lantern, Ash, Ember, DBError } from "types/beaconTypes.ts";
+import type { Attempt } from "types/serverTypes.ts";
+import { creds as c } from "utils/auth/neo4jCred.ts";
 
 dotenv.load({ export: true });
+
+export async function writeBeacon(entry:Lantern):Promise<Attempt> {
+  console.groupCollapsed(`====== FUNCTION writeBeacon(${entry.input}) ======`);
+
+  let driver: Driver | undefined;
+  let attempt: Attempt;
+  let attemptError: DBError | undefined;
+
+  try {
+    console.info("Initialising Driver...");
+    driver = neo4j.driver(c.URI, neo4j.auth.basic(c.USER, c.PASSWORD));
+    await driver.getServerInfo();
+  
+    const userId = entry.authId ? entry.authId : "test-auth-id";
+
+    console.info("Executing Cypher Query...");
+    const result = await driver.executeQuery(
+      `MERGE (s:User {name:$sProps.name})-[v:VERB]->(o:Concept {name:$oProps.name})
+      SET v.dbId = randomUUID(),
+          v += $vProps
+      RETURN s, v, o`,
+      {
+        sProps: { name: entry.shards.subject.head },
+        oProps: { name: entry.shards.object.head },
+        vProps: {
+          authId: userId,
+          presetId: entry.presetId ?? "",
+          input: entry.input,
+          name: entry.shards.verb.head,
+          atoms_subject: entry.atoms.subject,
+          atoms_verb: entry.atoms.verb,
+          atoms_object: entry.atoms.object,
+          atoms_adverbial: entry.atoms.adverbial,
+          shards_subject_head: entry.shards.subject.head,
+          shards_subject_phrase: entry.shards.subject.phrase,
+          shards_subject_article: entry.shards.subject.article,
+          shards_subject_quantity: entry.shards.subject.quantity,
+          shards_subject_descriptors: entry.shards.subject.descriptors,
+          shards_verb_head: entry.shards.verb.head,
+          shards_verb_phrase: entry.shards.verb.phrase,
+          shards_verb_descriptors: entry.shards.verb.descriptors,
+          shards_object_head: entry.shards.object.head,
+          shards_object_phrase: entry.shards.object.phrase,
+          shards_object_article: entry.shards.object.article,
+          shards_object_quantity: entry.shards.object.quantity,
+          shards_object_descriptors: entry.shards.object.descriptors,
+          shards_adverbial: entry.shards.adverbial,
+          isPublic: entry.isPublic ?? false,
+          isArchived: entry.isArchived ?? false,
+          isSnoozed: entry.isSnoozed ?? false,
+          category: entry.category ?? "",
+          actions: [],
+          errorLogs: []
+        }
+      },
+      { database: "neo4j" }
+    );
+
+    const record = result.records[0].get("v").properties;
+
+    console.groupCollapsed(`Ember`);
+    const ember: Ember = {
+      authId: record.authId,
+      dbId: record.dbId,
+      presetId: record.presetId,
+      input: record.input,
+      atoms: {
+        subject: record.atoms_subject,
+        verb: record.atoms_verb,
+        object: record.atoms_object,
+        adverbial: record.atoms_adverbial
+      },
+      category: record.category,
+      isPublic: record.isPublic,
+      isArchived: record.isArchived,
+      isSnoozed: record.isSnoozed,
+      actions: record.actions,
+      errorLogs: record.errorLogs
+    };
+    console.info(`Ember assembled`);
+    console.log(ember);
+    console.groupEnd();
+
+    attempt = { record: ember };
+  } catch (err) {
+    console.groupCollapsed(`--- Error ---`);
+
+    console.groupCollapsed(`Details`);
+    console.warn(err);
+    const cause = err instanceof Error ? err.cause : "Cause Unknown";
+    console.info(`Error Cause:`);
+    console.warn(cause);
+    console.groupEnd();
+
+    console.groupCollapsed(`Ash`);
+    attemptError = { isError: true, errorCause: cause };
+    attempt = {
+      record: { ...entry, errorLogs: [attemptError] },
+      error: attemptError
+    }
+    console.log(attempt);
+    console.groupEnd();
+
+    console.groupEnd();
+  } finally {
+    console.info("Closing Driver...");
+    driver?.close();
+  }
+
+  console.groupEnd();
+  console.info(`==================================================`);
+  return attempt;
+}
 
 export async function writeBeacons(entries:Lantern[]) {
   console.groupCollapsed(`====== FUNCTION writeBeacons(${entries.length} entries) ======`);
@@ -14,117 +128,4 @@ export async function writeBeacons(entries:Lantern[]) {
     i++;
   };
   console.groupEnd();
-}
-
-export async function writeBeacon(entry:Lantern):Promise<Beacon | Ash> {
-  console.groupCollapsed(`====== FUNCTION writeBeacon(${entry.input}) ======`);
-  let driver: Driver;
-  let newEntry: Beacon | Ash;
-  
-  try {
-    console.groupCollapsed(`--- Neo4j ---`);
-    console.info("Initialising Driver...");
-    driver = neo4j.driver(c.URI, neo4j.auth.basic(c.USER, c.PASSWORD));
-    console.info("Connecting to Aura...");
-    await driver.getServerInfo();
-
-    console.info("Building Query Params...");
-    const verbProps = {
-      dbId: entry.id ?? "no id",
-      presetId: entry.presetId ?? "no preset id",
-      input: entry.input,
-      atoms: {
-        client: {
-          subject: entry.atoms.client.subject,
-          verb: entry.atoms.client.verb,
-          object: entry.atoms.client.object,
-          adverbial: entry.atoms.client.adverbial
-        },
-        server: {
-          subject: entry.atoms.server.subject,
-          verb: entry.atoms.server.verb,
-          object: entry.atoms.server.object,
-          adverbial: entry.atoms.server.adverbial
-        }
-      },
-      isPublic: entry.isPublic ?? false,
-      isArchived: entry.isArchived ?? false,
-      isSnoozed: entry.isSnoozed ?? false,
-      category: entry.category ?? "",
-      actions: entry.actions ?? []
-    };
-
-    console.info("Executing Cypher Query...");
-    const result = await driver.executeQuery(
-      `MERGE (s:User {name:$sName})-[v:VERB {input: $vInput}]->(o:Concept {name:$oName})
-      SET v = $vProps
-      RETURN s, v, o`,
-      {
-        sName: entry.atoms.server.subject.head,
-        vInput: verbProps.input,
-        vProps: {
-          id: verbProps.id,
-          presetId: verbProps.presetId,
-          input: verbProps.input,
-          name: verbProps.atoms.server.verb.head,
-          atomsClientSubject: verbProps.atoms.client.subject,
-          atomsClientVerb: verbProps.atoms.client.verb,
-          atomsClientObject: verbProps.atoms.client.object,
-          atomsClientAdverbial: verbProps.atoms.client.adverbial,
-          atomsServerSubjectHead: verbProps.atoms.server.subject.head,
-          atomsServerSubjectArticle: verbProps.atoms.server.subject.article,
-          atomsServerSubjectQuantity: verbProps.atoms.server.subject.quantity,
-          atomsServerSubjectDescriptors: verbProps.atoms.server.subject.descriptors,
-          atomsServerSubjectPhrase: verbProps.atoms.server.subject.phrase,
-          atomsServerVerbHead: verbProps.atoms.server.verb.head,
-          atomsServerVerbPhrase: verbProps.atoms.server.verb.phrase,
-          atomsServerVerbDescriptors: verbProps.atoms.server.verb.descriptors,
-          atomsServerObjectHead: verbProps.atoms.server.object.head,
-          atomsServerObjectArticle: verbProps.atoms.server.object.article,
-          atomsServerObjectQuantity: verbProps.atoms.server.object.quantity,
-          atomsServerObjectDescriptors: verbProps.atoms.server.object.descriptors,
-          atomsServerObjectPhrase: verbProps.atoms.server.object.phrase,
-          isPublic: verbProps.isPublic,
-          isArchived: verbProps.isArchived,
-          isSnoozed: verbProps.isSnoozed,
-          category: verbProps.category,
-          actions: verbProps.actions
-        },
-        oName: entry.atoms.server.object.head
-      }, { database: "neo4j" }
-    );
-
-    console.info(`Assembling Return Object...`);
-    newEntry = {
-      // ...entry,
-      // id: result.records[0].get("id")
-      subject: result.records[0].get("s"),
-      verb: result.records[0].get("v"),
-      object: result.records[0].get("o")
-    };
-  } catch (err) {
-    console.warn(`Connection error`);
-    // console.warn(err);
-    const cause = err instanceof Error ? err.cause : "Cause Unknown";
-    console.warn(cause);
-
-    newEntry = {
-      ...entry,
-      errorLogs: [{ isError: true, errorCause: cause }]
-    };
-    
-    return newEntry as Ash;
-  } finally {
-    console.info("Closing Driver...");
-    driver?.close();
-    console.groupEnd();
-  }
-
-  console.groupCollapsed(`--- Return ---`);
-  console.log(newEntry.shards.subject);
-  console.log(newEntry.shards.verb);
-  console.log(newEntry.shards.object);
-  console.groupEnd();
-  
-  return newEntry;
 }

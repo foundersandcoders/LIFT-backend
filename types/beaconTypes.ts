@@ -1,5 +1,3 @@
-// =1==== BEACON STAGES ======
-
 /** ## Match
  * 
  * > Beacon Stage 1
@@ -10,13 +8,14 @@
  * - Consumer: `breaker(Match)`
  */
 export interface Match {
+  authId: string;
   presetId?: string;
   input: string;
   atoms: Atoms;
+  category?: string;
   isPublic: boolean;
   isArchived: boolean;
   isSnoozed: boolean;
-  category?: string;
 }
 
 /** ## Lantern
@@ -45,6 +44,7 @@ export interface Lantern extends Match {
  */
 export interface Beacon extends Lantern {
   dbId: string;
+  name: string;
   actions: Action[];
   errorLogs?: DBError[];
 }
@@ -76,11 +76,7 @@ export interface Ash extends Lantern {
  * - input type for client to server when editing a Beacon
  * - return type from server to client
  */
-export interface Ember extends Omit<Beacon, "shards"> {}
-
-// =2==== BEACON FRAGMENTS ======
-
-// =3==== Client Created ======
+export interface Ember extends Omit<Beacon, "shards" | "name"> {}
 
 /** ### Atoms
  * 
@@ -100,7 +96,12 @@ export interface Action {
   creationDate: string;
   byDate: string;
   action: string;
-  isResolved: boolean;
+  completed: boolean;
+  gratitude?: {
+    sent?: boolean;
+    message?: string;
+    sentDate?: string;
+  }
 }
 
 export interface Category {
@@ -111,8 +112,6 @@ export interface Category {
   icon: string;
   children?: Category[];
 }
-
-// =3==== Server Created ======
 
 export interface Shards {
   subject: NounShard;
@@ -134,8 +133,6 @@ export interface VerbShard {
   phrase: string;
   descriptors?: string[];
 }
-
-// =3==== Database Records ======
 
 export interface DBError {
   isError: boolean;

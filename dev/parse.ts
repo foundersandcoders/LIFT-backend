@@ -1,5 +1,5 @@
 import nlp from "npm:compromise@14.10.0";
-import { breaker } from "../language/breaker.ts";
+import { breaker } from "../utils/convert/breakInput.ts";
 
 const input = Deno.args.join(" ");
 

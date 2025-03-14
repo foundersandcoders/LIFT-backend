@@ -1,5 +1,5 @@
 import neo4j, { Driver } from "neo4j";
-import { creds } from "../../utils/creds/neo4j.ts";
+import { creds } from "../../utils/auth/neo4jCred.ts";
 
 const data = JSON.parse(
   await Deno.readTextFile("./data/seeds/facSeed.json"),

@@ -1,0 +1,6 @@
+---
+description: deno & neo4
+globs: 
+alwaysApply: false
+---
+Always refer to the documentation for the latest version of neo4j and deno

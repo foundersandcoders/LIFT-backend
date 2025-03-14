@@ -78,9 +78,8 @@ These are the request formats for the endpoints that either (a) are working or (
 
 Some of these will need to be updated to include the session token.
 
-- [ ] tdHi: Add the blocked tasks from Notion to this file
-- [x] tdMd: Change the assignation of verb from `[ v:${verb.toUpperCase()} ]` to `[v:VERB { name:${verb} }]`
-- [ ] tdHi: Update endpoints to allow receipt of auth token
+- [ ] tdWait: Update endpoints to allow receipt of auth token
+
 - [ ] tdCheck: What's the type of driver??
 
 ### 2B. `"/edit/*"`
@@ -154,20 +153,22 @@ It's a `POST` endpoint because it's designed to take a JSON body.
 
 #### 2X2. `GET "/get/v"`
 
-- [ ] tdMd: Retrieve `verb.input` instead of `typeOf(verb)`
+- [ ] tdLo: Retrieve `verb.input` instead of `typeOf(verb)`
 
 ### 2D. `/write/*`
 
 #### 2D1. `POST "/write/newBeacon"`
 
-- [ ] tdHi: Correctly assign nested props to `beacon`
+- [ ] tdHi: Generate a unique `dbID` prop on new `Beacon`
+- [ ] tdHi: Correctly assign nested props to `Beacon`
+
 - [ ] tdWait: Use `authID` for matching subject node
-- [ ] tdIdea: Call `breaker(match.atoms)` instead of `breaker(match)` so that they are identical
-- [ ] tdLo: Move term extraction from `breaker(match)` to a subfunction
-- [ ] tdHi: Create a unique `dbId` prop when creating a node
-- [ ] tdWait: Return `ember.dbId` to the frontend when creating new statements
-- [ ] tdWait: Create a unique `dbId` prop `ember.dbId` to the frontend when creating new statements
-- [ ] tdIdea: enforce the noun tag on `match.atoms.subject`
+- [ ] tdHi: Return `Ember.dbId` to the frontend when creating new statements
+
+- [ ] tdLo: Move term extraction from `breaker(Match)` to a subfunction
+
+- [ ] tdIdea: enforce the noun tag on `Match.atoms.subject`
+- [ ] tdIdea: Call `breaker(Match.atoms)` instead of `breaker(Match)` so that they are identical
 
 This needs editing - I wrote it a few days ago, and at that point we were going to be passing userId from the client rather than generating it in the server.
 
@@ -213,13 +214,15 @@ I'll also need to incorporate the authentication token into the request.
 
 > WIP
 
+- [ ] tdHi: Set the `authId` prop when creating a node
+
 ### 2E. `/auth/*`
 
 #### 2E1. `POST "/auth/signin/magic-link"`
 
-- [ ] tdWait: Create an endpoint that both signs in and creates a new user
-- [ ] tdWait: Create a new user node when a new user signs up
-- [ ] tdWait: Assign the managerEmail to the user node on creation
+- [ ] tdHi: Create an endpoint that both signs in and creates a new user
+- [ ] tdHi: Create a new user node when a new user signs up
+- [ ] tdHi: Assign the managerEmail to the user node on creation
 
 ```ts
   reqMagicLink(/* leads to "/" */);
@@ -237,6 +240,8 @@ I'll also need to incorporate the authentication token into the request.
 ```
 
 #### 2E2. `GET "/auth/verify?token={token}"`
+
+- [ ] tdHi: Create an auth route to verify the session token
 
 Request is get with params
 
@@ -293,7 +298,7 @@ Request is `POST` with credentials included
 
 #### 2F1. `POST "/send/ping"`
 
-- [ ] tdHi: Pull the manager's email from the user node
+- [ ] tdWait: Pull the manager's email from the user node
 
 ```ts
 function sendPing(/* leads to "/" */): Promise<PingRes> {};
