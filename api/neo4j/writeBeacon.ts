@@ -1,143 +1,131 @@
 import * as dotenv from "dotenv";
 import neo4j, { Driver } from "neo4j";
-import type { Entry as ServerEntry } from "types/outputTypes.ts";
-import { creds as c } from "utils/creds/neo4j.ts";
+import type { Lantern, Ash, Ember, DBError } from "types/beaconTypes.ts";
+import type { Attempt } from "types/serverTypes.ts";
+import { creds as c } from "utils/auth/neo4jCred.ts";
 
 dotenv.load({ export: true });
 
-export async function writeBeacon(entry: ServerEntry)/* : Promise<ServerEntry> */ {
-  console.groupCollapsed(`=== writeBeacon(${entry.input}) ===`);
-  let driver: Driver;
-  let newEntry/* :ServerEntry */;
-    
-  const subjectTerms:string[] = entry.atoms.server.subject.head;
-  const objectTerms:string[] = entry.atoms.server.object.head;
-  const verbTerms:string[] = entry.atoms.server.verb.head;
+export async function writeBeacon(entry:Lantern):Promise<Attempt> {
+  console.groupCollapsed(`====== FUNCTION writeBeacon(${entry.input}) ======`);
+
+  let driver: Driver | undefined;
+  let attempt: Attempt;
+  let attemptError: DBError | undefined;
 
   try {
+    console.info("Initialising Driver...");
     driver = neo4j.driver(c.URI, neo4j.auth.basic(c.USER, c.PASSWORD));
     await driver.getServerInfo();
+  
+    const userId = entry.authId ? entry.authId : "test-auth-id";
 
-    // =1 Node Queries
-    /* Subject Query */ await driver.executeQuery(
-      // [ ] tdMd: Use authentication ID for matching subject 
-      `MERGE (subject {name: $name})`,
-      { name: subjectTerms[0] },
-      { database: "neo4j" },
-    );
-  
-    /* Object Query */ await driver.executeQuery(
-      `MERGE (object:Person {name: $name})`,
-      { name: objectTerms[0] },
-      { database: "neo4j" },
-    );
-  
-    // =1 Edge Queries
-    /* Verb Props */
-    const verbProps = {
-      id: entry.id ?? "no id",
-      presetId: entry.presetId ?? "no preset id",
-      input: entry.input,
-      atoms: {
-        client: {
-          subject: entry.atoms.client.subject,
-          verb: entry.atoms.client.verb,
-          object: entry.atoms.client.object,
-          adverbial: entry.atoms.client.adverbial
-        },
-        server: {
-          subject: entry.atoms.server.subject,
-          verb: entry.atoms.server.verb,
-          object: entry.atoms.server.object,
-          adverbial: entry.atoms.server.adverbial
+    console.info("Executing Cypher Query...");
+    const result = await driver.executeQuery(
+      `MERGE (s:User {name:$sProps.name})-[v:VERB]->(o:Concept {name:$oProps.name})
+      SET v.dbId = randomUUID(),
+          v += $vProps
+      RETURN s, v, o`,
+      {
+        sProps: { name: entry.shards.subject.head },
+        oProps: { name: entry.shards.object.head },
+        vProps: {
+          authId: userId,
+          presetId: entry.presetId ?? "",
+          input: entry.input,
+          name: entry.shards.verb.head,
+          atoms_subject: entry.atoms.subject,
+          atoms_verb: entry.atoms.verb,
+          atoms_object: entry.atoms.object,
+          atoms_adverbial: entry.atoms.adverbial,
+          shards_subject_head: entry.shards.subject.head,
+          shards_subject_phrase: entry.shards.subject.phrase,
+          shards_subject_article: entry.shards.subject.article,
+          shards_subject_quantity: entry.shards.subject.quantity,
+          shards_subject_descriptors: entry.shards.subject.descriptors,
+          shards_verb_head: entry.shards.verb.head,
+          shards_verb_phrase: entry.shards.verb.phrase,
+          shards_verb_descriptors: entry.shards.verb.descriptors,
+          shards_object_head: entry.shards.object.head,
+          shards_object_phrase: entry.shards.object.phrase,
+          shards_object_article: entry.shards.object.article,
+          shards_object_quantity: entry.shards.object.quantity,
+          shards_object_descriptors: entry.shards.object.descriptors,
+          shards_adverbial: entry.shards.adverbial,
+          isPublic: entry.isPublic ?? false,
+          isArchived: entry.isArchived ?? false,
+          isSnoozed: entry.isSnoozed ?? false,
+          category: entry.category ?? "",
+          actions: [],
+          errorLogs: []
         }
       },
-      isPublic: entry.isPublic ?? false,
-      isArchived: entry.isArchived ?? false,
-      isSnoozed: entry.isSnoozed ?? false,
-      category: entry.category ?? "",
-      actions: entry.actions ?? []
-    };
-    
-    /* Verb Query Builder */
-    const query =`
-      MATCH (s {name: $subject})
-      MATCH (o {name: $object})
-      MERGE (s)-[v :\`${verbTerms[0]} \`]->(o)
-      SET v = $verbProps
-      RETURN v
-    `;
-
-    /* Verb Query */
-    const result = await driver.executeQuery(
-      query,
-      {
-        subject: subjectTerms[0],
-        object: objectTerms[0],
-        verbProps: {
-          id: verbProps.id,
-          presetId: verbProps.presetId,
-          input: verbProps.input,
-          atomsClientSubject: verbProps.atoms.client.subject,
-          atomsClientVerb: verbProps.atoms.client.verb,
-          atomsClientObject: verbProps.atoms.client.object,
-          atomsClientAdverbial: verbProps.atoms.client.adverbial,
-          atomsServerSubjectHead: verbProps.atoms.server.subject.head,
-          atomsServerSubjectArticle: verbProps.atoms.server.subject.article,
-          atomsServerSubjectQuantity: verbProps.atoms.server.subject.quantity,
-          atomsServerSubjectDescriptors: verbProps.atoms.server.subject.descriptors,
-          atomsServerSubjectPhrase: verbProps.atoms.server.subject.phrase,
-          atomsServerVerbHead: verbProps.atoms.server.verb.head,
-          atomsServerVerbPhrase: verbProps.atoms.server.verb.phrase,
-          atomsServerVerbDescriptors: verbProps.atoms.server.verb.descriptors,
-          atomsServerObjectHead: verbProps.atoms.server.object.head,
-          atomsServerObjectArticle: verbProps.atoms.server.object.article,
-          atomsServerObjectQuantity: verbProps.atoms.server.object.quantity,
-          atomsServerObjectDescriptors: verbProps.atoms.server.object.descriptors,
-          atomsServerObjectPhrase: verbProps.atoms.server.object.phrase,
-          isPublic: verbProps.isPublic,
-          isArchived: verbProps.isArchived,
-          isSnoozed: verbProps.isSnoozed,
-          category: verbProps.category,
-          actions: verbProps.actions
-        },
-      },
-      { database: "neo4j" },
+      { database: "neo4j" }
     );
-  
-    // =1 Build New Entry
-    newEntry = {
-      statement: result.records[0].get("v"),
-      /* ...entry, */
-      /* id: result.records[0].get("id") */
-    };
 
-  } catch (err) {
-    console.warn(`Connection error`);
-    console.warn(err);
-    console.warn(err instanceof Error ? err.cause : "Cause Unknown");
-    
+    const record = result.records[0].get("v").properties;
+
+    console.groupCollapsed(`Ember`);
+    const ember: Ember = {
+      authId: record.authId,
+      dbId: record.dbId,
+      presetId: record.presetId,
+      input: record.input,
+      atoms: {
+        subject: record.atoms_subject,
+        verb: record.atoms_verb,
+        object: record.atoms_object,
+        adverbial: record.atoms_adverbial
+      },
+      category: record.category,
+      isPublic: record.isPublic,
+      isArchived: record.isArchived,
+      isSnoozed: record.isSnoozed,
+      actions: record.actions,
+      errorLogs: record.errorLogs
+    };
+    console.info(`Ember assembled`);
+    console.log(ember);
     console.groupEnd();
 
-    return {...entry, error: { isError: true, errorCause: "Connection Error" }};
+    attempt = { record: ember };
+  } catch (err) {
+    console.groupCollapsed(`--- Error ---`);
+
+    console.groupCollapsed(`Details`);
+    console.warn(err);
+    const cause = err instanceof Error ? err.cause : "Cause Unknown";
+    console.info(`Error Cause:`);
+    console.warn(cause);
+    console.groupEnd();
+
+    console.groupCollapsed(`Ash`);
+    attemptError = { isError: true, errorCause: cause };
+    attempt = {
+      record: { ...entry, errorLogs: [attemptError] },
+      error: attemptError
+    }
+    console.log(attempt);
+    console.groupEnd();
+
+    console.groupEnd();
   } finally {
-    await driver?.close();
+    console.info("Closing Driver...");
+    driver?.close();
   }
 
   console.groupEnd();
-
-  return newEntry;
+  console.info(`==================================================`);
+  return attempt;
 }
 
-export async function writeBeacons(entries: ServerEntry[]) {
-  console.groupCollapsed(`=== writeBeacons(${entries.length}) ===`);
+export async function writeBeacons(entries:Lantern[]) {
+  console.groupCollapsed(`====== FUNCTION writeBeacons(${entries.length} entries) ======`);
   let i = 0;
-
   for (const entry of entries) {
-    console.groupCollapsed(`=== ${i}: ${entry.input} ===`);
+    console.log(`Passing Beacon ${i}: "${entry.input}"`);
     await writeBeacon(entry);
     i++;
-    console.groupEnd();
   };
   console.groupEnd();
 }

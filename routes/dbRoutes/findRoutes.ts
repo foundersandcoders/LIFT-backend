@@ -1,7 +1,7 @@
 import { Router } from "oak";
 import { Search } from "types/serverTypes.ts";
-import { checkId } from "utils/checkId.ts";
-import { checkName } from "utils/checkName.ts";
+import { checkId } from "../../utils/check/checkId.ts";
+import { checkName } from "../../utils/check/checkName.ts";
 import {
   findUserById,
   findUserByName,
@@ -70,7 +70,7 @@ router.post("/user", async (ctx) => {
   console.info("=======================");
 });
 
-// [ ] tdFix: This is just returning the subject's name
+// [ ] tdLo: This is just returning the subject's name
 router.get("/subject/:subject", async (ctx) => {
   try {
     const records = await findSubject(ctx.params.subject);

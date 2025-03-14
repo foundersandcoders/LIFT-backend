@@ -11,8 +11,6 @@ router.post("/ping", async (ctx) => {
   console.group(`=== POST("/email/ping") ===`);
     const data:EmailRequest = await ctx.request.body.json();
 
-    // [ ] tdHi: Pull the manager's email from the user node
-
     const { userId, userName, managerName, managerEmail } = data;
 
     console.table([ /* Show Parameters */

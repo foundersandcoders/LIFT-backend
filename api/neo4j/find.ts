@@ -1,5 +1,5 @@
 import neo4j, { Driver } from "neo4j";
-import { creds as c } from "utils/creds/neo4j.ts";
+import { creds as c } from "../../utils/auth/neo4jCred.ts";
 
 export async function findUserById(
   id: number,
@@ -74,7 +74,7 @@ export async function findUserByName(
   publicOnly: boolean = true
 ): Promise<string[]> {
   console.group(`=== findUserByName(${name}, ${publicOnly}) ===`);
-    let driver:(Driver|null) = null // [ ] tdCheck: What's the type of driver??
+    let driver:(Driver|null) = null;
     let records, result;
     const statements:string[] = [];
 
@@ -97,9 +97,9 @@ export async function findUserByName(
           {database: 'neo4j'}
         );
       }
-      records = result.records;
+      records = result?.records;
 
-      for (const record of records) {
+      if (records) for (const record of records) {
         console.log(record);
         statements.push(record.get("v"));
       }
@@ -116,9 +116,6 @@ export async function findUserByName(
 
   return statements;
 }
-
-// [ ] tdMd: store Client.Atoms
-// [ ] tdMd: store Server.Atoms
 
 export async function findSubject(
   subject: string

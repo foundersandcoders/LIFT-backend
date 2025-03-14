@@ -1,59 +1,57 @@
 import { Router } from "oak";
-// import type * as Client from "types/inputTypes.ts";
-// import type * as Server from "types/outputTypes.ts";
-import type { Entry as ClientEntry, Atoms as ClientAtoms } from "types/inputTypes.ts";
-import type { Entry as ServerEntry, Atoms as ServerAtoms } from "types/outputTypes.ts";
-import { breaker } from "utils/language/breaker.ts";
+import type { Match, Lantern, Ember, Ash, Shards, Atoms } from "types/beaconTypes.ts";
+import type { Attempt } from "types/serverTypes.ts";
+import { breaker } from "../../utils/convert/breakInput.ts";
 import { writeBeacon } from "neo4jApi/writeBeacon.ts";
 
 const router = new Router();
 const routes: string[] = [];
 
-// [ ] tdMd: pass the invidiual Atoms to the breaker instead of the whole statement
 router.post("/newBeacon", async (ctx) => {
-  console.groupCollapsed(`=== POST: /write/newBeacon ===`);
+  console.groupCollapsed(`========= POST: /write/newBeacon =========`);
   try {
-    const body:ClientEntry = await ctx.request.body.json();
-    console.log(`body.input: ${body.input}`);
+    const match:  Match = await ctx.request.body.json();
+    const shards: Shards = breaker(match);
+    const candidate: Lantern = { ...match, shards: shards };    
+    const attempt: Attempt = await writeBeacon(candidate);
+    
+    console.groupCollapsed(`Try: Done`);
+    if (attempt.error) {
+      console.log(`Error`);
 
-    const serverAtoms:ServerAtoms = breaker(body);
-    const entry:ServerEntry = {
-      ...body,
-      atoms: {
-        client: body.atoms,
-        server: serverAtoms
-      },
-      actions: []
-    };
-
-    // [ ] tdHi: Reinstate the type for newEntry
-    const newEntry/* :ServerEntry */ = await writeBeacon(entry);
-
-    if (newEntry.error?.isError) {
-      console.log("Error Creating Beacon");
       ctx.response.status = 400;
-      ctx.response.body = { newEntry };
+      ctx.response.body = attempt.record;
+
+      console.warn(ctx.response);
     } else {
-      console.log("Beacon Created");
+      console.log(`Success`);
+
       ctx.response.status = 200;
-      ctx.response.body = { newEntry };
+      ctx.response.body = attempt.record;
+      
+      console.log(ctx.response);
     }
+    console.groupEnd();
   } catch (error) {
+    console.groupCollapsed(`Try: Catch`);
     console.error("Error processing entry:", error);
+
+    const details = error instanceof Error ? error.message : String(error);
+
     ctx.response.status = 400;
-    ctx.response.body = {
-      details: error instanceof Error ? error.message : String(error)
-    };
+    ctx.response.body = { details };
+
+    console.error(ctx.response);
+    console.groupEnd();
   }
-  
   console.groupEnd();
 });
 
-router.post("/createUser", (ctx) => {
-  console.log("Not Implemented");
+router.post("/newUser", (ctx) => {
+  console.log("Not Implemented")
 });
 
 routes.push("/newBeacon");
-routes.push("/createUser");
+routes.push("/newUser");
 
 export { router as writeRouter, routes as writeRoutes };
