@@ -15,11 +15,11 @@ async function customCors(ctx: Context, next: () => Promise<unknown>) {
     In production, FRONTEND_ORIGIN will be set (e.g., "https://lift-backend.deno.dev/").
     In development, it will default to "*" if not provided.
   */
-  console.info(``);
-  console.info(`------------------------------------------------`);
-  console.info(``);
-  console.log(`Allowed Origin ${allowedOrigin}`);
-  console.info(``);
+  console.info(`|`);
+  console.info(`|-----------------------------------------------`);
+  console.info(`|`);
+  console.log(`| Allowed Origin ${allowedOrigin}`);
+  console.info(`|`);
 
   ctx.response.headers.set(
     "Access-Control-Allow-Origin",
@@ -51,12 +51,14 @@ app.use(router.allowedMethods());
 app.listen({ port });
 
 console.info(``);
-console.info(`======================================`);
-console.info(`======[ WELCOME • TO • BEACONS ]======`);
-console.info(`============= Port ${port} ==============`);
-console.info(``);
-
+console.info(`|====================================|`);
+console.info(`|=====| WELCOME | TO | BEACONS |=====|`);
+console.info(`|==============| ${port} |==============|`);
+console.info(`|`);
+console.groupCollapsed(`|=== DB Schema ===`);
 await constrainUser();
 await constrainVerb();
+console.groupEnd();
+console.info(`|================`);
 
 Deno.cron("Keep the DB awake", nudgeSched, nudgeDb);

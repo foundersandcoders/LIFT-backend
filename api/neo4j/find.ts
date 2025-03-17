@@ -1,12 +1,13 @@
 import neo4j, { Driver } from "neo4j";
 import { creds as c } from "../../utils/auth/neo4jCred.ts";
 
-export async function findUserById(
-  id: number,
-  publicOnly: boolean = true
-):Promise<string[]> {
-  console.group(`=== Running findUserById() ===`);
-    console.log(`Received (id: ${id}, publicOnly: ${publicOnly})`);
+export async function findUserById( authId: string, publicOnly: boolean = true ):Promise<string[]> {
+  console.group(`|=== findUserById() ===`);
+  console.info(`| Parameters`);
+  console.table([
+    {is: "authId", value: authId},
+    {is: "publicOnly", value: publicOnly}
+  ])
 
     let driver: Driver | null = null, records, result;
     const statements:string[] = [];
@@ -17,22 +18,22 @@ export async function findUserById(
 
       console.info(`Selecting Query Type`);
       
-      if (id && publicOnly) {
-        console.info(`Query: Public Beacons for user #${id}`);
+      if (authId && publicOnly) {
+        console.info(`Query: Public Beacons for user #${authId}`);
         result = await driver.executeQuery(
           `MATCH statement =
-            (user {id: $id})-[link {isPublic: true}]-()
+            (user {authId: $authId})-[link {isPublic: true}]-()
           RETURN statement`,
-          { id },
+          { authId },
           {database: 'neo4j'}
         );
-      } else if (id && !publicOnly) {
-        console.info(`Query: All Beacons for user #${id}`);
+      } else if (authId && !publicOnly) {
+        console.info(`Query: All Beacons for user #${authId}`);
         result = await driver.executeQuery(
           `MATCH statement =
-            (user {id: $id})-[link]-()
+            (user {authId: $authId})-[link]-()
           RETURN statement`,
-          { id },
+          { authId },
           {database: 'neo4j'}
         );
       } else {
@@ -69,23 +70,23 @@ export async function findUserById(
   return statements;
 }
 
-export async function findUserByName(
-  name: string,
-  publicOnly: boolean = true
-): Promise<string[]> {
+export async function findUserByName( name: string, publicOnly: boolean = true ): Promise<string[]> {
   console.group(`|=== findUserByName() ===`);
+  console.info(`| Parameters`);
   console.table([
     {is: "name", value: name},
     {is: "publicOnly", value: publicOnly}
   ])
 
-  let driver:(Driver|null) = null;
-  let records, result;
+  let driver: Driver | undefined;
   const statements:string[] = [];
 
   try {
+    console.info("| Initialising Driver...");
     driver = neo4j.driver(c.URI, neo4j.auth.basic(c.USER, c.PASSWORD));
     await driver.getServerInfo();
+
+    let result;
 
     if (name && publicOnly) {
       result = await driver.executeQuery(
@@ -104,22 +105,21 @@ export async function findUserByName(
         {database: 'neo4j'}
       );
     }
-    records = result?.records;
+    
+    for (const record of result.records) { statements.push(record.get("v").properties.input) };
 
-    if (records) for (const record of records) {
-      console.log(record);
-      statements.push(record.get("v"));
-    }
+    console.info(`| Return`);
+    console.table(statements);
   } catch (err) {
-    console.error(`Neo4j Error: ${err}`);
+    console.error(`| Neo4j Error: ${err}`);
   } finally {
-    console.info(`Closing Driver`);
+    console.info(`| Closing Driver`);
     await driver?.close();
-    console.info(`Driver Closed`);
+    console.info(`| Driver Closed`);
   }
 
   console.groupEnd();
-  console.info("========================");
+  console.info("|========================");
 
   return statements;
 }

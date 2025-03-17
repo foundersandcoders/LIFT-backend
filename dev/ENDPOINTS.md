@@ -121,6 +121,8 @@ Some of these will need to be updated to include the session token.
 
 This is the endpoint you should call to get the list of entries to show on the user's screen.
 
+- [ ] tdHi: Refine the verb data included in the return object
+<!-- note: Implement logIn -->
 - [ ] tdWait: This should check for and pass the authentication ID
 
 It's a `POST` endpoint because it's designed to take a JSON body.

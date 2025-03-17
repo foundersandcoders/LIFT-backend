@@ -7,7 +7,10 @@ import { creds as c } from "utils/auth/neo4jCred.ts";
 dotenv.load({ export: true });
 
 export async function writeBeacon(entry:Lantern):Promise<Attempt> {
-  console.groupCollapsed(`====== FUNCTION writeBeacon(${entry.input}) ======`);
+  console.groupCollapsed(`|=== writeBeacon(${entry.input}) ===`);
+  console.table([
+    {is: "input", value: entry.input}
+  ])
 
   let driver: Driver | undefined;
   let attempt: Attempt;

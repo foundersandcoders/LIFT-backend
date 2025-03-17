@@ -4,24 +4,20 @@ import { buildPing } from "content/builders/buildPing.ts";
 const resendKey = Deno.env.get("RESEND_KEY");
 
 export async function sendPing (
-  authId: number,
+  authId: string,
   userName: string,
-  readerName: string,
-  readerEmail: string
+  managerName: string,
+  managerEmail: string
 ): Promise<Response | Error> {
-  console.group(`|=== Running sendPing() ===`);
+  console.group(`|=== sendPing() ===`);
+  console.info(`| Parameters`);
   console.table([
     {is: "authId", value: authId},
     {is: "userName", value: userName},
-    {is: "readerName", value: readerName},
-    {is: "readerEmail", value: readerEmail}
+    {is: "managerName", value: managerName}
   ])  
   
-  console.group(`|=== Calling buildPing() ===`);
-  console.log(`| Sending (${authId}, ${userName}, ${readerName})`);
-  const content:PingInfo = await buildPing(authId, userName, readerName);
-  console.groupEnd();
-  console.info(`|===========================`);
+  const content:PingInfo = await buildPing(authId, userName, managerName);
 
   if (content.isValid) {
     console.info(`| Fetching from Resend API`);
@@ -33,7 +29,7 @@ export async function sendPing (
       },
       body: JSON.stringify({
         from: 'Beacons <nudger@beacons.ink>',
-        to: `${readerName} <${readerEmail}>`,
+        to: `${managerName} <${managerEmail}>`,
         subject: `${userName} Lit a Beacon`,
         html: content.content,
       }),
@@ -42,7 +38,7 @@ export async function sendPing (
     if (res.ok) {
       const data = await res.json();
       console.info(`| Email sent successfully`);
-      console.log(data);
+      console.table(data);
 
       console.groupEnd();
       console.info(`|===========================`);
@@ -53,7 +49,7 @@ export async function sendPing (
       });
     } else {
       const errorData = await res.text();
-      console.warn("| Error:", errorData);
+      console.warn(`| Error: ${errorData}`);
 
       console.groupEnd();
       console.info(`|===========================`);
@@ -64,6 +60,6 @@ export async function sendPing (
     console.groupEnd();
     console.info(`|===========================`);
 
-    return new Error(`| Cannot send email: No entries to send`);
+    return new Error(`Cannot send email: No entries to send`);
   }
 };

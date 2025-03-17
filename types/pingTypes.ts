@@ -1,5 +1,5 @@
 export interface PingRequest {
-  authId: number,
+  authId: string,
   userName: string,
   managerName: string,
   managerEmail: string

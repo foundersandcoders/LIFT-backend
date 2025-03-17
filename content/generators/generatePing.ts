@@ -1,48 +1,43 @@
-import { PingProps, PingInfo } from "types/pingTypes.ts";
+import { PingInfo } from "types/pingTypes.ts";
 
-export function generatePing(entries: string[], userName: string, managerName: string) {
-  console.groupCollapsed(`|=== Running generatePing() ===`);
-
-  console.group(`| Parameters`);
-  console.table([ /* Show Parameters */
+export function generatePing(entries: string[], userName: string, managerName: string): PingInfo {
+  console.groupCollapsed(`|=== generatePing() ===`);
+  console.info(`| Parameters`);
+  console.table([
     { is: "entries", value: entries },
     { is: "userName", value: userName },
     { is: "managerName", value: managerName }
   ]);
-  console.groupEnd();
 
-  console.group(`| New Ping`);
   const ping = new PingInfo();
-  console.table([ /* Show Ping */
+  console.info(`| New Ping`);
+  console.table([
     {is: "isValid", value: ping.isValid},
-    {is: "content", value: ping.content}
+    {is: "content length", value: ping.content?.length}
   ])
-  console.groupEnd();
 
   const quantity = entries.length;
   const noun = quantity == 1 ? "beacon" : "beacons";
   const article = quantity >= 2 ? "some" : quantity == 1 ? "a " : "no";
 
-  console.group(`| Final Ping`);
   if (quantity >= 1) {
     ping.isValid = true;
-    ping.content = (`<div><p>
-      Hi ${managerName},
-      <br/><br/>
-      ${userName} has shared ${article} ${noun} with you.
-      <br/><br/>
+    ping.content = (`<div>
+      <p>Hi ${managerName},</p>
+      <p>${userName} has shared ${article} ${noun} with you.</p>
       <ul>
         ${entries.map(entry => `<li>${entry}</li>`).join('')}
       </ul>
-    </p></div>`);
+    </div>`);
   }
-  console.table([ /* Show Ping */
+  console.info(`| Return`);
+  console.table([
     {is: "isValid", value: ping.isValid},
-    {is: "content", value: ping.content}
+    {is: "content length", value: ping.content?.length}
   ])
-  console.groupEnd();
 
   console.groupEnd();
   console.info(`|==============================`);
+
   return ping;
 }
