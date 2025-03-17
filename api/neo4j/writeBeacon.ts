@@ -1,6 +1,6 @@
 import * as dotenv from "dotenv";
 import neo4j, { Driver } from "neo4j";
-import type { Lantern, Ash, Ember, DBError } from "types/beaconTypes.ts";
+import type { Lantern, Ember, DBError } from "types/beaconTypes.ts";
 import type { Attempt } from "types/serverTypes.ts";
 import { creds as c } from "utils/auth/neo4jCred.ts";
 
@@ -65,6 +65,7 @@ export async function writeBeacon(entry:Lantern):Promise<Attempt> {
 
     const record = result.records[0].get("v").properties;
 
+    // [ ] tdIdea: Separate the Ember assignment into a new function that instantiates a Class
     console.groupCollapsed(`Ember`);
     const ember: Ember = {
       authId: record.authId,

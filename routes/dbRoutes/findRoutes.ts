@@ -35,7 +35,6 @@ router.post("/user", async (ctx) => {
 
     console.log(search);
 
-    // [ ] tdWait: This should check for and pass the authentication ID
     let records:string[] = [];
     switch (search.type) {
       case "id": {

@@ -78,6 +78,7 @@ These are the request formats for the endpoints that either (a) are working or (
 
 Some of these will need to be updated to include the session token.
 
+<!-- note: Implement logIn First -->
 - [ ] tdWait: Update endpoints to allow receipt of auth token
 
 - [ ] tdCheck: What's the type of driver??
@@ -104,6 +105,7 @@ Some of these will need to be updated to include the session token.
 
 #### 2B3. `PUT "/edit/editManager"`
 
+<!-- note: Implement createUser first -->
 - [ ] tdWait: Edit the managerEmail on the user node
 
 ```jsonc
@@ -119,6 +121,8 @@ Some of these will need to be updated to include the session token.
 #### 2C1. `POST "/find/user"`
 
 This is the endpoint you should call to get the list of entries to show on the user's screen.
+
+- [ ] tdWait: This should check for and pass the authentication ID
 
 It's a `POST` endpoint because it's designed to take a JSON body.
 
@@ -161,9 +165,10 @@ It's a `POST` endpoint because it's designed to take a JSON body.
 
 - [ ] tdHi: Generate a unique `dbID` prop on new `Beacon`
 - [ ] tdHi: Correctly assign nested props to `Beacon`
+- [x] tdHi: Return `Ember.dbId` to the frontend when creating new statements
 
+<!-- note: Implement Login first -->
 - [ ] tdWait: Use `authID` for matching subject node
-- [ ] tdHi: Return `Ember.dbId` to the frontend when creating new statements
 
 - [ ] tdLo: Move term extraction from `breaker(Match)` to a subfunction
 
@@ -264,6 +269,8 @@ Request is get with params
 
 #### 2E3. `GET "/auth/user"`
 
+<!-- note: Implement createUser -->
+<!-- note: Implement logIn -->
 - [ ] tdWait: Create a route to get the user details
 
 Request is `GET` with credentials included
@@ -284,6 +291,7 @@ Request is `GET` with credentials included
 
 #### 2E4. `POST "/auth/signout"`
 
+<!-- note: Implement logIn -->
 - [ ] tdWait: Create a route to sign out the user
 
 Request is `POST` with credentials included
@@ -298,6 +306,7 @@ Request is `POST` with credentials included
 
 #### 2F1. `POST "/send/ping"`
 
+<!-- note: Implement createUser -->
 - [ ] tdWait: Pull the manager's email from the user node
 
 ```ts
