@@ -73,43 +73,50 @@ export async function findUserByName(
   name: string,
   publicOnly: boolean = true
 ): Promise<string[]> {
-  console.group(`=== findUserByName(${name}, ${publicOnly}) ===`);
-    let driver:(Driver|null) = null;
-    let records, result;
-    const statements:string[] = [];
+  console.group(`|=== findUserByName() ===`);
+  console.table([
+    {is: "name", value: name},
+    {is: "publicOnly", value: publicOnly}
+  ])
 
-    try {
-      driver = neo4j.driver(c.URI, neo4j.auth.basic(c.USER, c.PASSWORD));
-      await driver.getServerInfo();
+  let driver:(Driver|null) = null;
+  let records, result;
+  const statements:string[] = [];
 
-      if (name && publicOnly) {
-        result = await driver.executeQuery(
-          `MATCH (s {name: $name})-[v {isPublic: true}]-(o)
-          RETURN v`,
-          { name },
-          {database: 'neo4j'}
-        );
-      } else if (name && !publicOnly) {
-        result = await driver.executeQuery(
-          `MATCH (s {name: $name})-[v]-(o)
-          RETURN v`,
-          { name },
-          {database: 'neo4j'}
-        );
-      }
-      records = result?.records;
+  try {
+    driver = neo4j.driver(c.URI, neo4j.auth.basic(c.USER, c.PASSWORD));
+    await driver.getServerInfo();
 
-      if (records) for (const record of records) {
-        console.log(record);
-        statements.push(record.get("v"));
-      }
-    } catch (err) {
-      console.error(`Neo4j Error: ${err}`);
-    } finally {
-      console.info(`Closing Driver`);
-      await driver?.close();
-      console.info(`Driver Closed`);
+    if (name && publicOnly) {
+      result = await driver.executeQuery(
+        `MATCH (s)-[v {isPublic: true}]-(o)
+        WHERE s.name[0] = $name
+        RETURN v`,
+        { name },
+        {database: 'neo4j'}
+      );
+    } else if (name && !publicOnly) {
+      result = await driver.executeQuery(
+        `MATCH (s)-[v]-(o)
+        WHERE s.name[0] = $name
+        RETURN v`,
+        { name },
+        {database: 'neo4j'}
+      );
     }
+    records = result?.records;
+
+    if (records) for (const record of records) {
+      console.log(record);
+      statements.push(record.get("v"));
+    }
+  } catch (err) {
+    console.error(`Neo4j Error: ${err}`);
+  } finally {
+    console.info(`Closing Driver`);
+    await driver?.close();
+    console.info(`Driver Closed`);
+  }
 
   console.groupEnd();
   console.info("========================");
@@ -219,7 +226,6 @@ export async function findVerb(
       const object = record.get("q.name");
       statements.push(`${subject} ${verb} ${object}`);
     }
-    
   } catch (err) {
     console.error("Error in get function:", err);
   } finally {
