@@ -1,50 +1,32 @@
 import { findUserById, findUserByName } from "neo4jApi/find.ts";
 import { generatePing } from "content/generators/generatePing.ts";
+import { PingInfo } from "types/pingTypes.ts";
 
-export async function buildPing(userId: number = 0, userName: string, managerName: string) {
-  console.group(`=== Running buildPing() ===`);
-    console.log(`Received (${userId}, ${userName}, ${managerName})`);
+export async function buildPing(authId: string, userName: string, managerName: string) {
+  console.group(`|=== buildPing() ===`);
+  console.info(`| Parameters`);
+  console.table([
+    {is: "authId", value: authId},
+    {is: "userName", value: userName},
+    {is: "managerName", value: managerName}
+  ])
+  
+  const entries = authId != "0" ?
+    await findUserById(authId, true) :
+    await findUserByName(userName, true);
+  
+  const ping: PingInfo = generatePing(entries, userName, managerName);
 
-    let entries: string[] = [];
+  !ping.isValid ?
+    console.warn(`| No beacons found for ${userName}`) :
+    console.log(`| Ping for ${userName} generated successfully`);
 
-    if (userId != 0) {
-      console.log(`userId is ${userId}`);
-      console.group(`=== Calling findUserById() ===`);
-        console.log(`Sending (${userId}, true)`);
-        entries = await findUserById(userId, true);
-        console.groupEnd();
-      console.info(`==========================`);
-    } else {
-      console.log(`userId is ${userId}`);
-      console.group(`=== Calling findUserByName() ===`);
-        console.log(`Sending (${userName}, true)`);
-        entries = await findUserByName(userName, true);
-        console.groupEnd();
-      console.info(`==========================`);
-    }
+  console.group(`|--- Ping to Send ---`);
+  console.log(ping);
+  console.groupEnd();
 
-    if (entries.length > 0) {
-      console.groupCollapsed(`=== Beacon Log ===`);
-        for (let x = 0; x < entries.length; x++) {
-          console.log(`Beacon ${x + 1} • ${entries[x]}`);
-        };
-      console.groupEnd();
-      console.info(`==================`);
-    }
+  console.groupEnd();
+  console.info(`|===========================`);
 
-    console.group(`=== Calling generatePing() ===`);
-      const content = generatePing(entries, userName, managerName);
-      
-      if (!content.sendable) {
-        console.warn(`Cannot send email: No beacons found for ${userName}`);
-      } else {
-        console.log(`Email generated successfully`);
-      }
-      console.groupEnd();
-    console.info(`==============================`);
-
-    console.groupEnd();
-  console.info(`===========================`);
-
-  return content;
+  return ping
 }

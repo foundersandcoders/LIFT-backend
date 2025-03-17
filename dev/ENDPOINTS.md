@@ -14,7 +14,6 @@
     - [2X2. `GET "/get/v"`](#2x2-get-getv)
   - [2D. `/write/*`](#2d-write)
     - [2D1. `POST "/write/newBeacon"`](#2d1-post-writenewbeacon)
-    - [2D2. `POST "/write/newUser"`](#2d2-post-writenewuser)
   - [2E. `/auth/*`](#2e-auth)
     - [2E1. `POST "/auth/signin/magic-link"`](#2e1-post-authsigninmagic-link)
     - [2E2. `GET "/auth/verify?token={token}"`](#2e2-get-authverifytokentoken)
@@ -122,6 +121,8 @@ Some of these will need to be updated to include the session token.
 
 This is the endpoint you should call to get the list of entries to show on the user's screen.
 
+- [ ] tdHi: Refine the verb data included in the return object
+<!-- note: Implement logIn -->
 - [ ] tdWait: This should check for and pass the authentication ID
 
 It's a `POST` endpoint because it's designed to take a JSON body.
@@ -163,15 +164,12 @@ It's a `POST` endpoint because it's designed to take a JSON body.
 
 #### 2D1. `POST "/write/newBeacon"`
 
-- [ ] tdHi: Generate a unique `dbID` prop on new `Beacon`
-- [ ] tdHi: Correctly assign nested props to `Beacon`
+- [x] tdHi: Generate a unique `dbID` prop on new `Beacon`
+- [x] tdHi: Correctly assign nested props to `Beacon`
 - [x] tdHi: Return `Ember.dbId` to the frontend when creating new statements
-
 <!-- note: Implement Login first -->
 - [ ] tdWait: Use `authID` for matching subject node
-
 - [ ] tdLo: Move term extraction from `breaker(Match)` to a subfunction
-
 - [ ] tdIdea: enforce the noun tag on `Match.atoms.subject`
 - [ ] tdIdea: Call `breaker(Match.atoms)` instead of `breaker(Match)` so that they are identical
 
@@ -215,17 +213,12 @@ And here's the format I'll need to change it to...
 
 I'll also need to incorporate the authentication token into the request.
 
-#### 2D2. `POST "/write/newUser"`
-
-> WIP
-
-- [ ] tdHi: Set the `authId` prop when creating a node
-
 ### 2E. `/auth/*`
 
 #### 2E1. `POST "/auth/signin/magic-link"`
 
 - [ ] tdHi: Create an endpoint that both signs in and creates a new user
+- [ ] tdHi: Set the `authId` prop when creating a user node
 - [ ] tdHi: Create a new user node when a new user signs up
 - [ ] tdHi: Assign the managerEmail to the user node on creation
 
@@ -246,7 +239,8 @@ I'll also need to incorporate the authentication token into the request.
 
 #### 2E2. `GET "/auth/verify?token={token}"`
 
-- [ ] tdHi: Create an auth route to verify the session token
+<!-- note: Implement logIn -->
+- [ ] tdWait: Create an auth route to verify the session token
 
 Request is get with params
 
@@ -293,6 +287,7 @@ Request is `GET` with credentials included
 
 <!-- note: Implement logIn -->
 - [ ] tdWait: Create a route to sign out the user
+- [ ] tdIdea: Turn this into a class
 
 Request is `POST` with credentials included
 

@@ -1,6 +1,6 @@
 import { Router } from "oak";
 import { z } from "zod";
-import { EmailRequest } from "types/emailTypes.ts";
+import { PingRequest } from "../../types/pingTypes.ts";
 import { sendPing } from "resendApi/sendPing.ts";
 import { sendTest } from "resendApi/sendTest.ts";
 
@@ -8,35 +8,32 @@ const router = new Router();
 const routes: string[] = [];
 
 router.post("/ping", async (ctx) => {
-  console.group(`=== POST("/email/ping") ===`);
-    const data:EmailRequest = await ctx.request.body.json();
+  console.group(`|=== POST "/email/ping" ===`);
+  const data: PingRequest = await ctx.request.body.json();
 
-    const { userId, userName, managerName, managerEmail } = data;
+  let { authId, userName, managerName, managerEmail } = data;
+  if (!authId) { authId = "0" };
+  console.table([
+    {is: "authId", value: authId ?? "0" },
+    {is: "userName", value: userName},
+    {is: "managerName", value: managerName},
+    {is: "managerEmail", value: managerEmail}
+  ])
 
-    console.table([ /* Show Parameters */
-      {is: "userId", value: userId },
-      {is: "userName", value: userName},
-      {is: "managerName", value: managerName},
-      {is: "managerEmail", value: managerEmail}
-    ])
+  if (!userName || !managerName || !managerEmail) {
+    ctx.throw(400, "Missing required parameters");
+  };
 
-    if ( !userName || !managerName || !managerEmail ) {
-      ctx.throw(400, "Missing required parameters")
-    }
+  const result = await sendPing(authId, userName, managerName, managerEmail);
 
-    console.group(`=== Calling sendPing() ===`);
-      console.log(`Sending (${userId}, ${userName}, ${managerName}, ${managerEmail})`);
-      
-      await sendPing(userId, userName, managerName, managerEmail);
-      
-      console.groupEnd();
-    console.info(`===========================`);
-
-    ctx.response.status = 200;
-    ctx.response.body = { success: true };
-    
-    console.groupEnd();
-  console.info(`==========================`);
+  ctx.response.status = 200;
+  ctx.response.body = {
+    success: true,
+    result
+  };
+  
+  console.groupEnd();
+  console.info(`|==========================`);
 });
 
 router.get("/test", async (ctx) => {

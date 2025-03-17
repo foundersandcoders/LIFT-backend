@@ -1,40 +1,43 @@
-import { join } from "node:path";
-import { EmailContent } from "../../types/emailTypes.ts";
+import { PingInfo } from "types/pingTypes.ts";
 
-export function generatePing(entries: string[], userName: string, managerName: string) {
-  console.group(`=== Running generatePing() ===`);
-    console.log(`Received (${entries}, ${userName}, ${managerName})`);
+export function generatePing(entries: string[], userName: string, managerName: string): PingInfo {
+  console.groupCollapsed(`|=== generatePing() ===`);
+  console.info(`| Parameters`);
+  console.table([
+    { is: "entries", value: entries },
+    { is: "userName", value: userName },
+    { is: "managerName", value: managerName }
+  ]);
 
-    // tdIdea: Turn this into a class
-    const content:EmailContent = { sendable: false, html: `` };
+  const ping = new PingInfo();
+  console.info(`| New Ping`);
+  console.table([
+    {is: "isValid", value: ping.isValid},
+    {is: "content length", value: ping.content?.length}
+  ])
 
-    const quantity = entries.length;
-    const noun = (quantity == 1 ? "beacon" : "beacons");
-    const article = (quantity > 1 ? "some" :
-      quantity < 1 ? "a " : "no"
-    );
+  const quantity = entries.length;
+  const noun = quantity == 1 ? "beacon" : "beacons";
+  const article = quantity >= 2 ? "some" : quantity == 1 ? "a " : "no";
 
-    if (quantity >= 1) {
-      content.sendable = true;
-      content.html = (
-        "<div><p>Hi "
-        + managerName
-        + "<br/><br/>"
-        + userName
-        + " has shared "
-        + article
-        + " "
-        + noun
-        + " with you.<br/><br/><ul>"
-        + entries.map(entry => `<li>${entry}</li>`).join('')
-        + "</ul></p></div>"
-      );
-    }
+  if (quantity >= 1) {
+    ping.isValid = true;
+    ping.content = (`<div>
+      <p>Hi ${managerName},</p>
+      <p>${userName} has shared ${article} ${noun} with you.</p>
+      <ul>
+        ${entries.map(entry => `<li>${entry}</li>`).join('')}
+      </ul>
+    </div>`);
+  }
+  console.info(`| Return`);
+  console.table([
+    {is: "isValid", value: ping.isValid},
+    {is: "content length", value: ping.content?.length}
+  ])
 
-    console.log(`Content is a ${typeof content.html}`);
+  console.groupEnd();
+  console.info(`|==============================`);
 
-    console.groupEnd();
-  console.info(`==============================`);
-
-  return content;
+  return ping;
 }

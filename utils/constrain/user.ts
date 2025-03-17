@@ -2,7 +2,7 @@ import neo4j, { Driver } from "neo4j";
 import { creds as c } from "utils/auth/neo4jCred.ts";
 
 export async function constrainUser() {
-  console.groupCollapsed(`====== FUNCTION constrainUser() ======`);
+  console.groupCollapsed(`|=== constrainUser() ===`);
   let driver: Driver | null = null;
   
   try {
@@ -16,10 +16,10 @@ export async function constrainUser() {
       { database: "neo4j" }
     );
 
-    console.info(`(:User { authId })`);
+    console.info(`|- User { authId }`);
   } catch (err) {
-    console.warn(`Connection error`);
-    console.warn(err);
+    console.warn(`| Connection error`);
+    console.warn(`| ${err}`);
   } finally {
     driver?.close()
   }
