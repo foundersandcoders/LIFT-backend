@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { magicLink } from "better-auth/plugins";
+import { userStore } from "./denoKvUserStore.ts";
 import { sendMagicLinkEmail } from "api/resend/sendMagicLink.ts";
 
 // Environment variables
@@ -9,6 +10,7 @@ const frontendUrl = Deno.env.get("FRONTEND_URL") || "http://localhost:3000";
 export const auth = betterAuth({
   secretKey: JWT_SECRET,
   baseUrl: frontendUrl,
+  userStore: userStore,
   plugins: [
     magicLink({
       expiresIn: 600,
