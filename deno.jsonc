@@ -43,6 +43,7 @@
       /* JSR Packages */
       "dotenv": "jsr:@std/dotenv",
       /* NPM Packages */
+      "better-auth": "npm:better-auth@^1.2.3",
       "compromise": "npm:compromise@14.10.0",
       "neo4j": "npm:neo4j-driver@^5.27.0",
       "zod": "npm:zod",
