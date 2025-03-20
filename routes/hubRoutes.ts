@@ -1,5 +1,6 @@
 import { Router } from "oak";
 import { Subrouter } from "types/serverTypes.ts";
+import { authRouter, authRoutes } from "routes/authRoutes/authRoutes.ts";
 import { editRouter, editRoutes } from "routes/dbRoutes/editRoutes.ts";
 import { getRouter, getRoutes } from "routes/dbRoutes/getRoutes.ts";
 import { findRouter, findRoutes } from "routes/dbRoutes/findRoutes.ts";
@@ -31,6 +32,7 @@ const registerRoutes = (pre: string, sub: Subrouter) => {
 };
 
 const subs = {
+  "/auth": { router: authRouter, routes: authRoutes },
   "/get": { router: getRouter, routes: getRoutes },
   "/edit": { router: editRouter, routes: editRoutes },
   "/find": { router: findRouter, routes: findRoutes },
@@ -73,6 +75,8 @@ router.get("/", (ctx) => {
   ctx.response.body = html;
 });
 
+router.use("/auth", authRouter.routes());
+router.use("/edit", editRouter.routes());
 router.use("/find", findRouter.routes());
 router.use("/get", getRouter.routes());
 router.use("/tool", toolRouter.routes());
