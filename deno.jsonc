@@ -38,38 +38,31 @@
   },
   "imports": {
     // Package Imports
-      /* Hotlink */
-      "oak": "https://deno.land/x/oak@v17.1.4/mod.ts",
-      /* JSR Packages */
-      "dotenv": "jsr:@std/dotenv",
-      /* NPM Packages */
-      "better-auth": "npm:better-auth@^1.2.3",
-      "compromise": "npm:compromise@14.10.0",
-      "neo4j": "npm:neo4j-driver@^5.27.0",
-      "zod": "npm:zod",
+    "oak": "https://deno.land/x/oak@v17.1.4/mod.ts",
+    "dotenv": "jsr:@std/dotenv",
+    "better-auth": "npm:better-auth@^1.2.3",
+    "compromise": "npm:compromise@14.10.0",
+    "neo4j": "npm:neo4j-driver@^5.27.0",
+    "zod": "npm:zod",
     // Path Mapping
-      /* API Functions */
-        "api/": "./api/",
-        "neo4jApi/": "./api/neo4j/",
-        "resendApi/": "./api/resend/",
-      "content/": "./content/",
-      "data": "./data/",
-      /* Routers */
-        "routes/": "./routes/",
-        "dbRoutes/": "./routes/neo4j/",
-        "emailRoutes/": "./routes/resend/",
-      /* Utility Functions */
-        "utils/": "./utils/",
-        "credUtils/": "./utils/creds/",
-        "dbUtils/": "./utils/db/",
-        "devUtils/": "./utils/dev/",
-        "langUtils/": "./utils/lang/",
-      "types/": "./types/"
+    "api/": "./api/",
+    "authApi/": "./api/auth/",
+    "neo4jApi/": "./api/neo4j/",
+    "resendApi/": "./api/resend/",
+    "content/": "./content/",
+    "data": "./data/",
+    "routes/": "./routes/",
+    "authRoutes/": "./routes/authRoutes/",
+    "dbRoutes/": "./routes/dbRoutes/",
+    "emailRoutes/": "./routes/emailRoutes/",
+    "utils/": "./utils/",
+    "credUtils/": "./utils/creds/",
+    "dbUtils/": "./utils/db/",
+    "devUtils/": "./utils/dev/",
+    "langUtils/": "./utils/lang/",
+    "types/": "./types/"
   },
-  "unstable": [ /* Unstable Features */
-    "cron", /* Cron Jobs */
-    "kv" /* Key-Value Store */
-  ],
+  "unstable": [ "cron", "kv" ],
   "fmt": {
     "semiColons": true,
     "singleQuote": false,
