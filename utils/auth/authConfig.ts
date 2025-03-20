@@ -1,7 +1,7 @@
 import { betterAuth } from "better-auth";
 import { magicLink } from "better-auth/plugins";
-import { userStore } from "./denoKvUserStore.ts";
-import { sendMagicLinkEmail } from "api/resend/sendMagicLink.ts";
+import { userStore } from "utils/auth/denoKvUserStore.ts";
+import { sendMagicLinkEmail } from "resendApi/sendMagicLink.ts";
 
 // Environment variables
 const JWT_SECRET = Deno.env.get("JWT_SECRET") || "development_secret_key";

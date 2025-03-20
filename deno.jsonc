@@ -11,7 +11,11 @@
     // Dev Tools
       "test": {
         "description": "Run the tests",
-        "command": "deno test -A"
+        "command": "deno test -A --unstable-kv --no-check"
+      },
+      "test:auth": {
+        "description": "Run only authentication tests",
+        "command": "deno test -A --unstable-kv --no-check tests/auth-test.ts"
       },
     // Resend API
       "checkResend": {

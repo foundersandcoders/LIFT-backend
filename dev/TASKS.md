@@ -138,172 +138,128 @@ This document outlines the plan for implementing secure authentication in the LI
    }
    ```
 
-### Task 4: Create Neo4j User Store
+### Task 4: Create Deno KV User Store
 
-**Overview:** Create a custom user store for better-auth that uses Neo4j.
+**Overview:** Create a custom user store for better-auth that uses Deno KV, with links to Neo4j via authId.
 
 **Steps:**
 
-1. Create `/utils/auth/neo4jUserStore.ts`:
+1. Create `/utils/auth/denoKvUserStore.ts`:
 
    ```typescript
-   import neo4j, { Driver } from "neo4j";
-   import { creds as c } from "utils/auth/neo4jCred.ts";
    import { v4 } from "https://deno.land/std@0.159.0/uuid/mod.ts";
    
+   // Open the default Deno KV database
+   const kv = await Deno.openKv();
+   
    // This will implement the UserStore interface from better-auth
-   export class Neo4jUserStore {
+   export class DenoKvUserStore {
+     // Create a prefix for our KV store keys
+     private userEmailPrefix = ["users", "email"];
+     private userIdPrefix = ["users", "id"];
+     
      async findUserByEmail(email: string) {
-       let driver: Driver | undefined;
+       const emailKey = [...this.userEmailPrefix, email];
+       const userEntry = await kv.get(emailKey);
        
-       try {
-         driver = neo4j.driver(c.URI, neo4j.auth.basic(c.USER, c.PASSWORD));
-         await driver.getServerInfo();
-         
-         const result = await driver.executeQuery(
-           `MATCH (u:User {email: $email})
-            RETURN u.id as id, u.email as email, u.username as username`,
-           { email },
-           { database: "neo4j" }
-         );
-         
-         if (result.records.length === 0) {
-           return null;
-         }
-         
-         const record = result.records[0];
-         return {
-           id: record.get("id"),
-           email: record.get("email"),
-           username: record.get("username"),
-         };
-       } catch (error) {
-         console.error("Database error:", error);
+       if (!userEntry.value) {
          return null;
-       } finally {
-         await driver?.close();
        }
+       
+       return userEntry.value;
      }
      
      async createUser(userData: { email: string; username?: string }) {
-       let driver: Driver | undefined;
-       
        try {
-         driver = neo4j.driver(c.URI, neo4j.auth.basic(c.USER, c.PASSWORD));
-         await driver.getServerInfo();
-         
+         // Generate a unique ID for the user
          const userId = v4.generate();
+         const authId = userId; // We'll use this as the authId in Neo4j
          
-         const result = await driver.executeQuery(
-           `CREATE (u:User {
-              id: $userId,
-              email: $email,
-              username: $username,
-              createdAt: datetime()
-            })
-            RETURN u.id as id, u.email as email, u.username as username`,
-           { 
-             userId,
-             email: userData.email,
-             username: userData.username || null,
-           },
-           { database: "neo4j" }
-         );
-         
-         const record = result.records[0];
-         return {
-           id: record.get("id"),
-           email: record.get("email"),
-           username: record.get("username"),
-         };
-       } catch (error) {
-         console.error("Database error:", error);
-         throw new Error("Failed to create user");
-       } finally {
-         await driver?.close();
-       }
-     }
-     
-     async getUserById(userId: string) {
-       let driver: Driver | undefined;
-       
-       try {
-         driver = neo4j.driver(c.URI, neo4j.auth.basic(c.USER, c.PASSWORD));
-         await driver.getServerInfo();
-         
-         const result = await driver.executeQuery(
-           `MATCH (u:User {id: $userId})
-            OPTIONAL MATCH (u)-[:HAS_MANAGER]->(m:User)
-            RETURN u.id as id, u.email as email, u.username as username,
-                  m.name as managerName, m.email as managerEmail`,
-           { userId },
-           { database: "neo4j" }
-         );
-         
-         if (result.records.length === 0) {
-           return null;
-         }
-         
-         const record = result.records[0];
+         // Create user object with basic data
          const user = {
-           id: record.get("id"),
-           email: record.get("email"),
-           username: record.get("username"),
+           id: userId,
+           authId: authId, // For linking to Neo4j
+           email: userData.email,
+           username: userData.username || null,
+           createdAt: new Date().toISOString(),
          };
          
-         const managerName = record.get("managerName");
-         const managerEmail = record.get("managerEmail");
+         // Save user by ID and email
+         const idKey = [...this.userIdPrefix, userId];
+         const emailKey = [...this.userEmailPrefix, userData.email];
          
-         if (managerName || managerEmail) {
-           user.manager = {
-             name: managerName,
-             email: managerEmail,
-           };
+         // Atomic operation ensures consistency
+         const result = await kv.atomic()
+           .check({ key: emailKey, versionstamp: null }) // Ensure email doesn't exist
+           .set(idKey, user)
+           .set(emailKey, user)
+           .commit();
+           
+         if (!result.ok) {
+           throw new Error("Failed to create user, email may already exist");
          }
          
          return user;
        } catch (error) {
-         console.error("Database error:", error);
-         return null;
-       } finally {
-         await driver?.close();
+         console.error("User creation error:", error);
+         throw new Error("Failed to create user");
        }
      }
      
-     async updateUserManager(userId: string, managerName: string, managerEmail: string) {
-       let driver: Driver | undefined;
+     async getUserById(userId: string) {
+       const idKey = [...this.userIdPrefix, userId];
+       const userEntry = await kv.get(idKey);
        
+       if (!userEntry.value) {
+         return null;
+       }
+       
+       return userEntry.value;
+     }
+     
+     async updateUser(userId: string, data: Record<string, unknown>) {
        try {
-         driver = neo4j.driver(c.URI, neo4j.auth.basic(c.USER, c.PASSWORD));
-         await driver.getServerInfo();
+         // Get the existing user
+         const idKey = [...this.userIdPrefix, userId];
+         const userEntry = await kv.get(idKey);
          
-         await driver.executeQuery(
-           `MATCH (u:User {id: $userId})
-            MERGE (u)-[:HAS_MANAGER]->(m:User {email: $managerEmail})
-            ON CREATE SET m.name = $managerName
-            ON MATCH SET m.name = $managerName`,
-           { userId, managerName, managerEmail },
-           { database: "neo4j" }
-         );
+         if (!userEntry.value) {
+           return null;
+         }
          
-         return true;
+         const user = userEntry.value as Record<string, unknown>;
+         const emailKey = [...this.userEmailPrefix, user.email as string];
+         
+         // Update the user with new data
+         const updatedUser = { ...user, ...data };
+         
+         // Atomic operation
+         const result = await kv.atomic()
+           .check({ key: idKey, versionstamp: userEntry.versionstamp })
+           .set(idKey, updatedUser)
+           .set(emailKey, updatedUser)
+           .commit();
+           
+         if (!result.ok) {
+           throw new Error("Failed to update user");
+         }
+         
+         return updatedUser;
        } catch (error) {
-         console.error("Database error:", error);
-         return false;
-       } finally {
-         await driver?.close();
+         console.error("User update error:", error);
+         return null;
        }
      }
    }
    
-   export const userStore = new Neo4jUserStore();
+   export const userStore = new DenoKvUserStore();
    ```
 
 2. Update the auth configuration to use this store:
 
    ```typescript
    // In authConfig.ts
-   import { userStore } from "./neo4jUserStore.ts";
+   import { userStore } from "./denoKvUserStore.ts";
    
    export const auth = betterAuth({
      secretKey: JWT_SECRET,
@@ -315,7 +271,127 @@ This document outlines the plan for implementing secure authentication in the LI
    });
    ```
 
-### Task 5: Implement Authentication Routes
+### Task 5: Create Neo4j User Link Middleware
+
+**Overview:** Create middleware to link auth users with Neo4j data models.
+
+**Steps:**
+
+1. Create `/utils/auth/neo4jUserLink.ts`:
+
+   ```typescript
+   import neo4j, { Driver } from "neo4j";
+   import { creds as c } from "utils/auth/neo4jCred.ts";
+   import { Context, Next } from "oak";
+   
+   /**
+    * Middleware that links authenticated users to Neo4j
+    * Run this after authMiddleware to ensure user exists in both systems
+    */
+   export async function neo4jUserLinkMiddleware(ctx: Context, next: Next) {
+     try {
+       // Get user from auth middleware
+       const user = ctx.state.user;
+       
+       if (!user || !user.id || !user.authId) {
+         return await next();
+       }
+       
+       // Check if user exists in Neo4j
+       await ensureUserInNeo4j(user.authId, user.email, user.username);
+       
+       // Continue with request
+       await next();
+     } catch (error) {
+       console.error("Neo4j user link error:", error);
+       await next(); // Still continue even if Neo4j link fails
+     }
+   }
+   
+   /**
+    * Creates or updates a user in Neo4j with the authId
+    */
+   async function ensureUserInNeo4j(authId: string, email: string, username?: string) {
+     let driver: Driver | undefined;
+     
+     try {
+       driver = neo4j.driver(c.URI, neo4j.auth.basic(c.USER, c.PASSWORD));
+       await driver.getServerInfo();
+       
+       // Merge operation creates if not exists, updates if exists
+       await driver.executeQuery(
+         `MERGE (u:User {authId: $authId})
+          ON CREATE SET 
+            u.email = $email,
+            u.username = $username,
+            u.createdAt = datetime()
+          ON MATCH SET
+            u.email = $email,
+            u.username = $username
+          RETURN u`,
+         { 
+           authId, 
+           email,
+           username: username || null
+         },
+         { database: "neo4j" }
+       );
+       
+       return true;
+     } catch (error) {
+       console.error("Neo4j user ensure error:", error);
+       return false;
+     } finally {
+       await driver?.close();
+     }
+   }
+   
+   /**
+    * Utility function to get a user's Neo4j data
+    */
+   export async function getNeo4jUserData(authId: string) {
+     let driver: Driver | undefined;
+     
+     try {
+       driver = neo4j.driver(c.URI, neo4j.auth.basic(c.USER, c.PASSWORD));
+       await driver.getServerInfo();
+       
+       const result = await driver.executeQuery(
+         `MATCH (u:User {authId: $authId})
+          OPTIONAL MATCH (u)-[:HAS_MANAGER]->(m:User)
+          RETURN u, m.name as managerName, m.email as managerEmail`,
+         { authId },
+         { database: "neo4j" }
+       );
+       
+       if (result.records.length === 0) {
+         return null;
+       }
+       
+       const record = result.records[0];
+       const user = record.get("u").properties;
+       
+       const managerName = record.get("managerName");
+       const managerEmail = record.get("managerEmail");
+       
+       if (managerName || managerEmail) {
+         user.manager = {
+           name: managerName,
+           email: managerEmail,
+         };
+       }
+       
+       return user;
+     } catch (error) {
+       console.error("Neo4j user data error:", error);
+       return null;
+     } finally {
+       await driver?.close();
+     }
+   }
+   ```
+
+### Task 6: Implement Authentication Routes
 
 **Overview:** Create routes that integrate with better-auth.
 
@@ -400,9 +476,9 @@ This document outlines the plan for implementing secure authentication in the LI
    };
    ```
 
-### Task 6: Create Authentication Middleware
+### Task 7: Create Authentication Middleware
 
-**Overview:** Create a middleware for protecting routes with better-auth.
+**Overview:** Create middleware for protecting routes with better-auth.
 
 **Steps:**
 
@@ -411,6 +487,7 @@ This document outlines the plan for implementing secure authentication in the LI
    ```typescript
    import { Context, Next } from "oak";
    import { auth } from "./authConfig.ts";
+   import { getNeo4jUserData } from "./neo4jUserLink.ts";
    
    export async function authMiddleware(ctx: Context, next: Next) {
      try {
@@ -428,6 +505,15 @@ This document outlines the plan for implementing secure authentication in the LI
        // Attach user to context state
        ctx.state.user = session.user;
        
+       // Optionally get Neo4j data if needed
+       if (ctx.request.url.pathname.includes("/beacon") || 
+           ctx.request.url.pathname.includes("/write")) {
+         const neo4jData = await getNeo4jUserData(session.user.authId);
+         if (neo4jData) {
+           ctx.state.neo4jUser = neo4jData;
+         }
+       }
+       
        await next();
      } catch (error) {
        console.error("Auth middleware error:", error);
@@ -439,7 +525,7 @@ This document outlines the plan for implementing secure authentication in the LI
    }
    ```
 
-### Task 7: Update CORS Configuration for Cookies
+### Task 8: Update CORS Configuration for Cookies
 
 **Overview:** Configure CORS for better-auth's cookie-based sessions.
 
@@ -481,7 +567,7 @@ This document outlines the plan for implementing secure authentication in the LI
    }
    ```
 
-### Task 8: Register Auth Routes in Hub Router
+### Task 9: Register Auth Routes in Hub Router
 
 **Overview:** Register auth routes in the main hub router.
 
@@ -503,7 +589,7 @@ This document outlines the plan for implementing secure authentication in the LI
    router.use("/auth", authRouter.routes());
    ```
 
-### Task 9: Update Protected Routes
+### Task 10: Update Protected Routes
 
 **Overview:** Secure existing routes that should require authentication.
 
@@ -518,6 +604,7 @@ This document outlines the plan for implementing secure authentication in the LI
    router.post("/newBeacon", authMiddleware, async (ctx) => {
      // Now ctx.state.user contains the authenticated user
      const user = ctx.state.user;
+     // Neo4j data is available in ctx.state.neo4jUser if needed
      
      // Rest of the code...
    });
@@ -525,7 +612,7 @@ This document outlines the plan for implementing secure authentication in the LI
 
 2. Apply similar updates to other routes that should require authentication.
 
-### Task 10: Environment Configuration
+### Task 11: Environment Configuration
 
 **Overview:** Add environment variables for better-auth.
 
@@ -539,7 +626,7 @@ This document outlines the plan for implementing secure authentication in the LI
    FRONTEND_URL=http://localhost:3000
    ```
 
-### Task 11: Create Manager Update Endpoint
+### Task 12: Create Manager Update Endpoint
 
 **Overview:** Create an endpoint to update the user's manager information.
 
@@ -549,8 +636,10 @@ This document outlines the plan for implementing secure authentication in the LI
 
    ```typescript
    import { authMiddleware } from "utils/auth/authMiddleware.ts";
-   import { userStore } from "utils/auth/neo4jUserStore.ts";
+   import { getNeo4jUserData } from "utils/auth/neo4jUserLink.ts";
    import { z } from "zod";
+   import neo4j, { Driver } from "neo4j";
+   import { creds as c } from "utils/auth/neo4jCred.ts";
    
    // Add schema validation
    const editManagerSchema = z.object({
@@ -576,24 +665,34 @@ This document outlines the plan for implementing secure authentication in the LI
        
        const { managerName, managerEmail } = result.data;
        
-       // Update manager information
-       const updateResult = await userStore.updateUserManager(
-         user.id, 
-         managerName, 
-         managerEmail
-       );
+       // Update manager in Neo4j
+       let driver: Driver | undefined;
        
-       if (!updateResult) {
+       try {
+         driver = neo4j.driver(c.URI, neo4j.auth.basic(c.USER, c.PASSWORD));
+         await driver.getServerInfo();
+         
+         await driver.executeQuery(
+           `MATCH (u:User {authId: $authId})
+            MERGE (u)-[:HAS_MANAGER]->(m:User {email: $managerEmail})
+            ON CREATE SET m.name = $managerName
+            ON MATCH SET m.name = $managerName`,
+           { authId: user.authId, managerName, managerEmail },
+           { database: "neo4j" }
+         );
+         
+         ctx.response.status = 200;
+         ctx.response.body = { success: true };
+       } catch (error) {
+         console.error("Database error:", error);
          ctx.response.status = 500;
          ctx.response.body = { 
            success: false,
            error: { message: "Failed to update manager information" }
          };
-         return;
+       } finally {
+         await driver?.close();
        }
-       
-       ctx.response.status = 200;
-       ctx.response.body = { success: true };
      } catch (error) {
        console.error("Error updating manager:", error);
        
@@ -640,9 +739,10 @@ The backend implementation will now integrate seamlessly with the frontend that 
    - Zod schema validation for custom endpoints
    - better-auth's built-in validation for auth endpoints
 
-4. **Error Handling**:
-   - Consistent error response format aligned with better-auth
-   - Limited error details to prevent information leakage
+4. **Storage Separation**:
+   - Authentication data stored in Deno KV for performance and security
+   - Business data stored in Neo4j with authId linking the two systems
+   - Logical separation of concerns
 
 ## Testing
 
@@ -657,4 +757,4 @@ To test the authentication system:
 
 ## Conclusion
 
-This implementation plan leverages the better-auth library directly, ensuring perfect compatibility with the frontend client. By using better-auth's built-in functionality combined with our custom Neo4j user store, we get the best of both worlds: seamless frontend integration and persistence in our existing database structure.
+This implementation plan leverages the better-auth library directly for perfect frontend compatibility, while separating authentication storage (Deno KV) from business data (Neo4j). The authId property provides a clean link between the two systems, allowing for optimal performance and maintainability.

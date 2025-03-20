@@ -12,10 +12,13 @@
     "jsr:@oak/commons@1": "1.0.0",
     "jsr:@std/assert@*": "1.0.11",
     "jsr:@std/assert@1": "1.0.11",
+    "jsr:@std/assert@^1.0.10": "1.0.11",
     "jsr:@std/assert@^1.0.11": "1.0.11",
     "jsr:@std/async@*": "1.0.10",
+    "jsr:@std/async@^1.0.9": "1.0.10",
     "jsr:@std/bytes@1": "1.0.4",
     "jsr:@std/crypto@1": "1.0.3",
+    "jsr:@std/data-structures@^1.0.6": "1.0.6",
     "jsr:@std/dotenv@*": "0.225.3",
     "jsr:@std/encoding@1": "1.0.6",
     "jsr:@std/encoding@^1.0.5": "1.0.6",
@@ -24,6 +27,7 @@
     "jsr:@std/internal@^1.0.5": "1.0.5",
     "jsr:@std/media-types@1": "1.1.0",
     "jsr:@std/path@1": "1.0.8",
+    "jsr:@std/testing@*": "1.0.9",
     "npm:@types/node@*": "22.5.4",
     "npm:better-auth@^1.2.3": "1.2.4",
     "npm:buffer@6": "6.0.3",
@@ -120,6 +124,9 @@
     "@std/crypto@1.0.3": {
       "integrity": "a2a32f51ddef632d299e3879cd027c630dcd4d1d9a5285d6e6788072f4e51e7f"
     },
+    "@std/data-structures@1.0.6": {
+      "integrity": "76a7fd8080c66604c0496220a791860492ab21a04a63a969c0b9a0609bbbb760"
+    },
     "@std/dotenv@0.225.3": {
       "integrity": "a95e5b812c27b0854c52acbae215856d9cce9d4bbf774d938c51d212711e8d4a"
     },
@@ -147,6 +154,15 @@
     },
     "@std/path@1.0.8": {
       "integrity": "548fa456bb6a04d3c1a1e7477986b6cffbce95102d0bb447c67c4ee70e0364be"
+    },
+    "@std/testing@1.0.9": {
+      "integrity": "9bdd4ac07cb13e7594ac30e90f6ceef7254ac83a9aeaa089be0008f33aab5cd4",
+      "dependencies": [
+        "jsr:@std/assert@^1.0.10",
+        "jsr:@std/async@^1.0.9",
+        "jsr:@std/data-structures",
+        "jsr:@std/internal"
+      ]
     }
   },
   "npm": {
