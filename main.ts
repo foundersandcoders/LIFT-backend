@@ -35,6 +35,11 @@ async function customCors(ctx: Context, next: () => Promise<unknown>) {
     "Access-Control-Allow-Headers",
     "Content-Type, Authorization",
   );
+  
+  ctx.response.headers.set(
+    "Access-Control-Allow-Credentials",
+    "true",
+  );
 
   if (ctx.request.method === "OPTIONS") {
     ctx.response.status = 204;

@@ -6,11 +6,15 @@ const router = new Router();
 const routes: string[] = [];
 
 router.post("/signin/magic-link", async (ctx) => {
+  console.groupCollapsed("|========= POST: /auth/signin/magic-link =========|");
+
   try {
-    // Extract email from request body
     const body = await ctx.request.body.json();
+    console.log(`| body: ${JSON.stringify(body)}`);
     const email = body.email;
+    console.log(`| email: ${email}`);
     const callbackURL = body.callbackURL || "/dashboard";
+    console.log(`| callbackURL: ${callbackURL}`);
     
     if (!email) {
       ctx.response.status = 400;
@@ -18,11 +22,14 @@ router.post("/signin/magic-link", async (ctx) => {
         success: false,
         error: { message: "Email is required" }
       };
+      console.log("| Error: email is required");
+      console.groupEnd();
       return;
     }
     
     // Use the auth handler (temporary implementation)
     const result = await auth.handleRequest(ctx.request, ctx.response);
+    console.log("| result", result);
     
     // Return success response
     ctx.response.status = 200;
@@ -30,6 +37,8 @@ router.post("/signin/magic-link", async (ctx) => {
       success: true,
       message: `Magic link email would be sent to ${email} (development mode)`
     };
+    console.log("| success", ctx.response.body);
+    console.groupEnd();
   } catch (error) {
     console.error("Magic link error:", error);
     ctx.response.status = 500;
@@ -37,10 +46,15 @@ router.post("/signin/magic-link", async (ctx) => {
       success: false, 
       error: { message: "Failed to send magic link" } 
     };
+    console.log("| error", ctx.response.body);
+    console.groupEnd();
   }
+  console.log("|=================================================|");
 });
 
 router.get("/verify", async (ctx) => {
+  console.log("| verify");
+
   try {
     // Extract token from query params
     const token = ctx.request.url.searchParams.get("token");
@@ -77,6 +91,8 @@ router.get("/verify", async (ctx) => {
 });
 
 router.get("/user", async (ctx) => {
+  console.log("| user");
+
   try {
     // Get session from auth (temporary implementation)
     const session = await auth.getSession(ctx.request);
@@ -106,6 +122,8 @@ router.get("/user", async (ctx) => {
 });
 
 router.post("/signout", async (ctx) => {
+  console.log("| signout");
+
   try {
     // Clear auth cookie (temporary implementation)
     ctx.cookies.delete("auth_token", { path: "/" });
@@ -125,10 +143,7 @@ router.post("/signout", async (ctx) => {
   }
 });
 
-routes.push("/signin/magic-link");
-routes.push("/verify");
-routes.push("/user");
-routes.push("/signout");
+routes.push("/signin/magic-link", "/verify", "/user", "/signout");
 
 export {
   router as authRouter,

@@ -20,13 +20,13 @@ export interface Attempt {
 export class Search {
   publicOnly: boolean;
   type: string;
-  id: number;
+  authId: string;
   name: string;
 
-  constructor(publicOnly: boolean, type: string, id: number, name: string) {
+  constructor(publicOnly: boolean, type: string, authId: string, name: string) {
     this.publicOnly = publicOnly;
     this.type = type;
-    this.id = id;
+    this.authId = authId;
     this.name = name;
   }
 }

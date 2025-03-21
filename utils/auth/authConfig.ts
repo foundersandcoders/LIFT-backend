@@ -9,8 +9,12 @@ const frontendUrl = Deno.env.get("FRONTEND_URL") || "http://localhost:3000";
 
 // Create auth handlers manually with support for Oak context
 const handleRequest = async (request: Request, response: Response) => {
-  // Implementation will depend on better-auth API
-  console.log("Auth handleRequest called");
+  console.groupCollapsed("|=== handleRequest ===|");
+  console.log("| Auth handleRequest called");
+  console.log(`| request: ${JSON.stringify(request)}`);
+  console.groupEnd();
+  console.log("|=====================|");
+
   return { success: true };
 };
 

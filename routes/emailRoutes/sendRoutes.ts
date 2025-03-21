@@ -3,12 +3,15 @@ import { z } from "zod";
 import { PingRequest } from "../../types/pingTypes.ts";
 import { sendPing } from "resendApi/sendPing.ts";
 import { sendTest } from "resendApi/sendTest.ts";
-
+import { authMiddleware } from "utils/auth/authMiddleware.ts";
 const router = new Router();
 const routes: string[] = [];
 
-router.post("/ping", async (ctx) => {
+router.post("/ping", authMiddleware, async (ctx) => {
   console.group(`|=== POST "/email/ping" ===`);
+  const user = ctx.state.user;
+  console.log(`| user: ${JSON.stringify(user)}`);
+  
   const data: PingRequest = await ctx.request.body.json();
 
   let { authId, userName, managerName, managerEmail } = data;

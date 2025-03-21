@@ -1,14 +1,16 @@
 import { Router } from "oak";
 import type { Match, Lantern, Ember, Ash, Shards, Atoms } from "types/beaconTypes.ts";
 import type { Attempt } from "types/serverTypes.ts";
-import { breaker } from "../../utils/convert/breakInput.ts";
+import { authMiddleware } from "utils/auth/authMiddleware.ts";
+import { breaker } from "utils/convert/breakInput.ts";
 import { writeBeacon } from "neo4jApi/writeBeacon.ts";
-
 const router = new Router();
 const routes: string[] = [];
 
-router.post("/newBeacon", async (ctx) => {
-  console.groupCollapsed(`========= POST: /write/newBeacon =========`);
+router.post("/newBeacon", authMiddleware, async (ctx) => {
+  console.groupCollapsed(`|========= POST: /write/newBeacon =========|`);
+  const user = ctx.state.user;
+  console.log(`| user: ${JSON.stringify(user)}`);
   try {
     const match:  Match = await ctx.request.body.json();
     const shards: Shards = breaker(match);
@@ -45,13 +47,9 @@ router.post("/newBeacon", async (ctx) => {
     console.groupEnd();
   }
   console.groupEnd();
-});
-
-router.post("/newUser", (ctx) => {
-  console.log("Not Implemented")
+  console.log("|==========================================|");
 });
 
 routes.push("/newBeacon");
-routes.push("/newUser");
 
 export { router as writeRouter, routes as writeRoutes };
