@@ -93,10 +93,10 @@ Task 1.2: Create a test route for auth configuration
 
 Task 2.1: Update magic link request route
 
-- Modify /auth/signin/magic-link to use better-auth's magic link function
+- Modify /auth/magic-link to use better-auth's magic link function
 - Update input validation using zod
 - Add detailed console logging
-- Verification: Use Postman to send a request to POST /auth/signin/magic-link with an email and verify
+- Verification: Use Postman to send a request to POST /auth/magic-link with an email and verify
 console logs show the request being processed
 
 Task 2.2: Test email sending
@@ -201,3 +201,11 @@ Task 8.2: Update documentation
 
 Each task builds incrementally on the previous tasks and focuses on making small, verifiable changes.
 The verification steps provide clear ways to test each change as it's made.
+
+## Magic Link Authentication Flow
+
+### Current Implementation
+
+The authentication flow for magic links works as follows:
+
+1. User requests a magic link from frontend by submitting their email to `/auth/magic-link` (not `/auth/signin/magic-link`)
