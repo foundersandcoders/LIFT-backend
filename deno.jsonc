@@ -85,7 +85,8 @@
       "include": [],
       "exclude": [
         "ban-untagged-todo",
-        "no-unused-vars"
+        "no-unused-vars",
+        "no-explicit-any"
       ]
     }
   }

@@ -1,5 +1,5 @@
 import { Context, Next } from "oak";
-import { auth } from "./authConfig.ts";
+import { authInstance as auth } from "./authConfig.ts";
 import { getNeo4jUserData } from "./neo4jUserLink.ts";
 
 export async function authMiddleware(ctx: Context, next: Next) {
@@ -8,7 +8,7 @@ export async function authMiddleware(ctx: Context, next: Next) {
     console.log(`| Path: ${ctx.request.url.pathname}`);
     
     // Get the session from better-auth
-    const session = await auth.getSession(ctx.request);
+    const session = await auth.api.getSession(ctx.request);
     console.log(`| Session: ${session ? "Found" : "Not found"}`);
     
     if (!session || !session.user) {
@@ -32,7 +32,7 @@ export async function authMiddleware(ctx: Context, next: Next) {
     if (ctx.request.url.pathname.includes("/beacon") || 
         ctx.request.url.pathname.includes("/write")) {
       console.log("| Getting Neo4j user data");
-      const neo4jData = await getNeo4jUserData(session.user.authId);
+      const neo4jData = await getNeo4jUserData(session.user.id);
       
       if (neo4jData) {
         console.log("| Neo4j data found and attached to context");
