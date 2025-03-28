@@ -14,14 +14,9 @@ const magicLinkRequestSchema = z.object({
 router.post("/signin/magic-link", async (ctx) => {
   console.groupCollapsed("|========= POST: /auth/magic-link =========|");
   try {
-    console.group(`|====== Request Body ======|`);
     const reqBody = await ctx.request.body.json();
-    console.table(reqBody);
-    console.groupEnd();
-    
-    console.log(`| Parse Result`);
-    const parseResult = magicLinkRequestSchema.safeParse(reqBody);
 
+    const parseResult = magicLinkRequestSchema.safeParse(reqBody);
     if (!parseResult.success) {
       console.group(`|====== Validation Error ======|`);
       const errorDetails = parseResult.error.format();
@@ -41,30 +36,18 @@ router.post("/signin/magic-link", async (ctx) => {
       console.groupEnd();
       return;
     }
-
-    console.log(`| Parse successful`);
-    
     const { email, callbackURL, redirect } = parseResult.data;
     
-    console.group(`|====== Validation Result ======|`);
     console.table(parseResult.data);
-    console.groupEnd();
 
     const redirectUrl = redirect || `${frontendUrl}${callbackURL}`;
 
-    console.group(`|====== Derived URLs ======|`);
-    console.log(`| ✓ Email: ${email}`);
-    console.log(`| ✓ Callback URL: ${callbackURL}`);
-    console.log(`| ✓ Redirect URL: ${redirectUrl}`);
-    console.groupEnd();
+    console.log(`| • Email: ${email}`);
+    console.log(`| • Callback URL: ${callbackURL}`);
+    console.log(`| • Redirect URL: ${redirectUrl}`);
 
-    console.group(`|====== Handler ======|`);
-
-    console.group(`|====== url ======|`);
     const url = new URL(ctx.request.url);
     url.pathname = "/auth/signin/magic-link";
-    console.table(url);
-    console.groupEnd();
 
     try {
       console.info(`| Calling auth.api.signInMagicLink`);

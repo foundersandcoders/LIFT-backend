@@ -3,13 +3,15 @@ const kv = await Deno.openKv();
 export class DenoKvUserStore {
   private userEmailPrefix = ["users", "email"];
   private userIdPrefix = ["users", "id"];
-  
-  async findUserByEmail(email: string) {
-    const emailKey = [...this.userEmailPrefix, email];
-    const userEntry = await kv.get(emailKey);
-    
-    if (!userEntry.value) { return null };
-    return userEntry.value;
+
+  async get(email: string) : Promise<Deno.KvEntryMaybe<T>> {
+    const result = await kv.get([...this.userEmailPrefix, email]);
+    return result;
+  }
+
+  async set(email: string, value: string, ttl?: number) {
+    if (ttl) await kv.set([...this.userEmailPrefix, email], value, { EX: ttl });
+    else await kv.set([...this.userEmailPrefix, email], value);
   }
   
   async createUser(userData: { email: string; username?: string }) {
@@ -41,14 +43,6 @@ export class DenoKvUserStore {
       console.error("User creation error:", error);
       throw new Error("Failed to create user");
     }
-  }
-  
-  async getUserById(userId: string) {
-    const idKey = [...this.userIdPrefix, userId];
-    const userEntry = await kv.get(idKey);
-    
-    if (!userEntry.value) { return null };
-    return userEntry.value;
   }
   
   async updateUser(userId: string, data: Record<string, unknown>) {

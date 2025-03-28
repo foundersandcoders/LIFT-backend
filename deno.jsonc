@@ -1,44 +1,49 @@
 {
   "tasks": {
-    "dev": {
+    "runDev": {
       "description": "Run the local development build",
       "command": "deno run -A --watch --unstable-cron --env-file=.env.local main.ts"
     },
-    "prod": {
+    "runProd": {
       "description": "Run the local production build",
       "command": "deno run -A --watch --unstable-cron --env-file=.env.production main.ts"
     },
     // Dev Tools
-      "test": {
-        "description": "Run the tests",
-        "command": "deno test -A --unstable-kv --no-check"
-      },
-      "test:auth": {
-        "description": "Run only authentication tests",
-        "command": "deno test -A --unstable-kv --no-check tests/auth-test.ts"
-      },
+    "test": {
+      "description": "Run the tests",
+      "command": "deno test -A --unstable-kv --no-check"
+    },
+    "testAuth": {
+      "description": "Run only authentication tests",
+      "command": "deno test -A --unstable-kv --no-check tests/auth-test.ts"
+    },
     // Resend API
-      "checkResend": {
-        "description": "Tests the Resend API",
-        "command": "deno run -A --watch --unstable-cron --env-file=.env.local ./utils/emails/sendTest.ts"
-      },
+    "resendCheck": {
+      "description": "Tests the Resend API",
+      "command": "deno run -A --watch --unstable-cron --env-file=.env.local ./utils/emails/sendTest.ts"
+    },
     // Neo4j API
-      "dbSeedLocal": {
-        "description": "Seed the local instance of neo4j",
-        "command": "deno run -A --env-file=.env.local queries/seed.ts"
-      },
-      "dbSeedProd": {
-        "description": "Seed the production instance of neo4j",
-        "command": "deno run -A --env-file=.env.production queries/seed.ts"
-      },
-      "dbResetLocal": {
-        "description": "Reset the local instance of neo4j",
-        "command": "deno run -A --env-file=.env.local queries/reset.ts"
-      },
-      "dbResetProduction": {
-        "description": "Reset the production instance of neo4j",
-        "command": "deno run -A --env-file=.env.production queries/reset.ts"
-      }
+    "n4jSeedL": {
+      "description": "Seed the local instance of neo4j",
+      "command": "deno run -A --env-file=.env.local queries/seed.ts"
+    },
+    "n4jSeedP": {
+      "description": "Seed the production instance of neo4j",
+      "command": "deno run -A --env-file=.env.production queries/seed.ts"
+    },
+    "n4jResetL": {
+      "description": "Reset the local instance of neo4j",
+      "command": "deno run -A --env-file=.env.local queries/reset.ts"
+    },
+    "n4jResetP": {
+      "description": "Reset the production instance of neo4j",
+      "command": "deno run -A --env-file=.env.production queries/reset.ts"
+    },
+    // SQLite
+    "sqlCheck": {
+      "description": "Initialize the SQLite database",
+      "command": "deno run -A --env-file=.env.local data/userDb.ts"
+    }
   },
   "imports": {
     // Package Imports
@@ -66,7 +71,10 @@
     "langUtils/": "./utils/lang/",
     "types/": "./types/"
   },
-  "unstable": [ "cron", "kv" ],
+  "unstable": [
+    "cron",
+    "kv"
+  ],
   "fmt": {
     "semiColons": true,
     "singleQuote": false,
@@ -81,7 +89,9 @@
   },
   "lint": {
     "rules": {
-      "tags": [ "recommended" ],
+      "tags": [
+        "recommended"
+      ],
       "include": [],
       "exclude": [
         "ban-untagged-todo",

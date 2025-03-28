@@ -1,47 +1,66 @@
 import { betterAuth } from "better-auth";
 import { magicLink } from "better-auth/plugins";
-import { userStore as denoKvUserStore } from "utils/auth/denoKvUserStore.ts";
-import { sendMagicLinkEmail } from "resendApi/sendMagicLink.ts";
-
-const SECRET_KEY: string | undefined = Deno.env.get("SECRET_KEY");
-const BASE_URL: string | undefined = Deno.env.get("BASE_URL");
-const enableTestEmails: boolean = Deno.env.get("ENABLE_TEST_EMAILS") === "true";
+import { userStore } from "utils/auth/denoKvUserStore.ts";
+import { authLogger } from "utils/auth/authLogger.ts";
 
 export const isDev: boolean = Deno.env.get("DENO_ENV") !== "production";
 export const logger: boolean = false;
 
-if (logger) { /* Auth Imports */
-  console.groupCollapsed(`|============ auth Imports ============|`);
-  console.log(`| betterAuth: ${typeof betterAuth}`);
-  console.log(`| magicLink: ${typeof magicLink}`);
-  console.log(`| denoKvUserStore: ${typeof denoKvUserStore}`);
-  console.log(`| sendMagicLinkEmail: ${typeof sendMagicLinkEmail}`);
-  console.groupEnd();
-}
+const secret: string | undefined = Deno.env.get("BETTER_AUTH_SECRET");
+const baseURL: string | undefined = Deno.env.get("BETTER_AUTH_URL");
 
 export const auth = betterAuth({
-  secret: SECRET_KEY,
-  baseUrl: BASE_URL,
-  userStore: denoKvUserStore,
-  // basePath: "/auth",
+  appName: "Beacons",
   debug: true,
+  secret: secret,
+  baseUrl: baseURL,
+  basePath: "/auth",
+  userStore: userStore,
+  database: {
+		dialect: "postgres",
+		type: "postgres",
+		casing: "camel"
+	},
+  // secondaryStorage: userStore,
   plugins: [
     magicLink({
-      disableSignUp: false,
       rateLimit: { window: 60, max: 5 },
       expiresIn: 1200,
-      sendMagicLink: async ({ email, url, token }, request) => { throw new Error("| Not implemented") },
-      generateToken: async (email) => { throw new Error("| Not implemented") }
+      disableSignUp: false,
+      // [ ] tdHi: Create a user
+      // generateToken: async (email) => {},
+      // [ ] tdHi: Generate a link
+      sendMagicLink: async ({ email, url, token }, request) => {},
+      // [ ] tdHi: magicLinkVerify
+      // [ ] tdHi: signOut
+      // [ ] tdMd: getSession
+      // [ ] tdLo: listSessions
+      // [ ] tdHi: updateUser
+      // [ ] tdHi: changeEmail
+      // [ ] tdHi: deleteUser
+      // [ ] tdLo: listUserAccounts
     })
-  ]
+  ],
+  session: {
+		modelName: "sessions",
+		fields: {
+			userId: "user_id"
+		},
+		expiresIn: 604800, // 7 days
+		updateAge: 86400, // 1 day
+		additionalFields: {
+			customField: {
+				type: "string",
+				nullable: true
+			}
+		},
+		storeSessionInDatabase: true,
+		preserveSessionInDatabase: false,
+		cookieCache: {
+			enabled: true,
+			maxAge: 300 // 5 minutes
+		}
+  },
 });
 
-if (logger) { /* Auth Init */
-  console.log("| ✅ better-auth initialized successfully");
-}
-
-if (logger) { /* Auth Methods */
-  console.group(`|============ auth Methods ============|`);
-  console.log(Object.keys(auth.api).sort());
-  console.groupEnd();
-}
+if (logger) authLogger();
