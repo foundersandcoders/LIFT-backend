@@ -2,7 +2,7 @@ import { Router } from "oak";
 import neo4j, { Driver } from "neo4j";
 import { z } from "zod";
 import { authMiddleware } from "utils/auth/authMiddleware.ts";
-import { creds as c } from "utils/auth/neo4jCred.ts";
+import { creds as c } from "utils/creds/neo4jCred.ts";
 import { getNeo4jUserData } from "utils/auth/neo4jUserLink.ts";
 
 const router = new Router();

@@ -1,5 +1,5 @@
 import { Context, Next } from "oak";
-import { authInstance as auth } from "./authConfig.ts";
+import { auth } from "utils/auth.ts";
 import { getNeo4jUserData } from "./neo4jUserLink.ts";
 
 export async function authMiddleware(ctx: Context, next: Next) {

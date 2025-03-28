@@ -4,6 +4,7 @@ import type { Attempt } from "types/serverTypes.ts";
 import { authMiddleware } from "utils/auth/authMiddleware.ts";
 import { breaker } from "utils/convert/breakInput.ts";
 import { writeBeacon } from "neo4jApi/writeBeacon.ts";
+
 const router = new Router();
 const routes: string[] = [];
 
