@@ -1,26 +1,25 @@
+import { kysely } from "utils/auth/kysely.ts";
 import { betterAuth } from "better-auth";
 import { magicLink } from "better-auth/plugins";
 import { userStore } from "utils/auth/denoKvUserStore.ts";
 import { authLogger } from "utils/auth/authLogger.ts";
 
-export const isDev: boolean = Deno.env.get("DENO_ENV") !== "production";
-export const logger: boolean = false;
+const betterAuthSecret = Deno.env.get("BETTER_AUTH_SECRET") || "";
+const betterAuthBaseURL = Deno.env.get("BETTER_AUTH_URL") || "";
 
-const secret: string | undefined = Deno.env.get("BETTER_AUTH_SECRET");
-const baseURL: string | undefined = Deno.env.get("BETTER_AUTH_URL");
+export const isDev: boolean = Deno.env.get("DENO_ENV") !== "production";
+export const logger: boolean = true;
+
+console.group(`|====== BetterAuth ======|`)
 
 export const auth = betterAuth({
   appName: "Beacons",
   debug: true,
-  secret: secret,
-  baseUrl: baseURL,
+  secret: betterAuthSecret,
+  baseUrl: betterAuthBaseURL,
   basePath: "/auth",
   userStore: userStore,
-  database: {
-		dialect: "postgres",
-		type: "postgres",
-		casing: "camel"
-	},
+  database: kysely,
   // secondaryStorage: userStore,
   plugins: [
     magicLink({
@@ -41,26 +40,35 @@ export const auth = betterAuth({
       // [ ] tdLo: listUserAccounts
     })
   ],
-  session: {
-		modelName: "sessions",
-		fields: {
-			userId: "user_id"
-		},
-		expiresIn: 604800, // 7 days
-		updateAge: 86400, // 1 day
-		additionalFields: {
-			customField: {
-				type: "string",
-				nullable: true
-			}
-		},
-		storeSessionInDatabase: true,
-		preserveSessionInDatabase: false,
-		cookieCache: {
-			enabled: true,
-			maxAge: 300 // 5 minutes
-		}
-  },
+  // session: {
+	// 	modelName: "sessions",
+	// 	fields: {
+	// 		userId: "user_id"
+	// 	},
+	// 	expiresIn: 604800, // 7 days
+	// 	updateAge: 86400, // 1 day
+	// 	additionalFields: {
+	// 		customField: {
+	// 			type: "string",
+	// 			nullable: true
+	// 		}
+	// 	},
+	// 	storeSessionInDatabase: true,
+	// 	preserveSessionInDatabase: false,
+	// 	cookieCache: {
+	// 		enabled: true,
+	// 		maxAge: 300 // 5 minutes
+	// 	}
+  // },
 });
 
-if (logger) authLogger();
+console.log(`| auth created`);
+
+if (logger) {
+  console.log(`| authLogger`);
+  authLogger();
+  console.log(`| authLogger done`);
+};
+
+console.log(`| End of auth.ts`);
+console.groupEnd();

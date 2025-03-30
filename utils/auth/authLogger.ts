@@ -22,6 +22,10 @@ export function authLogger() {
       console.group(`|============ userStore ============|`);
         console.log(Object.keys(auth.options.userStore).sort());
       console.groupEnd();
+  
+      console.group(`|============ database ============|`);
+        console.log(Object.keys(auth.options.database).sort());
+      console.groupEnd();
     console.groupEnd();
   console.groupEnd();
 }
