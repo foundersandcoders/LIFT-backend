@@ -1,20 +1,21 @@
-import { Kysely } from "npm:kysely";
-import { PostgresJSDialect } from "npm:kysely-postgres-js";
-import postgres from "npm:postgres";
+import {Kysely, PostgresDialect} from "ky"
+import Pool from "pg-pool"
 import type { Database } from "types/kyselyTypes.ts";
 
 const connection = Deno.env.get("SUPABASE_CONNECTION_STRING") || "";
 
-console.group(`|====== Kysely ======|`)
+console.group(`|====== Kysely (pg) ======|`)
+
 export const kysely = new Kysely<Database>({
-  dialect: new PostgresJSDialect({
-    postgres: postgres(connection),
+  dialect: new PostgresDialect({
+    pool: new Pool({
+      connectionString: connection,
+    }),
   }),
 })
 
-console.log(kysely);
-
-const intro = kysely.introspection;
-console.log(intro);
+console.log(Object.keys(kysely));
+console.log(Object.keys(kysely.introspection));
+console.log(Object.keys(kysely.schema));
 
 console.groupEnd();

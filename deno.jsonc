@@ -46,15 +46,22 @@
     }
   },
   "imports": {
-    // Package Imports
+    // JSR
     "oak": "https://deno.land/x/oak@v17.1.4/mod.ts",
-    "dotenv": "jsr:@std/dotenv",
+    // "dotenv": "jsr:@std/dotenv",
+    // NPM
     "better-auth": "npm:better-auth@^1.2.5",
     "compromise": "npm:compromise@14.10.0",
+    "ky": "npm:kysely@^0.27.6",
+    "ky-postgres": "npm:kysely-postgres-js@^2.0.0",
+    "ky-supa": "npm:kysely-supabase@^0.2.0",
     "neo4j": "npm:neo4j-driver@^5.27.0",
-    "pg": "npm:pg@^8.14.1",
+    "pg": "npm:pg",
+    "pg-pool": "npm:pg-pool",
+    "postgres": "npm:postgres@^3.4.5",
+    "supabase": "jsr:@supabase/supabase-js@2",
     "zod": "npm:zod",
-    // Path Mapping
+    // Filepath
     "api/": "./api/",
     "authApi/": "./api/auth/",
     "neo4jApi/": "./api/neo4j/",

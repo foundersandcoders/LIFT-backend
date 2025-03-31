@@ -1,4 +1,4 @@
-import type { Database as Supa } from "types/supabaseTypes.ts";
-import type { KyselifyDatabase } from "npm:kysely-supabase";
+import type { Database as Supabase } from "types/supabaseTypes.ts";
+import type { KyselifyDatabase } from "ky-supa";
 
-export type Database = KyselifyDatabase<Supa>;
+export type Database = KyselifyDatabase<Supabase>;
