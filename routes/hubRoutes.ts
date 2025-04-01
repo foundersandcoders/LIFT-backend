@@ -1,10 +1,10 @@
 import { Router } from "oak";
 import { Subrouter } from "types/serverTypes.ts";
-import { authRouter, authRoutes } from "authRoutes/authRoutes.ts";
+import { authRouter, authRoutes } from "./authRoutes.ts";
 import { editRouter, editRoutes } from "dbRoutes/editRoutes.ts";
 import { getRouter, getRoutes } from "dbRoutes/getRoutes.ts";
 import { findRouter, findRoutes } from "dbRoutes/findRoutes.ts";
-import { sendRouter, sendRoutes } from "emailRoutes/sendRoutes.ts";
+import { sendRouter, sendRoutes } from "./sendRoutes.ts";
 import { toolRouter, toolRoutes } from "dbRoutes/toolRoutes.ts";
 import { writeRouter, writeRoutes } from "dbRoutes/writeRoutes.ts";
 
