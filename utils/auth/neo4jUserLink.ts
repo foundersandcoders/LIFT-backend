@@ -1,10 +1,10 @@
-import neo4j, { Driver } from "neo4j";
-import { creds as c } from "utils/creds/neo4jCred.ts";
 import { Context, Next } from "oak";
+import neo4j, { Driver } from "neo4j";
+import { creds as c } from "credUtils/neo4jCred.ts";
 
 /**
  * Middleware that links authenticated users to Neo4j
- * Run this after authMiddleware to ensure user exists in both systems
+ * Run this after verifyUser to ensure user exists in both systems
  */
 export async function neo4jUserLinkMiddleware(ctx: Context, next: Next) {
   try {
@@ -63,6 +63,8 @@ async function ensureUserInNeo4j(authId: string, email: string, username?: strin
  */
 export async function getNeo4jUserData(authId: string) {
   let driver: Driver | undefined;
+
+  let user;
   
   try {
     driver = neo4j.driver(c.URI, neo4j.auth.basic(c.USER, c.PASSWORD));
@@ -76,12 +78,10 @@ export async function getNeo4jUserData(authId: string) {
       { database: "neo4j" }
     );
     
-    if (result.records.length === 0) {
-      return null;
-    }
+    if (result.records.length === 0) { return null };
     
     const record = result.records[0];
-    const user = record.get("u").properties;
+    user = record.get("u").properties;
     
     const managerName = record.get("managerName");
     const managerEmail = record.get("managerEmail");
@@ -92,12 +92,12 @@ export async function getNeo4jUserData(authId: string) {
         email: managerEmail,
       };
     }
-    
-    return user;
   } catch (error) {
     console.error("Neo4j user data error:", error);
-    return null;
+    user = null;
   } finally {
     await driver?.close();
   }
+
+  return user;
 }

@@ -1080,7 +1080,8 @@
     "https://deno.land/std/testing/bdd.ts": "https://deno.land/std@0.224.0/testing/bdd.ts",
     "https://deno.land/x/case/mod.ts": "https://deno.land/x/case@2.2.0/mod.ts",
     "https://deno.land/x/cors/mod.ts": "https://deno.land/x/cors@v1.2.2/mod.ts",
-    "https://deno.land/x/oak/mod.ts": "https://deno.land/x/oak@v17.1.4/mod.ts"
+    "https://deno.land/x/oak/mod.ts": "https://deno.land/x/oak@v17.1.4/mod.ts",
+    "https://deno.land/x/supabase/mod.ts": "https://deno.land/x/supabase@v2.44.2/mod.ts"
   },
   "remote": {
     "https://cdn.skypack.dev/-/compromise@v14.14.4-hHRcIrgGWSgObsZe4HUf/dist=es2019,mode=imports/optimized/common/one-bb333108.js": "e3c12793bb0391dd7c4a026aa1fd30a70b6e59f300445d01c2a0078284835d3c",

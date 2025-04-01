@@ -1,6 +1,6 @@
 import { Router } from "oak";
 import { Search } from "types/serverTypes.ts";
-import { authMiddleware } from "utils/auth/authMiddleware.ts";
+import { verifyUser } from "utils/auth/authMiddleware.ts";
 import { checkId } from "utils/check/checkId.ts";
 import { checkName } from "utils/check/checkName.ts";
 import {
@@ -14,7 +14,7 @@ import {
 const router = new Router();
 const routes: string[] = [];
 
-router.post("/user", authMiddleware, async (ctx) => {
+router.post("/user", verifyUser, async (ctx) => {
   console.groupCollapsed("|=== POST /find/user ===|");
   const user = ctx.state.user;
   console.log(`| user: ${JSON.stringify(user)}`);
@@ -72,6 +72,7 @@ router.post("/user", authMiddleware, async (ctx) => {
   console.groupEnd();
   console.info("=======================");
 });
+routes.push("/user");
 
 // [ ] tdLo: This is just returning the subject's name
 router.get("/subject/:subject", async (ctx) => {
@@ -92,6 +93,7 @@ router.get("/subject/:subject", async (ctx) => {
     ctx.response.body = { error: "Internal Server Error" };
   }
 });
+routes.push("/subject/:subject");
 
 router.get("/object/:object", async (ctx) => {
   try {
@@ -111,6 +113,7 @@ router.get("/object/:object", async (ctx) => {
     ctx.response.body = { error: "Internal Server Error" };
   }
 });
+routes.push("/object/:object");
 
 router.get("/verb/:verb", async (ctx) => {
 
@@ -131,8 +134,7 @@ router.get("/verb/:verb", async (ctx) => {
     ctx.response.body = { error: "Internal Server Error" };
   }
 });
-
-routes.push("/user", "/subject/:subject", "/object/:object", "/verb/:verb");
+routes.push("/verb/:verb");
 
 export {
   router as findRouter,

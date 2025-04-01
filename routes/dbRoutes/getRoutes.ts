@@ -4,6 +4,9 @@ import { getNouns, getVerbs } from "neo4jApi/get.ts";
 const router = new Router();
 const routes: string[] = [];
 
+/**
+ * Get all nouns
+ */
 router.get("/n", async (ctx) => {
   try {
     const records = await getNouns();
@@ -25,6 +28,9 @@ router.get("/n", async (ctx) => {
 });
 routes.push("/n");
 
+/**
+ * Get all verbs
+ */
 router.get("/v", async (ctx) => {
   try {
     const records = await getVerbs();

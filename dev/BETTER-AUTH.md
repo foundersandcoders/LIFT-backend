@@ -34,7 +34,7 @@ full implementation of better-auth integration.
    - Contains proper formatting for magic link emails
    - Includes error handling and logging
    - Status: Implementation complete
-5. Auth Middleware (authMiddleware.ts):
+5. Auth Middleware (verifyUser.ts):
    - Basic implementation that checks for authentication
    - Links to the Neo4j user data when needed
    - Status: Structure implemented but relies on auth.getSession which is a placeholder

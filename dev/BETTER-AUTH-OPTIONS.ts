@@ -16,7 +16,7 @@ import type { AuthContext } from ".";
 import type { CookieOptions } from "better-call";
 import type { Database } from "better-sqlite3";
 import type { Logger } from "../utils";
-import type { AuthMiddleware } from "../plugins";
+import type { verifyUser } from "../plugins";
 import type { LiteralUnion, OmitId } from "./helper";
 
 export type BetterAuthOptions = {
@@ -907,11 +907,11 @@ export type BetterAuthOptions = {
 		/**
 		 * Before a request is processed
 		 */
-		before?: AuthMiddleware;
+		before?: verifyUser;
 		/**
 		 * After a request is processed
 		 */
-		after?: AuthMiddleware;
+		after?: verifyUser;
 	};
 	/**
 	 * Disabled paths

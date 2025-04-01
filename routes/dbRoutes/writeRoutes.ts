@@ -1,14 +1,14 @@
 import { Router } from "oak";
 import type { Match, Lantern, Ember, Ash, Shards, Atoms } from "types/beaconTypes.ts";
 import type { Attempt } from "types/serverTypes.ts";
-import { authMiddleware } from "utils/auth/authMiddleware.ts";
+import { verifyUser } from "utils/auth/authMiddleware.ts";
 import { breaker } from "utils/convert/breakInput.ts";
 import { writeBeacon } from "neo4jApi/writeBeacon.ts";
 
 const router = new Router();
 const routes: string[] = [];
 
-router.post("/newBeacon", authMiddleware, async (ctx) => {
+router.post("/newBeacon", verifyUser, async (ctx) => {
   console.groupCollapsed(`|========= POST: /write/newBeacon =========|`);
   const user = ctx.state.user;
   console.log(`| user: ${JSON.stringify(user)}`);
@@ -50,7 +50,6 @@ router.post("/newBeacon", authMiddleware, async (ctx) => {
   console.groupEnd();
   console.log("|==========================================|");
 });
-
 routes.push("/newBeacon");
 
 export { router as writeRouter, routes as writeRoutes };

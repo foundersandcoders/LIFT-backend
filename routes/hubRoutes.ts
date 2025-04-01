@@ -1,12 +1,12 @@
 import { Router } from "oak";
 import { Subrouter } from "types/serverTypes.ts";
-import { authRouter, authRoutes } from "routes/authRoutes/authRoutes.ts";
-import { editRouter, editRoutes } from "routes/dbRoutes/editRoutes.ts";
-import { getRouter, getRoutes } from "routes/dbRoutes/getRoutes.ts";
-import { findRouter, findRoutes } from "routes/dbRoutes/findRoutes.ts";
-import { sendRouter, sendRoutes } from "routes/emailRoutes/sendRoutes.ts";
-import { toolRouter, toolRoutes } from "routes/dbRoutes/toolRoutes.ts";
-import { writeRouter, writeRoutes } from "routes/dbRoutes/writeRoutes.ts";
+import { authRouter, authRoutes } from "authRoutes/authRoutes.ts";
+import { editRouter, editRoutes } from "dbRoutes/editRoutes.ts";
+import { getRouter, getRoutes } from "dbRoutes/getRoutes.ts";
+import { findRouter, findRoutes } from "dbRoutes/findRoutes.ts";
+import { sendRouter, sendRoutes } from "emailRoutes/sendRoutes.ts";
+import { toolRouter, toolRoutes } from "dbRoutes/toolRoutes.ts";
+import { writeRouter, writeRoutes } from "dbRoutes/writeRoutes.ts";
 
 const router = new Router();
 const registeredRoutes: string[] = [];

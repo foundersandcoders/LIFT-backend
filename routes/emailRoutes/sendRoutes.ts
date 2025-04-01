@@ -1,14 +1,15 @@
 import { Router } from "oak";
-import { z } from "zod";
 import { PingRequest } from "types/pingTypes.ts";
-import { authMiddleware } from "utils/auth/authMiddleware.ts";
+import { verifyUser } from "utils/auth/authMiddleware.ts";
 import { sendPing } from "resendApi/sendPing.ts";
 import { sendTest } from "resendApi/sendTest.ts";
+
+const devMode = Deno.env.get("DENO_ENV") !== "production";
 
 const router = new Router();
 const routes: string[] = [];
 
-router.post("/ping", /* authMiddleware, */ async (ctx) => {
+router.post("/ping", verifyUser, async (ctx) => {
   console.group(`|=== POST "/email/ping" ===`);
   const user = ctx.state.user;
   console.log(`| user: ${JSON.stringify(user)}`);
@@ -37,17 +38,13 @@ router.post("/ping", /* authMiddleware, */ async (ctx) => {
   console.groupEnd();
   console.info(`|==========================`);
 });
+routes.push("/ping");
 
 router.get("/test", async (ctx) => {
   await sendTest();
   ctx.response.status = 200;
   ctx.response.body = ctx.params;
 });
+if (devMode) { routes.push("/test") };
 
-routes.push("/ping");
-routes.push("/test");
-
-export {
-  router as sendRouter,
-  routes as sendRoutes
-};
+export { router as sendRouter, routes as sendRoutes };
