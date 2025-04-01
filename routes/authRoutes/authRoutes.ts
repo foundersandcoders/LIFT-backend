@@ -1,111 +1,141 @@
 import { Router } from "oak";
 import { z } from "zod";
-import { auth } from "utils/auth.ts";
-import { APIError } from "better-auth/api";
+import { createClient } from "jsr:@supabase/supabase-js";
+// import { auth } from "utils/auth.ts";
+// import { APIError } from "better-auth/api";
 
 const router = new Router();
-const frontendUrl = Deno.env.get("BETTER_AUTH_URL") || "no frontend url";
-const magicLinkRequestSchema = z.object({
-  email: z.string().email(),
-  callbackURL: z.string().optional().default("/"),
-  redirect: z.string().url("Invalid URL format").optional(),
-}).strict();
+
+// const frontendUrl = Deno.env.get("BETTER_AUTH_URL") || "no frontend url";
+// const magicLinkRequestSchema = z.object({
+//   email: z.string().email(),
+//   callbackURL: z.string().optional().default("/"),
+//   redirect: z.string().url("Invalid URL format").optional(),
+// }).strict();
+
+// router.post("/signin/magic-link", async (ctx) => {
+//   console.groupCollapsed("|========= POST: /auth/magic-link =========|");
+//   try {
+//     const reqBody = await ctx.request.body.json();
+
+//     const parseResult = magicLinkRequestSchema.safeParse(reqBody);
+//     if (!parseResult.success) {
+//       console.group(`|====== Validation Error ======|`);
+//       const errorDetails = parseResult.error.format();
+      
+//       console.log(`| Validation error: ${JSON.stringify(errorDetails)}`);
+
+//       ctx.response.status = 400;
+//       ctx.response.body = {
+//         success: false,
+//         error: { message: "Invalid request body", details: errorDetails }
+//       };
+
+//       console.group(`|====== Response ======|`);
+//       console.table(ctx.response.body);
+//       console.groupEnd();
+//       console.groupEnd();
+//       console.groupEnd();
+//       return;
+//     }
+//     const { email, callbackURL, redirect } = parseResult.data;
+    
+//     console.table(parseResult.data);
+
+//     const redirectUrl = redirect || `${frontendUrl}${callbackURL}`;
+
+//     console.log(`| • Email: ${email}`);
+//     console.log(`| • Callback URL: ${callbackURL}`);
+//     console.log(`| • Redirect URL: ${redirectUrl}`);
+
+//     const url = new URL(ctx.request.url);
+//     url.pathname = "/auth/signin/magic-link";
+
+//     try {
+//       console.info(`| Calling auth.api.signInMagicLink`);
+//       const { headers, response } = await auth.api.signInMagicLink({
+//         method: "POST",
+//         headers: getHeaders(ctx.request.headers),
+//         body: {
+//           email: email,
+//           callbackURL: redirectUrl
+//         },
+//         returnHeaders: true,
+//         asResponse: true
+//       });
+
+//       console.group(`|====== Response Body ======|`);
+//       console.table(response);
+//       ctx.response.body = response;
+//       console.groupEnd();
+      
+//       console.group(`|====== Response Headers ======|`);
+//       console.log(`| headers`);
+//       console.table(headers);
+//       headers.forEach((value, key) => { ctx.response.headers.set(key, value) });
+
+//       console.log(`|====== headersOutput ======|`);
+//       const headersOutput = headers.get("x-custom-header");
+//       console.table(headersOutput);
+//       console.groupEnd();
+//       console.groupEnd();
+
+//       console.group(`|====== Response Cookies ======|`);
+//       const cookiesOutput = headers.get("set-cookie");
+//       console.table(cookiesOutput);
+//       console.groupEnd();
+//     } catch (error) {
+//       if (error instanceof APIError) {
+//         console.error(error.message, error.status)
+//       } else {
+//         console.error(error)
+//       }
+//     }
+//     console.groupEnd();
+    
+//     console.info("| ✓ Processed with better-auth handler");
+
+//     console.groupEnd();
+//     console.groupEnd();
+//     return;
+//   } catch (error) {
+//     console.error("Error in magic-link handler:", error);
+//     ctx.response.status = 500;
+//     ctx.response.body = { 
+//       success: false, 
+//       error: { message: error instanceof Error ? error.message : "Failed to send magic link" } 
+//     };
+//     console.log(`| Error: ${error instanceof Error ? error.message : String(error)}`);
+//     console.groupEnd();
+//     console.groupEnd();
+//   }
+// });
 
 router.post("/signin/magic-link", async (ctx) => {
-  console.groupCollapsed("|========= POST: /auth/magic-link =========|");
-  try {
-    const reqBody = await ctx.request.body.json();
-
-    const parseResult = magicLinkRequestSchema.safeParse(reqBody);
-    if (!parseResult.success) {
-      console.group(`|====== Validation Error ======|`);
-      const errorDetails = parseResult.error.format();
-      
-      console.log(`| Validation error: ${JSON.stringify(errorDetails)}`);
-
-      ctx.response.status = 400;
-      ctx.response.body = {
-        success: false,
-        error: { message: "Invalid request body", details: errorDetails }
-      };
-
-      console.group(`|====== Response ======|`);
-      console.table(ctx.response.body);
-      console.groupEnd();
-      console.groupEnd();
-      console.groupEnd();
-      return;
-    }
-    const { email, callbackURL, redirect } = parseResult.data;
-    
-    console.table(parseResult.data);
-
-    const redirectUrl = redirect || `${frontendUrl}${callbackURL}`;
-
-    console.log(`| • Email: ${email}`);
-    console.log(`| • Callback URL: ${callbackURL}`);
-    console.log(`| • Redirect URL: ${redirectUrl}`);
-
-    const url = new URL(ctx.request.url);
-    url.pathname = "/auth/signin/magic-link";
-
-    try {
-      console.info(`| Calling auth.api.signInMagicLink`);
-      const { headers, response } = await auth.api.signInMagicLink({
-        method: "POST",
-        headers: getHeaders(ctx.request.headers),
-        body: {
-          email: email,
-          callbackURL: redirectUrl
-        },
-        returnHeaders: true,
-        asResponse: true
-      });
-
-      console.group(`|====== Response Body ======|`);
-      console.table(response);
-      ctx.response.body = response;
-      console.groupEnd();
-      
-      console.group(`|====== Response Headers ======|`);
-      console.log(`| headers`);
-      console.table(headers);
-      headers.forEach((value, key) => { ctx.response.headers.set(key, value) });
-
-      console.log(`|====== headersOutput ======|`);
-      const headersOutput = headers.get("x-custom-header");
-      console.table(headersOutput);
-      console.groupEnd();
-      console.groupEnd();
-
-      console.group(`|====== Response Cookies ======|`);
-      const cookiesOutput = headers.get("set-cookie");
-      console.table(cookiesOutput);
-      console.groupEnd();
-    } catch (error) {
-      if (error instanceof APIError) {
-        console.error(error.message, error.status)
-      } else {
-        console.error(error)
-      }
-    }
-    console.groupEnd();
-    
-    console.info("| ✓ Processed with better-auth handler");
-
-    console.groupEnd();
-    console.groupEnd();
+  const body = await ctx.request.body.json();
+  const email = body.email;
+  
+  if (!email) {
+    ctx.response.status = 400;
+    ctx.response.body = { error: "Email is required" };
     return;
-  } catch (error) {
-    console.error("Error in magic-link handler:", error);
+  }
+
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+  const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  const { data, error } = await supabase.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: "http://localhost:3000/auth/callback" },
+  });
+
+  if (error) {
     ctx.response.status = 500;
-    ctx.response.body = { 
-      success: false, 
-      error: { message: error instanceof Error ? error.message : "Failed to send magic link" } 
-    };
-    console.log(`| Error: ${error instanceof Error ? error.message : String(error)}`);
-    console.groupEnd();
-    console.groupEnd();
+    ctx.response.body = { error: error.message };
+  } else {
+    ctx.response.status = 200;
+    ctx.response.body = { message: "Magic link sent", data };
   }
 });
 

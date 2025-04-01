@@ -1,8 +1,8 @@
+console.log("Starting LIFT backend...");
+
 import * as dotenv from "dotenv";
 import { Application, Context } from "oak";
-// Router
 import { router } from "routes/hubRoutes.ts";
-// Database
 import { nudgeDb, nudgeSched } from "utils/cron/nudgeDb.ts";
 import { defineSchema } from "utils/schema/schema.ts";
 
@@ -10,7 +10,7 @@ await dotenv.load({ export: true });
 export const isDev: boolean = Deno.env.get("DENO_ENV") !== "production";
 export const logger: boolean = false;
 
-const port = parseInt(Deno.env.get("PORT") ?? "8080");
+const port = parseInt(Deno.env.get("PORT") ?? "8070");
 const app = new Application();
 
 async function customCors(ctx: Context, next: () => Promise<unknown>) {

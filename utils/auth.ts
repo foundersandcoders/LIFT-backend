@@ -1,4 +1,4 @@
-import { kysely } from "utils/auth/kysely.ts";
+import { kysely } from "./auth/kysely.ts";
 import { betterAuth } from "better-auth";
 import { magicLink } from "better-auth/plugins";
 import { userStore } from "utils/auth/denoKvUserStore.ts";

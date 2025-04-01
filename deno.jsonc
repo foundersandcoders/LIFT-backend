@@ -41,14 +41,18 @@
     },
     // Auth
     "auth": {
-      "description": "Initialize the SQLite database",
+      "description": "Run the authentication workflow",
       "command": "deno run -A --env-file=.env.local utils/auth.ts"
+    },
+    "kysely": {
+      "description": "Test the Kysely implementation",
+      "command": "deno test -A --no-check --env-file=.env.local utils/auth/kysely/testRepository.spec.ts"
     }
   },
   "imports": {
     // JSR
     "oak": "https://deno.land/x/oak@v17.1.4/mod.ts",
-    // "dotenv": "jsr:@std/dotenv",
+    "dotenv": "jsr:@std/dotenv",
     // NPM
     "better-auth": "npm:better-auth@^1.2.5",
     "compromise": "npm:compromise@14.10.0",
@@ -58,7 +62,7 @@
     "neo4j": "npm:neo4j-driver@^5.27.0",
     "pg": "npm:pg",
     "pg-pool": "npm:pg-pool",
-    "postgres": "npm:postgres@^3.4.5",
+    "postgres": "npm:postgres@^3.4.4",
     "supabase": "jsr:@supabase/supabase-js@2",
     "zod": "npm:zod",
     // Filepath
@@ -79,10 +83,7 @@
     "langUtils/": "./utils/lang/",
     "types/": "./types/"
   },
-  "unstable": [
-    "cron",
-    "kv"
-  ],
+  "unstable": [ "cron", "kv" ],
   "fmt": {
     "semiColons": true,
     "singleQuote": false,
@@ -97,9 +98,7 @@
   },
   "lint": {
     "rules": {
-      "tags": [
-        "recommended"
-      ],
+      "tags": [ "recommended" ],
       "include": [],
       "exclude": [
         "ban-untagged-todo",

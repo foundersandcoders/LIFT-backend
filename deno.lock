@@ -20,6 +20,7 @@
     "jsr:@std/bytes@1": "1.0.4",
     "jsr:@std/crypto@1": "1.0.3",
     "jsr:@std/data-structures@^1.0.6": "1.0.6",
+    "jsr:@std/dotenv@*": "0.225.3",
     "jsr:@std/encoding@1": "1.0.6",
     "jsr:@std/encoding@^1.0.5": "1.0.6",
     "jsr:@std/expect@*": "1.0.12",
@@ -28,6 +29,7 @@
     "jsr:@std/media-types@1": "1.1.0",
     "jsr:@std/path@1": "1.0.8",
     "jsr:@std/testing@*": "1.0.9",
+    "jsr:@supabase/supabase-js@*": "2.49.4",
     "jsr:@supabase/supabase-js@2": "2.49.4",
     "npm:@supabase/auth-js@2.69.1": "2.69.1",
     "npm:@supabase/functions-js@2.4.4": "2.4.4",
@@ -55,7 +57,7 @@
     "npm:pg@*": "8.14.1",
     "npm:postgres@*": "3.4.4",
     "npm:postgres@3.4.4": "3.4.4",
-    "npm:postgres@^3.4.5": "3.4.5",
+    "npm:postgres@^3.4.4": "3.4.4",
     "npm:qs@^6.13.0": "6.14.0",
     "npm:string_decoder@^1.3.0": "1.3.0",
     "npm:supabase@*": "1.226.4",
@@ -153,6 +155,9 @@
     },
     "@std/data-structures@1.0.6": {
       "integrity": "76a7fd8080c66604c0496220a791860492ab21a04a63a969c0b9a0609bbbb760"
+    },
+    "@std/dotenv@0.225.3": {
+      "integrity": "a95e5b812c27b0854c52acbae215856d9cce9d4bbf774d938c51d212711e8d4a"
     },
     "@std/encoding@1.0.6": {
       "integrity": "ca87122c196e8831737d9547acf001766618e78cd8c33920776c7f5885546069"
@@ -670,7 +675,7 @@
       "integrity": "sha512-R1tWx6/x3tSatWvsmbHJxpBZYhNNxcnMw52QzZaHKg7ZOWtHib4iZyEaw4gb2hNKVctWQ3jfMxZT/ZaEMK6kBQ==",
       "dependencies": [
         "kysely@0.27.4",
-        "postgres@3.4.4"
+        "postgres"
       ]
     },
     "kysely-supabase@0.2.0_@supabase+supabase-js@2.49.4_kysely@0.27.4_supabase@1.226.4": {
@@ -835,9 +840,6 @@
     },
     "postgres@3.4.4": {
       "integrity": "sha512-IbyN+9KslkqcXa8AO9fxpk97PA4pzewvpi2B3Dwy9u4zpV32QicaEdgmF3eSQUzdRk7ttDHQejNgAEr4XoeH4A=="
-    },
-    "postgres@3.4.5": {
-      "integrity": "sha512-cDWgoah1Gez9rN3H4165peY9qfpEo+SA61oQv65O3cRUE1pOEoJWwddwcqKE8XZYjbblOJlYDlLV4h67HrEVDg=="
     },
     "proc-log@5.0.0": {
       "integrity": "sha512-Azwzvl90HaF0aCz1JrDdXQykFakSSNPaPoiZ9fm5qJIMHioDZEi7OAdRwSm6rSoPtY3Qutnm3L7ogmg3dc+wbQ=="
@@ -1075,6 +1077,7 @@
     }
   },
   "redirects": {
+    "https://deno.land/std/testing/bdd.ts": "https://deno.land/std@0.224.0/testing/bdd.ts",
     "https://deno.land/x/case/mod.ts": "https://deno.land/x/case@2.2.0/mod.ts",
     "https://deno.land/x/cors/mod.ts": "https://deno.land/x/cors@v1.2.2/mod.ts",
     "https://deno.land/x/oak/mod.ts": "https://deno.land/x/oak@v17.1.4/mod.ts"
@@ -1096,6 +1099,8 @@
     "https://deno.land/std@0.159.0/uuid/v1.ts": "7123410ef9ce980a4f2e54a586ccde5ed7063f6f119a70d86eebd92f8e100295",
     "https://deno.land/std@0.159.0/uuid/v4.ts": "a52ce28e5fe3719b94598ca22829f7c10845070b92e25755dc19b1ab173a3d1d",
     "https://deno.land/std@0.159.0/uuid/v5.ts": "1cf2d86112afe0d5d291fbfc3b9729f3cf8524c4eb7d613011d029e45d6194f6",
+    "https://deno.land/std@0.224.0/testing/_test_suite.ts": "f10a8a6338b60c403f07a76f3f46bdc9f1e1a820c0a1decddeb2949f7a8a0546",
+    "https://deno.land/std@0.224.0/testing/bdd.ts": "3e4de4ff6d8f348b5574661cef9501b442046a59079e201b849d0e74120d476b",
     "https://deno.land/x/case@2.2.0/camelCase.ts": "b9a4cf361a7c9740ecb75e00b5e2c006bd4e5d40e442d26c5f2760286fa66796",
     "https://deno.land/x/case@2.2.0/constantCase.ts": "c698fc32f00cd267c1684b1d413d784260d7e7798f2bf506803e418497d839b5",
     "https://deno.land/x/case@2.2.0/dotCase.ts": "03ae55d5635e6a4ca894a003d9297cd9cd283af2e7d761dd3de13663849a9423",
@@ -1157,6 +1162,7 @@
   },
   "workspace": {
     "dependencies": [
+      "jsr:@std/dotenv@*",
       "jsr:@supabase/supabase-js@2",
       "npm:better-auth@^1.2.5",
       "npm:compromise@14.10.0",
@@ -1166,7 +1172,7 @@
       "npm:neo4j-driver@^5.27.0",
       "npm:pg-pool@*",
       "npm:pg@*",
-      "npm:postgres@^3.4.5",
+      "npm:postgres@^3.4.4",
       "npm:zod@*"
     ]
   }
