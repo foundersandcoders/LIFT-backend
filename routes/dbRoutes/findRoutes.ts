@@ -1,7 +1,8 @@
 import { Router } from "oak";
 import { Search } from "types/serverTypes.ts";
-import { checkId } from "../../utils/check/checkId.ts";
-import { checkName } from "../../utils/check/checkName.ts";
+import { verifyUser } from "utils/auth/authMiddleware.ts";
+import { checkId } from "utils/check/checkId.ts";
+import { checkName } from "utils/check/checkName.ts";
 import {
   findUserById,
   findUserByName,
@@ -13,19 +14,22 @@ import {
 const router = new Router();
 const routes: string[] = [];
 
-router.post("/user", async (ctx) => {
-  console.groupCollapsed("=== POST /find/user ===");
+router.post("/user", verifyUser, async (ctx) => {
+  console.groupCollapsed("|=== POST /find/user ===|");
+  const user = ctx.state.user;
+  console.log(`| user: ${JSON.stringify(user)}`);
+
   try {
     const body = ctx.request.body;
     const bodyJson = await body.json();
 
-    const id:number = checkId(bodyJson.id);
+    const authId:string = checkId(bodyJson.authId);
     const name:string = checkName(bodyJson.name);
     const publicOnly:boolean = bodyJson.publicOnly;
 
-    const search = new Search(publicOnly, "init", id, name);
+    const search = new Search(publicOnly, "init", authId, name);
 
-    if (search.id != -1) {
+    if (search.authId != "") {
       search.type = "id";
     } else if (search.name != "") {
       search.type = "name";
@@ -38,7 +42,7 @@ router.post("/user", async (ctx) => {
     let records:string[] = [];
     switch (search.type) {
       case "id": {
-        records = await findUserById(search.id, search.publicOnly);
+        records = await findUserById(search.authId, search.publicOnly);
         break; 
       }
       case "name": {
@@ -68,6 +72,7 @@ router.post("/user", async (ctx) => {
   console.groupEnd();
   console.info("=======================");
 });
+routes.push("/user");
 
 // [ ] tdLo: This is just returning the subject's name
 router.get("/subject/:subject", async (ctx) => {
@@ -88,6 +93,7 @@ router.get("/subject/:subject", async (ctx) => {
     ctx.response.body = { error: "Internal Server Error" };
   }
 });
+routes.push("/subject/:subject");
 
 router.get("/object/:object", async (ctx) => {
   try {
@@ -107,8 +113,10 @@ router.get("/object/:object", async (ctx) => {
     ctx.response.body = { error: "Internal Server Error" };
   }
 });
+routes.push("/object/:object");
 
 router.get("/verb/:verb", async (ctx) => {
+
   try {
     const records = await findVerb(ctx.params.verb);
     if (!records) {
@@ -126,10 +134,6 @@ router.get("/verb/:verb", async (ctx) => {
     ctx.response.body = { error: "Internal Server Error" };
   }
 });
-
-routes.push("/user");
-routes.push("/subject/:subject");
-routes.push("/object/:object");
 routes.push("/verb/:verb");
 
 export {

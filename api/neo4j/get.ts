@@ -1,5 +1,5 @@
 import neo4j, { Driver } from "neo4j";
-import { creds as c } from "../../utils/auth/neo4jCred.ts";
+import { creds as c } from "utils/creds/neo4jCred.ts";
 
 export async function getNouns() {
   let driver: Driver | null = null;

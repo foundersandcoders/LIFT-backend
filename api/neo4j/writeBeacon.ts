@@ -2,7 +2,7 @@ import * as dotenv from "dotenv";
 import neo4j, { Driver } from "neo4j";
 import type { Lantern, Ember, DBError } from "types/beaconTypes.ts";
 import type { Attempt } from "types/serverTypes.ts";
-import { creds as c } from "utils/auth/neo4jCred.ts";
+import { creds as c } from "utils/creds/neo4jCred.ts";
 
 dotenv.load({ export: true });
 

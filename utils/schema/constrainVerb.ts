@@ -1,8 +1,11 @@
 import neo4j, { Driver } from "neo4j";
-import { creds as c } from "utils/auth/neo4jCred.ts";
+import { creds as c } from "utils/creds/neo4jCred.ts";
+
+export const isDev: boolean = Deno.env.get("DENO_ENV") !== "production";
+export const logger: boolean = false;
 
 export async function constrainVerb() {
-  console.groupCollapsed(`|=== constrainVerb() ===`);
+  if (logger) console.info(`| ":VERB" Edge Props`);
   let driver: Driver | null = null;
   
   try {
@@ -16,12 +19,11 @@ export async function constrainVerb() {
       { database: "neo4j" }
     );
 
-    console.info(`|- VERB { dbId }`);
+    if (logger) console.info(`|- • dbId is unique`);
   } catch (err) {
     console.warn(`| Connection error`);
     console.warn(`| ${err}`);
   } finally {
     driver?.close()
   }
-  console.groupEnd();
 }
