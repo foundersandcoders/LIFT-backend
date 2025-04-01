@@ -10,7 +10,7 @@ await dotenv.load({ export: true });
 export const isDev: boolean = Deno.env.get("DENO_ENV") !== "production";
 export const logger: boolean = false;
 
-const port = parseInt(Deno.env.get("PORT") ?? "8070");
+const port = parseInt(Deno.env.get("PORT") ?? "8080");
 const app = new Application();
 
 async function customCors(ctx: Context, next: () => Promise<unknown>) {
