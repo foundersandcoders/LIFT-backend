@@ -21,7 +21,7 @@ router.post("/signin/magic-link", async (ctx) => {
 
   const { data, error } = await supabase.auth.signInWithOtp({
     email,
-    options: { emailRedirectTo: "http://localhost:3000/auth/callback" },
+    options: { emailRedirectTo: "http://localhost:5000/auth/callback" },
   });
 
   // [ ] tdHi: Get callback URL from Alex
