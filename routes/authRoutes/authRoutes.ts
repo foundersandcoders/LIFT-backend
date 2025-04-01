@@ -6,6 +6,7 @@ const router = new Router();
 const routes: string[] = [];
 
 router.post("/signin/magic-link", async (ctx) => {
+  console.group(`|============ Sign In Request ============|`);
   const body = await ctx.request.body.json();
   const email = body.email;
   
@@ -26,13 +27,23 @@ router.post("/signin/magic-link", async (ctx) => {
 
   // [ ] tdHi: Get callback URL from Alex
 
+  console.group(`|====== Sign In Result ======|`);
   if (error) {
+    console.info(`| Error`);
+    console.error(error);
+
     ctx.response.status = 500;
     ctx.response.body = { error: error.message };
   } else {
+    console.info(`| Success`);
+    console.log(data);
+
     ctx.response.status = 200;
     ctx.response.body = { message: "Magic link sent", data };
   }
+  console.groupEnd();
+
+  console.groupEnd();
 });
 routes.push("signin/magic-link");
 
