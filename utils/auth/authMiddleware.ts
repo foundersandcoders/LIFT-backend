@@ -52,7 +52,7 @@ export async function verifyUser(ctx: Context, next: () => Promise<unknown>) {
 
   if (linkPaths.some(path => ctx.request.url.pathname.includes(path))) {
     console.log("| Neo4j data collected at this point");
-    const neo4jData = await getNeo4jUserData(user.user.id);
+    const neo4jData = await getNeo4jUserData(user.user?.id || "");
     
     if (neo4jData) {
       console.log("| Neo4j data found and attached to context");

@@ -2,53 +2,6 @@ const resendKey = Deno.env.get("RESEND_KEY");
 const isDev = Deno.env.get("DENO_ENV") !== "production";
 const FRONTEND_URL = Deno.env.get("FRONTEND_URL") || "http://localhost:3000";
 
-// A function to generate and send a magic link manually
-// // This bypasses better-auth entirely for testing
-// export async function generateManualMagicLink(email: string, callbackURL = "/") {
-//   // Create a simple token (this is for testing only!)
-//   const token = `manual-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
-  
-//   // Create verification URLs
-//   const frontendVerifyUrl = `${FRONTEND_URL}/auth/verify?token=${token}`;
-//   const apiVerifyUrl = `${FRONTEND_URL}/api/auth/verify?token=${token}`;
-  
-//   console.log("\n==============================================================");
-//   console.log("||             MANUAL MAGIC LINK CREATED                     ||");
-//   console.log("||        THIS BYPASSES BETTER-AUTH COMPLETELY               ||");
-//   console.log("==============================================================");
-//   console.log(`📧 EMAIL: ${email}`);
-//   console.log(`🔑 TOKEN: ${token}`);
-//   console.log(`🔗 FRONTEND URL: ${frontendVerifyUrl}`);
-//   console.log(`🔗 API URL: ${apiVerifyUrl}`);
-//   console.log("==============================================================\n");
-  
-//   // In development, don't actually send the email
-//   if (isDev) {
-//     return { 
-//       success: true, 
-//       message: "Manual magic link created (not sent in dev mode)",
-//       token,
-//       url: frontendVerifyUrl
-//     };
-//   }
-  
-//   // In production, send an actual email
-//   try {
-//     await sendMagicLinkEmail(email, frontendVerifyUrl);
-//     return { 
-//       success: true, 
-//       message: "Manual magic link email sent",
-//       token,
-//       url: frontendVerifyUrl
-//     };
-//   } catch (error) {
-//     return { 
-//       success: false, 
-//       error: error instanceof Error ? error.message : String(error) 
-//     };
-//   }
-// }
-
 /**
  * Sends a magic link email to the specified email address.
  * In development mode, it will not send an actual email and just log the URL.
