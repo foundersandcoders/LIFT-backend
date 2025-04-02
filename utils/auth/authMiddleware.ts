@@ -2,7 +2,7 @@ import { Context, Next } from "oak";
 import { createClient } from "supabase";
 import { getNeo4jUserData } from "./neo4jUserLink.ts";
 
-const devMode:boolean = true;
+const devMode:boolean = Deno.env.get("DENO_ENV") !== "production";
 
 export async function verifyUser(ctx: Context, next: () => Promise<unknown>) {
   console.groupCollapsed("|=== Verification Middleware ===|");

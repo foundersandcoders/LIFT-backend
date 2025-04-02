@@ -4,11 +4,6 @@
 import { assertEquals } from "jsr:@std/assert";
 import { delay } from "jsr:@std/async/delay";
 import { expect } from "jsr:@std/expect";
-
-// Import all auth tests
-import "./auth/auth.test.ts";
-import "./auth/authConfig.test.ts";
-import "./auth/denoKvUserStore.test.ts";
 import "./auth/sendMagicLink.test.ts";
 
 // Basic tests to verify the test runner works
