@@ -12,6 +12,7 @@ export interface Match {
   presetId?: string;
   input: string;
   atoms: Atoms;
+  description?: string;
   category?: string;
   isPublic: boolean;
   isArchived: boolean;
