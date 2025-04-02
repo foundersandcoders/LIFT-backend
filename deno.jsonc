@@ -1,10 +1,10 @@
 {
   "tasks": {
-    "runDev": {
+    "rundev": {
       "description": "Run the local development build",
       "command": "deno run -A --watch --unstable-cron --env-file=.env.local main.ts"
     },
-    "runProd": {
+    "runprod": {
       "description": "Run the local production build",
       "command": "deno run -A --watch --unstable-cron --env-file=.env.production main.ts"
     },
@@ -13,29 +13,29 @@
       "description": "Run the tests",
       "command": "deno test -A --unstable-kv --no-check"
     },
-    "testAuth": {
+    "testauth": {
       "description": "Run only authentication tests",
       "command": "deno test -A --unstable-kv --no-check tests/auth-test.ts"
     },
     // Resend API
-    "resendCheck": {
+    "resendcheck": {
       "description": "Tests the Resend API",
       "command": "deno run -A --watch --unstable-cron --env-file=.env.local ./utils/emails/sendTest.ts"
     },
     // Neo4j API
-    "n4jSeedL": {
+    "n4jseedl": {
       "description": "Seed the local instance of neo4j",
       "command": "deno run -A --env-file=.env.local queries/seed.ts"
     },
-    "n4jSeedP": {
+    "n4jseedp": {
       "description": "Seed the production instance of neo4j",
       "command": "deno run -A --env-file=.env.production queries/seed.ts"
     },
-    "n4jResetL": {
+    "n4jresetl": {
       "description": "Reset the local instance of neo4j",
       "command": "deno run -A --env-file=.env.local queries/reset.ts"
     },
-    "n4jResetP": {
+    "n4jresetp": {
       "description": "Reset the production instance of neo4j",
       "command": "deno run -A --env-file=.env.production queries/reset.ts"
     },
