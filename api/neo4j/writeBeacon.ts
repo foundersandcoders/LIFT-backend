@@ -41,6 +41,7 @@ export async function writeBeacon(entry:Lantern):Promise<Attempt> {
           atoms_verb: entry.atoms.verb,
           atoms_object: entry.atoms.object,
           atoms_adverbial: entry.atoms.adverbial,
+          description: entry.description ?? "",
           shards_subject_head: entry.shards.subject.head,
           shards_subject_phrase: entry.shards.subject.phrase,
           shards_subject_article: entry.shards.subject.article,
@@ -81,6 +82,7 @@ export async function writeBeacon(entry:Lantern):Promise<Attempt> {
         object: record.atoms_object,
         adverbial: record.atoms_adverbial
       },
+      description: record.description,
       category: record.category,
       isPublic: record.isPublic,
       isArchived: record.isArchived,
